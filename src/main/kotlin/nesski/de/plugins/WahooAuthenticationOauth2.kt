@@ -23,10 +23,12 @@ import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
+import io.ktor.util.logging.KtorSimpleLogger
 import nesski.de.models.UserSession
 import nesski.de.models.WahooWorkouts
 
 const val BASE_URL = "https://api.wahooligan.com"
+internal val log = KtorSimpleLogger("WahooAuthenticationOauth2")
 
 fun Application.configureAuthentication(httpClient: HttpClient = applicationHttpClient) {
     install(Sessions) {
@@ -83,7 +85,7 @@ fun Application.configureAuthentication(httpClient: HttpClient = applicationHttp
             }
         }
         get("/") {
-            call.respondRedirect("http://wahoo.calendar:8484/login")
+            call.respondRedirect("http://localhost:8484/login")
         }
         get("/home") {
             val userSession: UserSession? = UserSession.getSession(call)
@@ -94,23 +96,27 @@ fun Application.configureAuthentication(httpClient: HttpClient = applicationHttp
         get("/{path}") {
             val userSession: UserSession? = UserSession.getSession(call)
             if (userSession != null) {
-                val workouts: WahooWorkouts = getWorkouts(httpClient, userSession)
+                val workouts: WahooWorkouts = getPlans(httpClient, userSession)
                 call.respondText("Found, ${workouts.workouts.size} workouts from user profile!")
             }
         }
     }
 }
 
-suspend fun getWorkouts(
+suspend fun getPlans(
     httpClient: HttpClient,
     userSession: UserSession,
 ): WahooWorkouts {
-    val res =
-        httpClient.get("$BASE_URL/v1/workouts") {
+    return runCatching {
+        httpClient.get("$BASE_URL/v1/plans") {
             headers {
                 append(HttpHeaders.Authorization, "Bearer ${userSession.token}")
             }
         }
-
-    return res.body()
+    }.fold(
+        onSuccess = { it.body() },
+        onFailure = {
+            log.error("Encountered error while getting plans: $it")
+        },
+    )
 }
