@@ -106,8 +106,8 @@ fun Application.configureAuthentication(httpClient: HttpClient = applicationHttp
 suspend fun getPlans(
     httpClient: HttpClient,
     userSession: UserSession,
-): WahooWorkouts {
-    return runCatching {
+): WahooWorkouts =
+    runCatching {
         httpClient.get("$BASE_URL/v1/plans") {
             headers {
                 append(HttpHeaders.Authorization, "Bearer ${userSession.token}")
@@ -117,6 +117,6 @@ suspend fun getPlans(
         onSuccess = { it.body() },
         onFailure = {
             log.error("Encountered error while getting plans: $it")
+            throw it
         },
     )
-}

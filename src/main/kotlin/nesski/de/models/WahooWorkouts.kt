@@ -1,8 +1,8 @@
 package nesski.de.models
 
-import java.time.Instant
 import kotlinx.serialization.Serializable
 import nesski.de.utils.InstantSerializer
+import java.time.Instant
 
 @Serializable
 data class WahooWorkouts(
@@ -10,7 +10,7 @@ data class WahooWorkouts(
     val page: Int,
     val order: String,
     val sort: String,
-    val workouts: List<Workouts>
+    val workouts: List<Workouts>,
 )
 
 @Serializable
@@ -26,6 +26,6 @@ data class Workouts(
     @Serializable(InstantSerializer::class)
     val created_at: Instant,
     @Serializable(InstantSerializer::class)
-    val updated_at: Instant
-    //val workout_summary: null,
+    val updated_at: Instant,
+    // val workout_summary: null,
 )

@@ -7,7 +7,7 @@ ktor:
     port: 8484
     watch:
       - classes
-    host: wahoo.calendar
+    host: wahoo.nesski.com
 oauth:
   clientId: ""
   clientSecret: ""
