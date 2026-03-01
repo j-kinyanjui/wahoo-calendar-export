@@ -13,36 +13,40 @@ Allow users to view their Wahoo/Systm training plans in their personal calendar 
 ### Validated
 
 - ✓ OAuth2 authentication with Wahoo REST API — existing
-- ✓ Fetch training plans from api.wahooligan.com/v1/plans — existing
 
 ### Active
 
+- [ ] OAuth flow for Systm — manual token input acceptable
 - [ ] Fetch training plans from Systm GraphQL API (api.thesufferfest.com)
 - [ ] Support manual JWT token input for Systm authentication
 - [ ] Parse GraphQL response to extract workout names and scheduled dates
 - [ ] Basic schedule sync (on-demand/daily, not real-time)
+- [ ] Create training plans on api.wahooligan.com/v1/plans
+- [ ] Fetch training plans from api.wahooligan.com/v1/plans
 
 ### Out of Scope
 
 - Calendar export format — deferred to future phase
 - Real-time sync — on-demand/daily only
-- OAuth flow for Systm — manual token input acceptable
 
 ## Context
 
 **Technical Environment:**
+
 - Kotlin with Ktor framework
 - Existing OAuth2 authentication plugin for Wahoo REST API
 - HTTP client already configured
 - Session management via Ktor sessions
 
 **Systm GraphQL Details (from HAR analysis):**
+
 - Endpoint: https://api.thesufferfest.com/graphql
 - Authentication: Bearer JWT token (different from REST API token)
 - Key Query: GetUserPlansRange - fetches user training plan items
 - Token format: JWT containing {id, sessionToken, username, wahooId, wahooToken, platform, version, roles}
 
 **Known Issues:**
+
 - Training plans created in Systm web app cannot be pulled via existing REST API
 - Need separate authentication mechanism for Systm GraphQL API
 
@@ -55,11 +59,13 @@ Allow users to view their Wahoo/Systm training plans in their personal calendar 
 
 ## Key Decisions
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
+| Decision                   | Rationale                                                       | Outcome   |
+| -------------------------- | --------------------------------------------------------------- | --------- |
+| Manual JWT input for Systm | Implementing Auth flow for Systm                                | — Pending |
 | Manual JWT input for Systm | Simpler than implementing OAuth, user can extract from DevTools | — Pending |
-| On-demand/daily sync | Not a real-time use case, reduces complexity | — Pending |
-| Defer calendar export | User explicitly deferred, focus on data fetching first | — Pending |
+| On-demand/daily sync       | Not a real-time use case, reduces complexity                    | — Pending |
+| Defer calendar export      | User explicitly deferred, focus on data fetching first          | — Pending |
 
 ---
-*Last updated: 2026-03-01 after project initialization*
+
+_Last updated: 2026-03-01 after project initialization_

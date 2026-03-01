@@ -9,7 +9,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can input Systm JWT token via web form
+- [ ] **AUTH-01**: OAuth flow for Systm — manual token input acceptable OR User can input Systm JWT token via web form
 - [ ] **AUTH-02**: User's Systm token is stored in session (existing Ktor sessions)
 - [ ] **AUTH-03**: User can clear/reset their Systm token
 
@@ -53,39 +53,40 @@ Deferred to future release. Tracked but not in current roadmap.
 
 Explicitly excluded. Documented to prevent scope creep.
 
-| Feature | Reason |
-|---------|--------|
-| OAuth2 flow for Systm | Manual token input simpler, users can extract from DevTools |
-| Real-time sync | On-demand/daily sync sufficient per requirements |
-| Calendar export | Explicitly deferred to future phase |
+| Feature                | Reason                                                      |
+| ---------------------- | ----------------------------------------------------------- |
+| Real-time sync         | On-demand/daily sync sufficient per requirements            |
+| Calendar export        | Explicitly deferred to future phase                         |
 | Wahoo REST API removal | Keep existing functionality, add Systm as additional source |
 
 ## Traceability
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| DATA-01 | Phase 1 | Pending |
-| DATA-02 | Phase 1 | Pending |
-| DATA-03 | Phase 1 | Pending |
-| DATA-04 | Phase 1 | Pending |
-| PARSE-01 | Phase 2 | Pending |
-| PARSE-02 | Phase 2 | Pending |
-| PARSE-03 | Phase 2 | Pending |
-| PARSE-04 | Phase 2 | Pending |
-| DISP-01 | Phase 2 | Pending |
-| DISP-02 | Phase 2 | Pending |
-| DISP-03 | Phase 2 | Pending |
+| Requirement | Phase   | Status  |
+| ----------- | ------- | ------- |
+| AUTH-01     | Phase 1 | Pending |
+| AUTH-02     | Phase 1 | Pending |
+| AUTH-03     | Phase 1 | Pending |
+| DATA-01     | Phase 1 | Pending |
+| DATA-02     | Phase 1 | Pending |
+| DATA-03     | Phase 1 | Pending |
+| DATA-04     | Phase 1 | Pending |
+| PARSE-01    | Phase 2 | Pending |
+| PARSE-02    | Phase 2 | Pending |
+| PARSE-03    | Phase 2 | Pending |
+| PARSE-04    | Phase 2 | Pending |
+| DISP-01     | Phase 2 | Pending |
+| DISP-02     | Phase 2 | Pending |
+| DISP-03     | Phase 2 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 14 total
 - Mapped to phases: 14
 - Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-03-01*
-*Last updated: 2026-03-01 after initial definition*
+
+_Requirements defined: 2026-03-01_
+_Last updated: 2026-03-01 after initial definition_
