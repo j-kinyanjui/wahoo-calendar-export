@@ -13,9 +13,9 @@
 | Field | Value |
 |-------|-------|
 | **Phase** | 1 - Authentication & GraphQL Setup |
-| **Plan** | 01-01 complete |
+| **Plan** | 01-02 complete |
 | **Status** | In progress |
-| **Progress** | ███░░░░░░ 33% |
+| **Progress** | ██████░░░ 66% |
 
 ---
 
@@ -29,6 +29,7 @@
 | Blockers | 0 | None identified |
 
 ---
+| Phase 01-authentication-graphql-setup P02 | 2 min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -41,6 +42,7 @@
 | 2-phase structure | Quick depth = 1-2 phases max | Defined |
 | Cookie-based session storage | Uses Ktor Sessions with encrypted cookies | Implemented in 01-01 |
 | Bearer token auth for GraphQL | Standard approach for JWT in Authorization header | Implemented in 01-01 |
+| Config-based auth for Systm | YAML file for credentials, auto-login on startup | Implemented in 01-02 |
 
 ### Technical Notes
 
@@ -67,10 +69,10 @@
 - Research completed on GraphQL Kotlin client and JWT handling
 - Roadmap created with 2 phases
 - Phase 1 Plan 01 completed: Session infrastructure + GraphQL client
+- Phase 1 Plan 02 completed: Config-based auth with auto-login
 
 ### What's Next
 
-- Execute Phase 1 Plan 02: Login form + JWT validation + logout
 - Execute Phase 1 Plan 03: GetUserPlansRange query + error handling
 - Validate Phase 1 success criteria
 
@@ -82,4 +84,4 @@
 
 ---
 
-*State updated: 2026-03-01*
+*State updated: 2026-03-02*
