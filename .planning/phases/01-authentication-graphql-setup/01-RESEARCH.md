@@ -8,7 +8,7 @@
 
 Phase 1 implements user authentication to the Systm GraphQL API (api.thesufferfest.com) via a login mutation, storing the JWT in Ktor sessions, and fetching training plans. The existing Ktor project already has session handling for OAuth2 tokens - this phase adds GraphQL-based authentication and data fetching.
 
-**Primary recommendation:** Use plain Ktor HttpClient with kotlinx.serialization for GraphQL (simpler than adding graphql-kotlin-client), and java-jwt for token validation. Extend existing UserSession model to support Systm tokens.
+**Primary recommendation:** Use plain Ktor HttpClient with kotlinx.serialization for GraphQL (simpler than adding graphql-kotlin-client). Extend existing UserSession model to support Systm tokens. No local JWT validation needed - Systm validates on API calls.
 
 <user_constraints>
 ## User Constraints (from CONTEXT.md)
@@ -16,7 +16,7 @@ Phase 1 implements user authentication to the Systm GraphQL API (api.thesufferfe
 ### Locked Decisions
 - GraphQL Login mutation (not OAuth2) - username/password to api.thesufferfest.com
 - JWT token stored in encrypted session (existing Ktor sessions pattern)
-- Validate JWT expiration before storing or using - parse `exp` claim
+- No local JWT validation - Systm validates on API calls
 - Default fetch range: past 7 days + next 14 days (21 days total)
 - Parse GraphQL error responses even when HTTP 200
 

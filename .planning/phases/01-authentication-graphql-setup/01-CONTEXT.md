@@ -24,9 +24,8 @@ User can authenticate to Systm via username/password (GraphQL login mutation) an
 - Session persists across browser refreshes
 
 ### Token Validation
-- Validate JWT expiration before storing or using
-- Parse `exp` claim from JWT
-- Show clear error message if token is expired
+- No JWT validation needed - token received from successful login
+- Store token as-is; Systm API validates on each request
 
 ### Date Range
 - Default fetch range: past 7 days + next 14 days (21 days total)
