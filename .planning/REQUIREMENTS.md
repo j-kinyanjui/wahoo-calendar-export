@@ -10,7 +10,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Authentication
 
 - [x] **AUTH-01**: OAuth flow for Systm — manual token input acceptable OR User can input Systm JWT token via web form
-- [ ] **AUTH-02**: User's Systm token is stored in session (existing Ktor sessions)
+- [x] **AUTH-02**: User's Systm token is stored in session (existing Ktor sessions)
 - [x] **AUTH-03**: User can clear/reset their Systm token
 
 ### Data Fetching
@@ -66,7 +66,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase   | Status  |
 | ----------- | ------- | ------- |
 | AUTH-01     | Phase 1 | Complete |
-| AUTH-02     | Phase 1 | Pending |
+| AUTH-02     | Phase 1 | Complete |
 | AUTH-03     | Phase 1 | Complete |
 | DATA-01     | Phase 1 | Complete |
 | DATA-02     | Phase 1 | Complete |
