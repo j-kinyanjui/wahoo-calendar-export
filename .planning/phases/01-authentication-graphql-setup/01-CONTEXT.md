@@ -14,10 +14,10 @@ User can authenticate to Systm via username/password (GraphQL login mutation) an
 ## Implementation Decisions
 
 ### Authentication Method
-- GraphQL Login mutation (not OAuth2) - matches how Systm web app authenticates
-- Username/password submitted via GraphQL mutation to api.thesufferfest.com
-- Returns JWT token that can be used for subsequent GraphQL requests
-- User registers OAuth app on Wahoo developer portal for callback URL
+- User config file (YAML) with Systm username/password
+- Credentials read from config on startup
+- GraphQL login mutation authenticates automatically
+- JWT token stored in session (no web login form)
 
 ### Token Storage
 - Store JWT token in encrypted session (existing Ktor sessions pattern)
@@ -40,17 +40,17 @@ User can authenticate to Systm via username/password (GraphQL login mutation) an
   - GraphQL validation errors
 
 ### OpenCode's Discretion
-- Exact form field design (username, password inputs)
+- Config file location and name (config/systm.yaml or similar)
 - Session cookie configuration
-- Error message wording
-- Date picker UI if user-selectable later
+- Auto-login error handling (what happens if config credentials fail)
+- Status endpoint design
 
 </decisions>
 
 <specifics>
 ## Specific Ideas
 
-- "Use same pattern as Wahoo REST API - redirect flow, callback URL, store token in session"
+- "Use YAML config file for credentials"
 - "Default 7-14 days (typical training cycle)"
 
 </specifics>
