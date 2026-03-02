@@ -34,7 +34,10 @@
 6. Application executes GetUserPlansRange GraphQL query with date parameters
 7. Application handles GraphQL error responses (HTTP 200 with errors field) gracefully
 
-**Plans:** TBD
+**Plans:** 3 plans
+- [ ] 01-01-PLAN.md — Session infrastructure + GraphQL client
+- [ ] 01-02-PLAN.md — Login form + JWT validation + logout
+- [ ] 01-03-PLAN.md — GetUserPlansRange query + error handling
 
 ---
 
@@ -64,7 +67,7 @@
 
 | Phase                     | Plans Complete | Status      | Completed |
 | ------------------------- | -------------- | ----------- | --------- |
-| 1 - Auth & GraphQL Setup  | 0/1            | Not started | -         |
+| 1 - Auth & GraphQL Setup  | 0/3            | Not started | -         |
 | 2 - Training Plan Display | 0/1            | Not started | -         |
 
 ---
