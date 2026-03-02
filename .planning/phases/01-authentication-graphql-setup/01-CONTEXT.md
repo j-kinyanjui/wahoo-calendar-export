@@ -19,13 +19,15 @@ User can authenticate to Systm via username/password (GraphQL login mutation) an
 - GraphQL login mutation authenticates automatically
 - JWT token stored in session (no web login form)
 
-### Token Storage
-- Store JWT token in encrypted session (existing Ktor sessions pattern)
-- Session persists across browser refreshes
+### Token Handling
+- Parse JWT claims from login response (not for validation - Systm handles that)
+- Claims available: id, sessionToken, username, wahooId, wahooToken, platform, version, roles
+- Store token + claims in session for later use
+- No local JWT validation needed - Systm validates on API calls
 
-### Token Validation
-- No JWT validation needed - token received from successful login
-- Store token as-is; Systm API validates on each request
+### Session Behavior
+- One-time sync: authenticate, fetch plans, logout
+- Auto-logout after successful sync (Phase 2)
 
 ### Date Range
 - Default fetch range: past 7 days + next 14 days (21 days total)
@@ -51,7 +53,9 @@ User can authenticate to Systm via username/password (GraphQL login mutation) an
 ## Specific Ideas
 
 - "Use YAML config file for credentials"
-- "Default 7-14 days (typical training cycle)"
+- "Parse JWT claims: id, sessionToken, username, wahooId, wahooToken"
+- "One-time sync: authenticate → fetch plans → logout"
+- "Logout after successful calendar sync"
 
 </specifics>
 
@@ -59,7 +63,9 @@ User can authenticate to Systm via username/password (GraphQL login mutation) an
 ## Deferred Ideas
 
 - OAuth2 flow for Systm - GraphQL login is simpler and matches actual API
-- Custom date range selection - use default first, add to backlog
+- Custom date range selection - use default first
+- Long-running sync job - this is one-time sync
+- Calendar export - Phase 2+
 
 </deferred>
 
