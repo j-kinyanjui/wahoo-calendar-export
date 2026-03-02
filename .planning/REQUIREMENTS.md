@@ -9,16 +9,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: OAuth flow for Systm — manual token input acceptable OR User can input Systm JWT token via web form
+- [x] **AUTH-01**: OAuth flow for Systm — manual token input acceptable OR User can input Systm JWT token via web form
 - [ ] **AUTH-02**: User's Systm token is stored in session (existing Ktor sessions)
-- [ ] **AUTH-03**: User can clear/reset their Systm token
+- [x] **AUTH-03**: User can clear/reset their Systm token
 
 ### Data Fetching
 
-- [ ] **DATA-01**: Application can make GraphQL requests to api.thesufferfest.com
-- [ ] **DATA-02**: Application sends Bearer JWT token with GraphQL requests
-- [ ] **DATA-03**: Application executes GetUserPlansRange query with date parameters
-- [ ] **DATA-04**: Application handles GraphQL error responses (HTTP 200 with errors field)
+- [x] **DATA-01**: Application can make GraphQL requests to api.thesufferfest.com
+- [x] **DATA-02**: Application sends Bearer JWT token with GraphQL requests
+- [x] **DATA-03**: Application executes GetUserPlansRange query with date parameters
+- [x] **DATA-04**: Application handles GraphQL error responses (HTTP 200 with errors field)
 
 ### Data Parsing
 
@@ -65,13 +65,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase   | Status  |
 | ----------- | ------- | ------- |
-| AUTH-01     | Phase 1 | Pending |
+| AUTH-01     | Phase 1 | Complete |
 | AUTH-02     | Phase 1 | Pending |
-| AUTH-03     | Phase 1 | Pending |
-| DATA-01     | Phase 1 | Pending |
-| DATA-02     | Phase 1 | Pending |
-| DATA-03     | Phase 1 | Pending |
-| DATA-04     | Phase 1 | Pending |
+| AUTH-03     | Phase 1 | Complete |
+| DATA-01     | Phase 1 | Complete |
+| DATA-02     | Phase 1 | Complete |
+| DATA-03     | Phase 1 | Complete |
+| DATA-04     | Phase 1 | Complete |
 | PARSE-01    | Phase 2 | Pending |
 | PARSE-02    | Phase 2 | Pending |
 | PARSE-03    | Phase 2 | Pending |
@@ -89,4 +89,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 ---
 
 _Requirements defined: 2026-03-01_
-_Last updated: 2026-03-01 after initial definition_
+_Last updated: 2026-03-02 after plan 01-03 completion_
