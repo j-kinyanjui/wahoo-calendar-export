@@ -4,9 +4,14 @@
 }:
 {
   # https://devenv.sh/languages/
-  languages.javascript = {
-    enable = true;
-    npm.enable = true;
+  languages = {
+    javascript = {
+      enable = true;
+      npm.enable = true;
+    };
+    java = {
+      enable = true;
+    };
   };
 
   # https://devenv.sh/scripts/
