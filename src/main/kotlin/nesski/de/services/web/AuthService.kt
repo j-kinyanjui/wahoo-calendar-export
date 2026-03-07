@@ -56,11 +56,12 @@ class SystmAuthService(
     private val password: String
 ) {
     companion object {
-        private const val LOGIN_MUTATION = $$"""
-            mutation Login($username: String!, $password: String!) {
+        private const val LOGIN_MUTATION = """
+            mutation Login(${'$'}appInformation: AppInformation!, ${'$'}username: String!, ${'$'}password: String!) {
                 loginUser(
-                    username: $username
-                    password: $password
+                    appInformation: ${'$'}appInformation
+                    username: ${'$'}username
+                    password: ${'$'}password
                 ) {
                     status
                     message
@@ -78,7 +79,7 @@ class SystmAuthService(
 
     /**
      * Login to Systm using credentials from config.
-     * @return [LoginUserResult] on success, or `null` if login fails.
+     * @return token on success, or null if login fails.
      */
     suspend fun login(): String? {
         return try {
@@ -88,6 +89,11 @@ class SystmAuthService(
                 operationName = "Login",
                 query = LOGIN_MUTATION,
                 variables = mapOf(
+                    "appInformation" to mapOf(
+                        "platform" to "web",
+                        "version" to "7.105.0-web.3516-9-g193a6cfb",
+                        "installId" to "538496F7A02E17E14DF16ECCE8F5DF04"
+                    ),
                     "username" to username,
                     "password" to password
                 )
@@ -97,6 +103,8 @@ class SystmAuthService(
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }.body()
+
+            //logger.info("Body {}", response.toString())
 
             val result = response.data?.loginUser
             if (result?.failureId != null) {

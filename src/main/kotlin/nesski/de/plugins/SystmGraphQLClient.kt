@@ -2,30 +2,72 @@ package nesski.de.plugins
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.JsonEncoder
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonPrimitive
-import nesski.de.models.SystmSession
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.sessions.get
-import io.ktor.server.sessions.sessions
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.double
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.long
+import kotlinx.serialization.json.put
+import nesski.de.models.GraphQLRequest
+import nesski.de.models.GraphQLResponse
 
 const val SYSTM_BASE_URL = "https://api.thesufferfest.com"
 const val SYSTM_GRAPHQL_ENDPOINT = "$SYSTM_BASE_URL/graphql"
+
+object TokenStorage {
+    var token: String? = null
+}
+
+val wahooHttpClient = HttpClient(CIO) {
+    install(ContentNegotiation) {
+        json(Json {
+            prettyPrint = true
+            isLenient = true
+            ignoreUnknownKeys = true
+        })
+    }
+}
+
+/**
+ * Execute a GraphQL query against the Systm API
+ * @param query The GraphQL query string
+ * @param variables Optional variables for the query
+ * @return GraphQLResponse<T> containing the response data or errors
+ */
+suspend inline fun <reified T> executeSystmQuery(
+    query: String,
+    variables: Map<String, String>? = null,
+): GraphQLResponse<T> {
+    val request = GraphQLRequest(
+        query = query,
+        variables = variables
+    )
+
+    return wahooHttpClient.post(SYSTM_GRAPHQL_ENDPOINT) {
+        contentType(ContentType.Application.Json)
+        header("Authorization", "Bearer ${TokenStorage.token}")
+        setBody(request)
+    }.body()
+}
 
 /**
  * Serializer for Any type to handle GraphQL variables
@@ -38,75 +80,36 @@ object AnySerializer : KSerializer<Any> {
             is String -> encoder.encodeString(value)
             is Number -> encoder.encodeDouble(value.toDouble())
             is Boolean -> encoder.encodeBoolean(value)
+            is Map<*, *> -> {
+                val jsonObject = buildJsonObject {
+                    value.forEach { (k, v) ->
+                        when (v) {
+                            is String -> put(k.toString(), v)
+                            is Number -> put(k.toString(), v)
+                            is Boolean -> put(k.toString(), v)
+                            else -> put(k.toString(), v.toString())
+                        }
+                    }
+                }
+                (encoder as JsonEncoder).encodeJsonElement(jsonObject)
+            }
             else -> encoder.encodeString(value.toString())
         }
     }
 
     override fun deserialize(decoder: Decoder): Any {
-        return when (val primitive = (decoder as JsonDecoder).decodeJsonElement()) {
+        return when (val element = (decoder as JsonDecoder).decodeJsonElement()) {
             is JsonPrimitive -> {
-                when {
-                    primitive.isString -> primitive.content
-                    primitive.boolean != null -> primitive.boolean
-                    primitive.int != null -> primitive.int
-                    primitive.long != null -> primitive.long
-                    primitive.double != null -> primitive.double
-                    else -> primitive.content
-                }
+                element.content
             }
-            is JsonObject -> primitive.toString()
-            else -> primitive.toString()
+            is JsonObject -> {
+                // You can parse JsonObject into a Map or some other object
+                // If you just want the string representation of the object, do this:
+                element.toString()
+                // Or if you need a map representation:
+                element.entries.associate { it.key to it.value }
+            }
+            else -> element.toString() // Default case
         }
     }
-}
-
-/**
- * Execute a GraphQL query against the Systm API
- * @param query The GraphQL query string
- * @param variables Optional variables for the query
- * @param systmSession The session containing the auth token
- * @param httpClient The HTTP client to use for the request
- * @return GraphQLResponse<T> containing the response data or errors
- */
-suspend inline fun <reified T> executeSystmQuery(
-    query: String,
-    variables: Map<String, Any>? = null,
-    systmSession: SystmSession,
-    httpClient: HttpClient
-): GraphQLResponse<T> {
-    val request = GraphQLRequest(
-        query = query,
-        variables = variables
-    )
-
-    return httpClient.post(SYSTM_GRAPHQL_ENDPOINT) {
-        contentType(ContentType.Application.Json)
-        header("Authorization", "Bearer ${systmSession.token}")
-        setBody(request)
-    }.body()
-}
-
-/**
- * Get SystmSession from application call
- */
-suspend fun getSystmSession(call: ApplicationCall): SystmSession? {
-    return call.sessions.get()
-}
-
-/**
- * Execute a GraphQL query using the session from the application call
- * @param query The GraphQL query string
- * @param variables Optional variables for the query
- * @param call The application call containing the session
- * @param httpClient The HTTP client to use for the request
- * @return GraphQLResponse<T> containing the response data or errors
- */
-suspend inline fun <reified T> executeSystmQueryFromCall(
-    query: String,
-    variables: Map<String, Any>? = null,
-    call: ApplicationCall,
-    httpClient: HttpClient
-): GraphQLResponse<T>? {
-    val systmSession = getSystmSession(call) ?: return null
-    return executeSystmQuery(query, variables, systmSession, httpClient)
 }

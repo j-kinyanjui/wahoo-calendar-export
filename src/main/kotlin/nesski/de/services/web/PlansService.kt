@@ -2,27 +2,27 @@ package nesski.de.services.web
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.request.post
 import io.ktor.client.request.header
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.util.logging.KtorSimpleLogger
-import nesski.de.models.GetUserPlansRangeResponse
-import nesski.de.models.Plan
-import nesski.de.plugins.GraphQLRequest
-import nesski.de.plugins.GraphQLResponse
-import nesski.de.plugins.SYSTM_GRAPHQL_ENDPOINT
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import nesski.de.models.GetUserPlansRangeResponse
+import nesski.de.models.GraphQLError
+import nesski.de.models.GraphQLRequest
 import nesski.de.models.GraphQLResponse
+import nesski.de.models.Plan
+import nesski.de.plugins.SYSTM_GRAPHQL_ENDPOINT
 
 internal val log = KtorSimpleLogger("SystmPlansService")
 
 /**
  * Exception thrown when GraphQL returns errors
  */
-class GraphQLException(val errors: List<nesski.de.plugins.GraphQLError>) : Exception(
+class GraphQLException(val errors: List<GraphQLError>) : Exception(
     errors.joinToString(", ") { it.message }
 )
 
@@ -34,9 +34,9 @@ class SystmPlansService(
 ) {
     companion object {
         // GraphQL query for getting user plans within a date range
-        private val GET_USER_PLANS_RANGE_QUERY = """
-            query GetUserPlansRange(${'$'}startDate: String!, ${'$'}endDate: String!) {
-                userPlansRange(startDate: ${'$'}startDate, endDate: ${'$'}endDate) {
+        private val GET_USER_PLANS_RANGE_QUERY = $$"""
+            query GetUserPlansRange($startDate: String!, $endDate: String!) {
+                userPlansRange(startDate: $startDate, endDate: $endDate) {
                     plans {
                         id
                         name
@@ -72,7 +72,7 @@ class SystmPlansService(
         startDate: LocalDate,
         endDate: LocalDate
     ): List<Plan> {
-        log.info("Fetching plans from ${startDate} to ${endDate}")
+        log.info("Fetching plans from $startDate to $endDate")
 
         val request = GraphQLRequest(
             query = GET_USER_PLANS_RANGE_QUERY,
@@ -89,7 +89,7 @@ class SystmPlansService(
         }.body()
 
         // Check for GraphQL errors first
-        if (response.errors != null && response.errors.isNotEmpty()) {
+        if (!response.errors.isNullOrEmpty()) {
             log.error("GraphQL errors during fetchPlans: ${response.errors}")
             throw GraphQLException(response.errors)
         }
