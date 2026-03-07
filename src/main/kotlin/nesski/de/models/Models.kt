@@ -2,7 +2,6 @@ package nesski.de.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import nesski.de.plugins.AnySerializer
 
 /**
  * Response wrapper for GetUserPlansRange GraphQL query
@@ -91,7 +90,7 @@ enum class PlanType {
 @Serializable
 data class GraphQLRequest(
     val query: String,
-    val variables: Map<String, @Serializable(with = AnySerializer::class) Any>? = null,
+    val variables: Map<String, String>? = null,
     val operationName: String? = null
 )
 

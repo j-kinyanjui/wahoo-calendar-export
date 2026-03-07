@@ -17,32 +17,34 @@ import nesski.de.plugins.SYSTM_GRAPHQL_ENDPOINT
 internal val logger: Logger = KtorSimpleLogger("SystmAuthService")
 
 /**
- * GraphQL response for login mutation
+ * GraphQL response wrapper for the loginUser mutation.
+ * Maps to: { "data": { "loginUser": { ... } } }
  */
 @Serializable
 data class LoginResponse(
-    @SerialName("login")
-    val login: LoginData?
+    @SerialName("loginUser")
+    val loginUser: LoginUserResult?
 )
 
+/**
+ * Result of the loginUser mutation.
+ * The API always returns HTTP 200 — a failed login is indicated by
+ * a null [token] & non-null [failureId].
+ */
 @Serializable
-data class LoginData(
-    @SerialName("token")
-    val token: String,
-    @SerialName("user")
-    val user: UserData?
+data class LoginUserResult(
+    val status: String,
+    val message: String? = null,
+    val token: String? = null,
+    val failureId: String? = null,
+    val user: UserData? = null
 )
 
 @Serializable
 data class UserData(
-    @SerialName("id")
     val id: String,
-    @SerialName("username")
-    val username: String,
-    @SerialName("wahooId")
-    val wahooId: String? = null,
-    @SerialName("wahooToken")
-    val wahooToken: String? = null
+    val fullName: String? = null,
+    val email: String? = null
 )
 
 /**
@@ -54,27 +56,31 @@ class SystmAuthService(
     private val password: String
 ) {
     companion object {
-        // GraphQL login mutation
-        private val LOGIN_MUTATION = $$"""
-            mutation Login($email: String!, $password: String!) {
-                login(email: $email, password: $password) {
-                    token
+        private const val LOGIN_MUTATION = $$"""
+            mutation Login($username: String!, $password: String!) {
+                loginUser(
+                    username: $username
+                    password: $password
+                ) {
+                    status
+                    message
                     user {
                         id
-                        username
-                        wahooId
-                        wahooToken
+                        fullName
+                        email
                     }
+                    token
+                    failureId
                 }
             }
-        """.trimIndent()
+        """
     }
 
     /**
-     * Login to Systm using credentials from config
-     * @return Pair of (token, user claims) or null if login fails
+     * Login to Systm using credentials from config.
+     * @return [LoginUserResult] on success, or `null` if login fails.
      */
-    suspend fun login(): Pair<String, SystmUserClaims>? {
+    suspend fun login(): String? {
         return try {
             logger.info("Attempting Systm login for user: $username")
 
@@ -82,7 +88,7 @@ class SystmAuthService(
                 operationName = "Login",
                 query = LOGIN_MUTATION,
                 variables = mapOf(
-                    "email" to username,
+                    "username" to username,
                     "password" to password
                 )
             )
@@ -92,29 +98,19 @@ class SystmAuthService(
                 setBody(request)
             }.body()
 
-            if (!response.errors.isNullOrEmpty()) {
-                logger.error("GraphQL errors during login: ${response.errors}")
+            val result = response.data?.loginUser
+            if (result?.failureId != null) {
+                logger.error(
+                    "Login failed: status=${result.status}, " +
+                    "message=${result.message}, failureId=${result.failureId}"
+                )
                 return null
             }
 
-            val loginData = response.data?.login
-            if (loginData == null) {
-                logger.error("No login data returned")
-                return null
-            }
-
-            val token = loginData.token
-            val claims = parseJwtClaims(token)
-
-            if (claims == null) {
-                logger.error("Failed to parse JWT claims from login response")
-                return null
-            }
-
-            logger.info("Successfully logged in as: ${claims.username}")
-            Pair(token, claims)
+            logger.info("Successfully logged in as: ${result?.user?.fullName}")
+            result?.token
         } catch (e: Exception) {
-            logger.error("Login failed: ${e.message}")
+            logger.error("Login failed with exception: ${e.message}")
             null
         }
     }
