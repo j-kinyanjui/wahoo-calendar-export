@@ -25,5 +25,4 @@ fun Application.wahooSystmWeb(httpClient: HttpClient = wahooHttpClient) {
     TokenStorage.token = runBlocking {
         authService.login()
     }
-    println("Fetched Token: ${TokenStorage.token}", )
 }

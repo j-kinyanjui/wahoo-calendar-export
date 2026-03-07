@@ -56,12 +56,12 @@ class SystmAuthService(
     private val password: String
 ) {
     companion object {
-        private const val LOGIN_MUTATION = """
-            mutation Login(${'$'}appInformation: AppInformation!, ${'$'}username: String!, ${'$'}password: String!) {
+        private const val LOGIN_MUTATION = $$"""
+            mutation Login($appInformation: AppInformation!, $username: String!, $password: String!) {
                 loginUser(
-                    appInformation: ${'$'}appInformation
-                    username: ${'$'}username
-                    password: ${'$'}password
+                    appInformation: $appInformation
+                    username: $username
+                    password: $password
                 ) {
                     status
                     message
@@ -82,44 +82,38 @@ class SystmAuthService(
      * @return token on success, or null if login fails.
      */
     suspend fun login(): String? {
-        return try {
-            logger.info("Attempting Systm login for user: $username")
+        logger.info("Attempting Systm login for user: $username")
 
-            val request = GraphQLRequest(
-                operationName = "Login",
-                query = LOGIN_MUTATION,
-                variables = mapOf(
-                    "appInformation" to mapOf(
-                        "platform" to "web",
-                        "version" to "7.105.0-web.3516-9-g193a6cfb",
-                        "installId" to "538496F7A02E17E14DF16ECCE8F5DF04"
-                    ),
-                    "username" to username,
-                    "password" to password
-                )
+        val request = GraphQLRequest(
+            operationName = "Login",
+            query = LOGIN_MUTATION,
+            variables = mapOf(
+                "appInformation" to mapOf(
+                    "platform" to "web",
+                    "version" to "7.105.0-web.3516-9-g193a6cfb",
+                    "installId" to "538496F7A02E17E14DF16ECCE8F5DF04"
+                ),
+                "username" to username,
+                "password" to password
             )
+        )
 
-            val response: GraphQLResponse<LoginResponse> = httpClient.post(SYSTM_GRAPHQL_ENDPOINT) {
-                contentType(ContentType.Application.Json)
-                setBody(request)
-            }.body()
+        val response: GraphQLResponse<LoginResponse> = httpClient.post(SYSTM_GRAPHQL_ENDPOINT) {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }.body()
 
-            //logger.info("Body {}", response.toString())
+        //logger.info("Body {}", response.toString())
 
-            val result = response.data?.loginUser
-            if (result?.failureId != null) {
-                logger.error(
-                    "Login failed: status=${result.status}, " +
-                    "message=${result.message}, failureId=${result.failureId}"
-                )
-                return null
-            }
-
-            logger.info("Successfully logged in as: ${result?.user?.fullName}")
-            result?.token
-        } catch (e: Exception) {
-            logger.error("Login failed with exception: ${e.message}")
-            null
+        val result = response.data?.loginUser
+        if (result?.failureId != null) {
+            throw IllegalStateException(
+                "Login failed: status=${result.status}, " +
+                        "message=${result.message}, failureId=${result.failureId}"
+            )
         }
+
+        logger.info("Successfully logged in as: ${result?.user?.fullName}")
+        return result?.token
     }
 }

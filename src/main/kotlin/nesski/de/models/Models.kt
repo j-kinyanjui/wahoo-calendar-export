@@ -2,7 +2,7 @@ package nesski.de.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import nesski.de.plugins.AnySerializer
+import nesski.de.utils.AnySerializer
 
 /**
  * Response wrapper for GetUserPlansRange GraphQL query
