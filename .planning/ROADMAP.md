@@ -3,7 +3,7 @@
 ## Phases
 
 - [x] **Phase 1: Authentication & GraphQL Setup** - JWT token management and GraphQL client (completed 2026-03-02)
-- [ ] **Phase 2: Training Plan Display** - Parse and display fetched workouts
+- [ ] **Phase 2: CLI Migration & Plan Export** - Migrate to Ktor client-only CLI, fetch plans, export as .ics tasks to email
 
 ## Overview
 
@@ -40,23 +40,26 @@
 
 ---
 
-### Phase 2: Training Plan Display
+### Phase 2: CLI Migration & Plan Export
 
-**Goal:** User can view fetched training plans with workout details
+**Goal:** Migrate from Ktor server to a Clikt-based CLI application that auto-authenticates, fetches training plans for a user-specified time range, generates .ics VTODO entries (Apple Reminders tasks), and emails them to a provided address
 
 **Depends on:** Phase 1
 
-**Requirements:** PARSE-01, PARSE-02, PARSE-03, PARSE-04, DISP-01, DISP-02, DISP-03
+**Requirements:** PARSE-01, PARSE-02, PARSE-03, PARSE-04, DISP-01, DISP-02, DISP-03, CLI-01, CLI-02, EXPORT-01
 
 **Success Criteria** (what must be TRUE):
 
-1. Application extracts workout name from each GraphQL response item
-2. Application extracts planned/scheduled date from each workout
-3. Application identifies and categorizes workout types (ride, run, strength, etc.)
-4. Application tracks workout status (completed, planned, missed)
-5. User can view a list of all fetched training plans on screen
-6. Each displayed plan shows workout name and scheduled date
-7. Application displays clear error messages when requests fail
+1. Ktor server dependencies removed (server-core, netty, auth, config-yaml)
+2. Application runs as a CLI via Clikt with `--email`, `--range`, `--from`/`--to` options
+3. Credentials loaded from env vars (`SYSTM_USER`, `SYSTM_PASSWORD`) with fallback to `~/.wahoo-cli/config`
+4. Auto-login on each run using existing SystmAuthService
+5. Plans fetched for specified range: `now`, `1w`, `2w`, `1m`, `2m`, or explicit `--from`/`--to` (max 2 months)
+6. Each workout generates a VTODO .ics entry with due date (compatible with Apple Reminders)
+7. .ics file emailed to the provided `--email` address via SMTP
+8. Application extracts workout name, date, type, and status from GraphQL response
+9. nginx/Docker infrastructure removed
+10. Clear error messages for auth failures, API errors, invalid ranges, and email delivery issues
 
 **Plans:** TBD
 
@@ -67,7 +70,7 @@
 | Phase                     | Plans Complete | Status      | Completed |
 | ------------------------- | -------------- | ----------- | --------- |
 | 1 - Auth & GraphQL Setup  | 3/3            | Complete    | 2026-03-02 |
-| 2 - Training Plan Display | 0/1            | Not started | -         |
+| 2 - CLI Migration & Plan Export | 0/?            | Not started | -         |
 
 ---
 

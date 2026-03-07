@@ -4,7 +4,7 @@
 
 **Core Value:** Allow users to view their Wahoo/Systm training plans in their personal calendar for better workout scheduling and tracking.
 
-**Current Focus:** Phase 1 - Authentication & GraphQL Setup
+**Current Focus:** Phase 2 - CLI Migration & Plan Export
 
 ---
 
@@ -45,6 +45,13 @@
 | Config-based auth for Systm | YAML file for credentials, auto-login on startup | Implemented in 01-02 |
 | Default date range for plans | Past 7 + next 14 days for practical workout planning | Implemented in 01-03 |
 | GraphQLException on errors | Handle HTTP 200 with errors field properly | Implemented in 01-03 |
+| Migrate to CLI (drop Ktor server) | No server routes needed; app is a batch/CLI process | Decided for Phase 2 |
+| Clikt for CLI framework | Kotlin-native, subcommands, typed options, clean API | Decided for Phase 2 |
+| Single command flow | Auto-login + fetch + export in one invocation | Decided for Phase 2 |
+| VTODO .ics for Apple Reminders | Workouts appear as tasks with due dates | Decided for Phase 2 |
+| Email .ics delivery | Send generated .ics to user-provided email via SMTP | Decided for Phase 2 |
+| Env vars + config file for creds | SYSTM_USER/SYSTM_PASSWORD env vars, fallback to ~/.wahoo-cli/config | Decided for Phase 2 |
+| Relative + absolute time ranges | Support now/1w/1m/2m shorthand and --from/--to dates, max 2 months | Decided for Phase 2 |
 
 ### Technical Notes
 
@@ -80,14 +87,18 @@ No pending todos.
 
 ### What's Next
 
-- Phase 1 is complete - validate success criteria
-- Move to Phase 2: Training Plan Display
+- Phase 2: CLI Migration & Plan Export
+  - Remove Ktor server, migrate to Clikt CLI
+  - Single command: auto-login, fetch plans, generate .ics VTODO, email to user
+  - Time range support: now, 1w, 2w, 1m, 2m, or explicit --from/--to (max 2 months)
 
 ### User Preferences
 
 - Manual JWT input acceptable (no OAuth flow needed)
 - On-demand/daily sync (not real-time)
-- Calendar export deferred to v2
+- CLI app, not a web server
+- Apple Reminders integration via VTODO .ics tasks
+- Email delivery of .ics files
 
 ---
 
