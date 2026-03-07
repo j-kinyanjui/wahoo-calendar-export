@@ -1,11 +1,9 @@
-package nesski.de.plugins
+package nesski.de.modules
 
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
-import io.ktor.server.application.call
 import io.ktor.server.application.install
-import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.get
@@ -14,14 +12,15 @@ import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
-import io.ktor.server.sessions.clear
 import io.ktor.server.sessions.set
 import io.ktor.util.logging.KtorSimpleLogger
+import io.ktor.util.logging.Logger
 import kotlinx.serialization.Serializable
-import nesski.de.models.SystmSession
-import nesski.de.services.SystmAuthService
+import nesski.de.plugins.applicationHttpClient
+import nesski.de.services.web.SystmAuthService
+import nesski.de.services.web.logger
 
-internal val log = KtorSimpleLogger("SystmAuthentication")
+internal val logger: Logger = KtorSimpleLogger("SystmAuthentication")
 
 /**
  * Auth status response
@@ -37,25 +36,24 @@ data class SystmAuthStatus(
 /**
  * Configure Systm authentication with auto-login, logout, and status routes
  */
-fun Application.configureSystmAuthentication(httpClient: HttpClient = applicationHttpClient) {
+fun Application.wahooSystmWeb(httpClient: HttpClient = applicationHttpClient) {
     install(Sessions) {
         cookie<SystmSession>("systm_session")
     }
 
-    // Try to load credentials and auto-login on startup
-    val credentials = SystmAuthService.loadCredentials(this)
-    val authService = if (credentials != null) {
-        SystmAuthService(httpClient, credentials.first, credentials.second)
-    } else {
-        null
+    /**
+     * Load Systm credentials from application environment config
+     */
+    fun loadCredentials(): Pair<String, String> {
+        val username = environment.config.property("systm.username")
+        val password = environment.config.property("systm.password")
+        return Pair(username.getString(), password.getString())
     }
 
-    // Auto-authenticate on startup if credentials are available
-    if (authService != null) {
-        log.info("Attempting auto-login on startup with configured credentials")
-        // Note: Auto-login will be performed on first request via interceptors
-        // or can be triggered here by calling authService.login()
-    }
+    val credentials = loadCredentials()
+    val authService = SystmAuthService(httpClient, credentials.first, credentials.second)
+    authService.login()
+
 
     routing {
         /**
@@ -64,7 +62,7 @@ fun Application.configureSystmAuthentication(httpClient: HttpClient = applicatio
          */
         get("/systm-logout") {
             call.sessions.clear<SystmSession>()
-            log.info("User logged out from Systm")
+            logger.info("User logged out from Systm")
 
             // Redirect to error page with logout reason
             val redirectUrl = call.request.queryParameters["redirectUrl"]
@@ -77,45 +75,6 @@ fun Application.configureSystmAuthentication(httpClient: HttpClient = applicatio
                         status = "logged_out",
                         loggedIn = false,
                         message = "Successfully logged out. Restart app to re-authenticate with config credentials."
-                    )
-                )
-            }
-        }
-
-        /**
-         * GET /systm-status - returns auth status
-         */
-        get("/systm-status") {
-            val session: SystmSession? = call.sessions.get()
-
-            if (session != null) {
-                if (session.isExpired()) {
-                    call.respond(
-                        HttpStatusCode.Unauthorized,
-                        SystmAuthStatus(
-                            status = "expired",
-                            loggedIn = false,
-                            message = "Session has expired. Restart app to re-authenticate."
-                        )
-                    )
-                } else {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        SystmAuthStatus(
-                            status = "authenticated",
-                            loggedIn = true,
-                            message = "Active session"
-                        )
-                    )
-                }
-            } else {
-                val hasCredentials = credentials != null
-                call.respond(
-                    HttpStatusCode.Unauthorized,
-                    SystmAuthStatus(
-                        status = if (hasCredentials) "needs_login" else "not_configured",
-                        loggedIn = false,
-                        message = if (hasCredentials) "Credentials configured but not logged in. Restart app to auto-login." else "No credentials configured in systm.yaml"
                     )
                 )
             }
@@ -135,13 +94,13 @@ fun Application.configureSystmAuthentication(httpClient: HttpClient = applicatio
 
             // Try to login with config credentials
             if (authService != null) {
-                log.info("Manual login triggered, attempting to authenticate...")
+                logger.info("Manual login triggered, attempting to authenticate...")
                 val loginResult = authService.login()
                 if (loginResult != null) {
                     val (token, claims) = loginResult
                     val systmSession = SystmSession.create(token)
                     call.sessions.set(systmSession)
-                    log.info("Successfully authenticated as: ${claims.username}")
+                    logger.info("Successfully authenticated as: ${claims.username}")
 
                     val redirectUrl = call.request.queryParameters["redirectUrl"]
                     if (redirectUrl != null) {

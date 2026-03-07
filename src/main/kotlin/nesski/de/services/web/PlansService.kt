@@ -1,4 +1,4 @@
-package nesski.de.services
+package nesski.de.services.web
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -8,16 +8,14 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.util.logging.KtorSimpleLogger
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import nesski.de.models.GetUserPlansRangeResponse
 import nesski.de.models.Plan
-import nesski.de.models.UserPlansData
 import nesski.de.plugins.GraphQLRequest
 import nesski.de.plugins.GraphQLResponse
 import nesski.de.plugins.SYSTM_GRAPHQL_ENDPOINT
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import nesski.de.models.GraphQLResponse
 
 internal val log = KtorSimpleLogger("SystmPlansService")
 

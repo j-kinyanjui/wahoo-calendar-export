@@ -60,32 +60,6 @@ object AnySerializer : KSerializer<Any> {
     }
 }
 
-@Serializable
-data class GraphQLRequest(
-    val query: String,
-    val variables: Map<String, @Serializable(with = AnySerializer::class) Any>? = null,
-    val operationName: String? = null
-)
-
-@Serializable
-data class GraphQLError(
-    val message: String,
-    val locations: List<GraphQLLocation>? = null,
-    val path: List<String>? = null
-)
-
-@Serializable
-data class GraphQLLocation(
-    val line: Int,
-    val column: Int
-)
-
-@Serializable
-data class GraphQLResponse<T>(
-    val data: T? = null,
-    val errors: List<GraphQLError>? = null
-)
-
 /**
  * Execute a GraphQL query against the Systm API
  * @param query The GraphQL query string

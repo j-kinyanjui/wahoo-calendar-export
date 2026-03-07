@@ -11,3 +11,7 @@ ktor:
 oauth:
   clientId: ""
   clientSecret: ""
+systm:
+  username: ${SYSTEM_USER:your-email@example.com}
+  password: ${SYSTEM_PASSWORD:your-password}
+
