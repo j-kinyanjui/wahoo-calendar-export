@@ -56,9 +56,7 @@
 
 ### Pending Todos
 
-| # | Todo | Area |
-|---|------|------|
-| 1 | Migrate from Ktor server to Ktor client-only architecture | general |
+No pending todos.
 
 ### Known Risks
 
