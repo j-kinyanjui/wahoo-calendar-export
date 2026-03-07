@@ -54,6 +54,12 @@
 - GraphQL endpoint: https://api.thesufferfest.com/graphql
 - Key query: GetUserPlansRange
 
+### Pending Todos
+
+| # | Todo | Area |
+|---|------|------|
+| 1 | Migrate from Ktor server to Ktor client-only architecture | general |
+
 ### Known Risks
 
 1. JWT token security during storage - mitigated via encrypted sessions
@@ -87,4 +93,4 @@
 
 ---
 
-*State updated: 2026-03-02*
+*State updated: 2026-03-07*
