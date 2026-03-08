@@ -4,18 +4,15 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.UsageError
-import com.github.ajalt.clikt.core.terminal
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.mordant.terminal.StringPrompt
-import com.github.ajalt.mordant.terminal.YesNoPrompt
 import kotlinx.coroutines.runBlocking
 import nesski.de.config.AppConfig
 import nesski.de.plugins.TokenStorage
 import nesski.de.plugins.wahooHttpClient
 import nesski.de.services.web.GraphQLException
+import nesski.de.services.web.PlansService
 import nesski.de.services.web.SystmAuthService
-import nesski.de.services.web.SystmPlansService
 import nesski.de.utils.parseDateRange
 
 class WahooCli : CliktCommand(
@@ -28,7 +25,8 @@ class WahooCli : CliktCommand(
     private val from by option("--from", help = "Start date (YYYY-MM-DD)")
     private val to by option("--to", help = "End date (YYYY-MM-DD)")
     private val configPath by option("--config", "-c", help = "Config file path")
-        .default("~/.config/wahoo-cli/config.toml")
+        //.default("~/.config/wahoo-cli/config.toml")
+        .default("src/main/resources/config.toml")
 
     override fun run() {
         val resolvedConfigPath = configPath.replaceFirst("~", System.getProperty("user.home"))
@@ -63,8 +61,8 @@ class WahooCli : CliktCommand(
         }
 
         runBlocking {
-            val plans = try {
-                val plansService = SystmPlansService(wahooHttpClient, TokenStorage.token)
+            val items = try {
+                val plansService = PlansService(wahooHttpClient, TokenStorage.token)
                 plansService.fetchPlans(dateRange.start, dateRange.end)
             } catch (e: GraphQLException) {
                 echo("API error: ${e.message}")
@@ -74,24 +72,52 @@ class WahooCli : CliktCommand(
                 throw ProgramResult(1)
             }
 
-            // 7. Display plans in console
             echo("\nTraining Plans (${dateRange.start} to ${dateRange.end}):\n")
 
-            if (plans.isEmpty()) {
+            if (items.isEmpty()) {
                 echo("No plans found for this date range.")
                 return@runBlocking
             }
 
-            var totalWorkouts = 0
-            for (plan in plans) {
-                echo("\uD83D\uDCCB ${plan.name} (${plan.status ?: "scheduled"})")
-                for (workout in plan.workouts) {
-                    echo("  ${workout.name} \u2014 ${workout.scheduledDate ?: "no date"} [${workout.type ?: "unknown"}] [${workout.status ?: "planned"}]")
-                    totalWorkouts++
+            // Group items by plan name for a nicer display
+            val byPlan = items.groupBy { it.plan?.name ?: "Unassigned" }
+
+            var totalItems = 0
+            for ((planName, planItems) in byPlan) {
+                val planInfo = planItems.firstNotNullOfOrNull { it.plan }
+                val planLevel = planInfo?.level?.let { " [$it]" } ?: ""
+                echo("$planName$planLevel")
+
+                for (item in planItems.sortedBy { it.plannedDate }) {
+                    totalItems++
+                    val workoutName = item.prospects?.firstOrNull()?.name ?: item.type ?: "unknown"
+                    val date = formatPlannedDate(item.plannedDate)
+                    val duration = formatDuration(item.prospects?.firstOrNull()?.plannedDuration)
+                    val status = item.status ?: "planned"
+                    val style = item.prospects?.firstOrNull()?.style?.let { " ($it)" } ?: ""
+
+                    echo("  $date  $workoutName$style  ${duration}  [$status]")
                 }
+                echo("")
             }
 
-            echo("\n$totalWorkouts workout(s) across ${plans.size} plan(s)\n")
+            echo("${totalItems} workout(s) across ${byPlan.size} plan(s)\n")
         }
+    }
+
+    /** Extract just the date portion from an ISO-8601 datetime string. */
+    private fun formatPlannedDate(isoDateTime: String?): String {
+        if (isoDateTime == null) return "no date   "
+        // The API returns strings like "2026-03-10T00:00:00.000Z"
+        return isoDateTime.substringBefore("T").padEnd(10)
+    }
+
+    /** Format a duration (in hours, fractional) into a human-readable string. */
+    private fun formatDuration(hours: Double?): String {
+        if (hours == null) return ""
+        val totalMinutes = (hours * 60).toInt()
+        val h = totalMinutes / 60
+        val m = totalMinutes % 60
+        return if (h > 0) "${h}h${m}m" else "${m}m"
     }
 }

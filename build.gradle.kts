@@ -41,4 +41,5 @@ dependencies {
 
     // Test
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+    testImplementation("io.ktor:ktor-client-mock:$ktor_version")
 }

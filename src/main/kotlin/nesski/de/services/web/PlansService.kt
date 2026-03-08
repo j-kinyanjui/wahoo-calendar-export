@@ -9,12 +9,13 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import nesski.de.models.GetUserPlansRangeResponse
 import nesski.de.models.GraphQLError
 import nesski.de.models.GraphQLRequest
 import nesski.de.models.GraphQLResponse
-import nesski.de.models.Plan
+import nesski.de.models.UserPlanItem
 import nesski.de.plugins.SYSTM_GRAPHQL_ENDPOINT
 
 private val log = LoggerFactory.getLogger("SystmPlansService")
@@ -27,66 +28,169 @@ class GraphQLException(val errors: List<GraphQLError>) : Exception(
 )
 
 /**
- * Service for fetching Systm training plans
+ * Service for fetching Systm training plans via the `userPlan` GraphQL query.
  */
-class SystmPlansService(
+class PlansService(
     private val httpClient: HttpClient,
     private val token: String,
+    private val timezone: String = ZoneId.systemDefault().id,
 ) {
     companion object {
-        // GraphQL query for getting user plans within a date range
-        private val GET_USER_PLANS_RANGE_QUERY = $$"""
-            query GetUserPlansRange($startDate: String!, $endDate: String!) {
-                userPlansRange(startDate: $startDate, endDate: $endDate) {
-                    plans {
-                        id
-                        name
-                        scheduledDate
-                        status
-                        type
-                        workouts {
-                            id
-                            name
-                            scheduledDate
-                            duration
-                            type
-                            status
-                        }
-                    }
+        /**
+         * GraphQL query matching the real Wahoo SYSTM API.
+         *
+         * The query field is `userPlan` (NOT `userPlansRange`).
+         * Variable types use the custom scalars `Date`, `QueryParams`, and `TimeZone`.
+         */
+        private val GET_USER_PLANS_QUERY = $$"""
+            query GetUserPlansRange($startDate: Date, $endDate: Date, $queryParams: QueryParams, $timezone: TimeZone) {
+              userPlan(
+                startDate: $startDate
+                endDate: $endDate
+                queryParams: $queryParams
+                timezone: $timezone
+              ) {
+                ...userPlanItemFragment
+                __typename
+              }
+            }
+
+            fragment userPlanItemFragment on UserPlanItem {
+              day
+              plannedDate
+              rank
+              agendaId
+              status
+              type
+              appliedTimeZone
+              wahooWorkoutId
+              completionData {
+                name
+                date
+                activityId
+                durationSeconds
+                style
+                deleted
+                __typename
+              }
+              prospects {
+                type
+                name
+                compatibility
+                description
+                style
+                intensity {
+                  master
+                  nm
+                  ac
+                  map
+                  ftp
+                  __typename
                 }
+                trainerSetting {
+                  mode
+                  level
+                  __typename
+                }
+                plannedDuration
+                durationType
+                metrics {
+                  ratings {
+                    nm
+                    ac
+                    map
+                    ftp
+                    __typename
+                  }
+                  __typename
+                }
+                contentId
+                workoutId
+                notes
+                fourDPWorkoutGraph {
+                  time
+                  value
+                  type
+                  __typename
+                }
+                __typename
+              }
+              plan {
+                id
+                name
+                color
+                deleted
+                durationDays
+                startDate
+                endDate
+                addons
+                level
+                subcategory
+                weakness
+                description
+                category
+                grouping
+                option
+                uniqueToPlan
+                type
+                progression
+                planDescription
+                volume
+                __typename
+              }
+              linkData {
+                name
+                date
+                activityId
+                durationSeconds
+                style
+                deleted
+                __typename
+              }
+              __typename
             }
         """.trimIndent()
 
-        private val DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE
+        /** The API expects ISO-8601 datetime strings with time portion. */
+        private val START_OF_DAY_FORMATTER: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'00:00:00.000'Z'")
+        private val END_OF_DAY_FORMATTER: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'23:59:59.999'Z'")
     }
 
     /**
-     * Fetch plans for a given token within a date range
-     * @param token The Bearer token for authentication
+     * Fetch plan items for a given date range.
+     *
      * @param startDate Start date for the range (inclusive)
-     * @param endDate End date for the range (inclusive)
-     * @return List of plans within the specified date range
+     * @param endDate   End date for the range (inclusive)
+     * @return List of [UserPlanItem]s within the range
      * @throws GraphQLException if the GraphQL query returns errors
      */
     suspend fun fetchPlans(
         startDate: LocalDate,
         endDate: LocalDate
-    ): List<Plan> {
-        log.info("Fetching plans from $startDate to $endDate")
+    ): List<UserPlanItem> {
+        log.info("Fetching plans from $startDate to $endDate (tz=$timezone)")
 
         val request = GraphQLRequest(
-            query = GET_USER_PLANS_RANGE_QUERY,
+            operationName = "GetUserPlansRange",
+            query = GET_USER_PLANS_QUERY,
             variables = mapOf(
-                "startDate" to startDate.format(DATE_FORMATTER),
-                "endDate" to endDate.format(DATE_FORMATTER)
+                "startDate" to startDate.format(START_OF_DAY_FORMATTER),
+                "endDate" to endDate.format(END_OF_DAY_FORMATTER),
+                "queryParams" to mapOf("limit" to 1000),
+                "timezone" to timezone
             )
         )
 
-        val response: GraphQLResponse<GetUserPlansRangeResponse> = httpClient.post(SYSTM_GRAPHQL_ENDPOINT) {
-            contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer $token")
-            setBody(request)
-        }.body()
+        val response: GraphQLResponse<GetUserPlansRangeResponse> =
+            httpClient.post(SYSTM_GRAPHQL_ENDPOINT) {
+                contentType(ContentType.Application.Json)
+                header("Authorization", "Bearer $token")
+                setBody(request)
+            }.body()
+
+        log.info("Response body: {}", response.toString())
 
         // Check for GraphQL errors first
         if (!response.errors.isNullOrEmpty()) {
@@ -94,13 +198,13 @@ class SystmPlansService(
             throw GraphQLException(response.errors)
         }
 
-        val plansData = response.data?.userPlansRange
-        if (plansData == null) {
-            log.warn("No data returned from userPlansRange query")
+        val items = response.data?.userPlan
+        if (items == null) {
+            log.warn("No data returned from userPlan query")
             return emptyList()
         }
 
-        log.info("Successfully fetched ${plansData.plans.size} plans")
-        return plansData.plans
+        log.info("Successfully fetched ${items.size} plan item(s)")
+        return items
     }
 }
