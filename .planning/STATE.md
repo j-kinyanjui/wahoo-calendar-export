@@ -13,7 +13,7 @@
 | Field | Value |
 |-------|-------|
 | **Phase** | 2 - CLI Migration & Plan Export |
-| **Plan** | 03 of 03 complete |
+| **Plan** | 04 of 04 complete |
 | **Status** | Phase Complete |
 | **Progress** | ██████████ 100% |
 
@@ -25,7 +25,7 @@
 |--------|-------|-------|
 | v1 Requirements | 16 | All mapped to phases |
 | Phases | 2 | Quick depth approach |
-| Current Phase Progress | 3/3 | Phase complete |
+| Current Phase Progress | 4/4 | Phase complete |
 | Blockers | 0 | None identified |
 
 | Phase-Plan | Duration | Tasks | Files |
@@ -34,6 +34,7 @@
 | Phase 02-cli-migration-plan-export P01 | 21 min | 2 tasks | 6 files |
 | Phase 02-cli-migration-plan-export P02 | 2 min | 2 tasks | 5 files |
 | Phase 02-cli-migration-plan-export P03 | 1 min | 1 tasks | 2 files |
+| Phase 02-cli-migration-plan-export P04 | 1 min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -61,6 +62,7 @@
 | ProgramResult for exit codes | Clikt's recommended way to exit with non-zero code | Implemented in 02-02 |
 | SLF4J for service logging | Decouple from Ktor server utilities; logback-classic provides SLF4J | Implemented in 02-02 |
 | CLI-01/CLI-02 marked complete | Functionality already implemented; definitions were missing from REQUIREMENTS.md | Documented in 02-03 |
+| Default --config path to ~/.config/wahoo-cli/config | Match CLI-02 spec; XDG convention for user config | Implemented in 02-04 |
 
 ### Technical Notes
 
@@ -96,10 +98,11 @@ No pending todos.
 - Phase 2 Plan 01 completed: CLI migration — build, entry point, config, date range parser
 - Phase 2 Plan 02 completed: CLI wired end-to-end — auth, fetch, console display, server cleanup
 - Phase 2 Plan 03 completed: Gap closure — added CLI-01/CLI-02 requirement definitions and traceability
+- Phase 2 Plan 04 completed: Gap closure — changed default --config path to ~/.config/wahoo-cli/config
 
 ### What's Next
 
-- Phase 2 complete. All 3 plans executed.
+- Phase 2 complete. All 4 plans executed (including gap closure).
 - Future work: ICS export, email delivery (Phase 3)
 
 ### User Preferences
@@ -112,4 +115,4 @@ No pending todos.
 
 ---
 
-*State updated: 2026-03-08 (02-03 complete)*
+*State updated: 2026-03-08 (02-04 complete)*
