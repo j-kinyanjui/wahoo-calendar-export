@@ -13,9 +13,9 @@
 | Field | Value |
 |-------|-------|
 | **Phase** | 2 - CLI Migration & Plan Export |
-| **Plan** | 01 of 02 complete |
-| **Status** | In Progress |
-| **Progress** | █████░░░░░ 50% |
+| **Plan** | 02 of 02 complete |
+| **Status** | Phase Complete |
+| **Progress** | ██████████ 100% |
 
 ---
 
@@ -25,13 +25,14 @@
 |--------|-------|-------|
 | v1 Requirements | 14 | All mapped to phases |
 | Phases | 2 | Quick depth approach |
-| Current Phase Progress | 1/2 | Plan 01 complete |
+| Current Phase Progress | 2/2 | Phase complete |
 | Blockers | 0 | None identified |
 
 | Phase-Plan | Duration | Tasks | Files |
 |------------|----------|-------|-------|
 | Phase 01-authentication-graphql-setup P03 | 3 min | 3 tasks | 4 files |
 | Phase 02-cli-migration-plan-export P01 | 21 min | 2 tasks | 6 files |
+| Phase 02-cli-migration-plan-export P02 | 2 min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -55,6 +56,9 @@
 | TOML config at ~/.config/wahoo-cli/config | XDG convention, env var overrides, graceful defaults | Implemented in 02-01 |
 | Relative + absolute time ranges | now/1w/2w/1m/2m shorthand and --from/--to dates, max 2 months | Implemented in 02-01 |
 | Serialization plugin version match | Updated from 1.4.32 to 2.3.10 to match Kotlin version | Implemented in 02-01 |
+| runBlocking for CLI suspend bridging | Ktor client calls are suspend; runBlocking bridges to Clikt sync run() | Implemented in 02-02 |
+| ProgramResult for exit codes | Clikt's recommended way to exit with non-zero code | Implemented in 02-02 |
+| SLF4J for service logging | Decouple from Ktor server utilities; logback-classic provides SLF4J | Implemented in 02-02 |
 
 ### Technical Notes
 
@@ -88,12 +92,12 @@ No pending todos.
 - Phase 1 Plan 02 completed: Config-based auth with auto-login
 - Phase 1 Plan 03 completed: GetUserPlansRange query + error handling
 - Phase 2 Plan 01 completed: CLI migration — build, entry point, config, date range parser
+- Phase 2 Plan 02 completed: CLI wired end-to-end — auth, fetch, console display, server cleanup
 
 ### What's Next
 
-- Phase 2 Plan 02: Wire auth/fetch/display into CLI
-  - Connect SystmAuthService + SystmPlansService to WahooCli.run()
-  - Console display of fetched training plans
+- Phase 2 complete. All plans executed.
+- Future work: ICS export, email delivery (if new phases added)
 
 ### User Preferences
 
@@ -105,4 +109,4 @@ No pending todos.
 
 ---
 
-*State updated: 2026-03-08*
+*State updated: 2026-03-08 (02-02 complete)*

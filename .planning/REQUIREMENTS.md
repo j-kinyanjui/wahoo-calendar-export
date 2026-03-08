@@ -22,16 +22,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Data Parsing
 
-- [ ] **PARSE-01**: Application extracts workout name from GraphQL response
-- [ ] **PARSE-02**: Application extracts planned date from GraphQL response
-- [ ] **PARSE-03**: Application handles workout types (type field)
-- [ ] **PARSE-04**: Application handles workout status (completed, planned, etc.)
+- [x] **PARSE-01**: Application extracts workout name from GraphQL response
+- [x] **PARSE-02**: Application extracts planned date from GraphQL response
+- [x] **PARSE-03**: Application handles workout types (type field)
+- [x] **PARSE-04**: Application handles workout status (completed, planned, etc.)
 
 ### Display
 
-- [ ] **DISP-01**: User can view list of fetched training plans
-- [ ] **DISP-02**: Each plan shows name and scheduled date
-- [ ] **DISP-03**: Application displays error messages for failed requests
+- [x] **DISP-01**: User can view list of fetched training plans
+- [x] **DISP-02**: Each plan shows name and scheduled date
+- [x] **DISP-03**: Application displays error messages for failed requests
 
 ## v2 Requirements
 
@@ -72,13 +72,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-02     | Phase 1 | Complete |
 | DATA-03     | Phase 1 | Complete |
 | DATA-04     | Phase 1 | Complete |
-| PARSE-01    | Phase 2 | Pending |
-| PARSE-02    | Phase 2 | Pending |
-| PARSE-03    | Phase 2 | Pending |
-| PARSE-04    | Phase 2 | Pending |
-| DISP-01     | Phase 2 | Pending |
-| DISP-02     | Phase 2 | Pending |
-| DISP-03     | Phase 2 | Pending |
+| PARSE-01    | Phase 2 | Complete |
+| PARSE-02    | Phase 2 | Complete |
+| PARSE-03    | Phase 2 | Complete |
+| PARSE-04    | Phase 2 | Complete |
+| DISP-01     | Phase 2 | Complete |
+| DISP-02     | Phase 2 | Complete |
+| DISP-03     | Phase 2 | Complete |
 
 **Coverage:**
 
