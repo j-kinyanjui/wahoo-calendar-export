@@ -27,8 +27,7 @@ class WahooCli : CliktCommand(
     private val from by option("--from", help = "Start date (YYYY-MM-DD)")
     private val to by option("--to", help = "End date (YYYY-MM-DD)")
     private val configPath by option("--config", "-c", help = "Config file path")
-        //.default("~/.config/wahoo-cli/config.toml")
-        .default("src/main/resources/config.toml")
+        .default("~/.config/wahoo-cli/config")
 
     override fun run() {
         val resolvedConfigPath = configPath.replaceFirst("~", System.getProperty("user.home"))
