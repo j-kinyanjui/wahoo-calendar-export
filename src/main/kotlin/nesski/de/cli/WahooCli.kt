@@ -2,13 +2,19 @@ package nesski.de.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.Context
+import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.core.terminal
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.mordant.terminal.StringPrompt
 import com.github.ajalt.mordant.terminal.YesNoPrompt
+import kotlinx.coroutines.runBlocking
 import nesski.de.config.AppConfig
+import nesski.de.plugins.wahooHttpClient
+import nesski.de.services.web.GraphQLException
+import nesski.de.services.web.SystmAuthService
+import nesski.de.services.web.SystmPlansService
 import nesski.de.utils.parseDateRange
 
 class WahooCli : CliktCommand(
@@ -46,10 +52,56 @@ class WahooCli : CliktCommand(
             throw UsageError(e.message ?: "Invalid date range options")
         }
 
-        // 5. Skeleton output — full orchestration wired in Plan 02
-        echo("Fetching plans from ${dateRange.start} to ${dateRange.end}")
+        runBlocking {
+            // 5. Authenticate with SYSTM API
+            val token: String
+            try {
+                val authService = SystmAuthService(wahooHttpClient, username, password)
+                val result = authService.login()
+                if (result == null) {
+                    echo("\u2717 Authentication failed: no token received")
+                    throw ProgramResult(1)
+                }
+                token = result
+                echo("\u2713 Authenticated as $username")
+            } catch (e: ProgramResult) {
+                throw e
+            } catch (e: Exception) {
+                echo("\u2717 Authentication failed: ${e.message}")
+                throw ProgramResult(1)
+            }
 
-        // TODO: Wire auth, fetch, display in Plan 02
+            // 6. Fetch plans for date range
+            val plans = try {
+                val plansService = SystmPlansService(wahooHttpClient)
+                plansService.fetchPlans(token, dateRange.start, dateRange.end)
+            } catch (e: GraphQLException) {
+                echo("\u2717 API error: ${e.message}")
+                throw ProgramResult(1)
+            } catch (e: Exception) {
+                echo("\u2717 Failed to fetch plans: ${e.message}")
+                throw ProgramResult(1)
+            }
+
+            // 7. Display plans in console
+            echo("\nTraining Plans (${dateRange.start} to ${dateRange.end}):\n")
+
+            if (plans.isEmpty()) {
+                echo("No plans found for this date range.")
+                return@runBlocking
+            }
+
+            var totalWorkouts = 0
+            for (plan in plans) {
+                echo("\uD83D\uDCCB ${plan.name} (${plan.status ?: "scheduled"})")
+                for (workout in plan.workouts) {
+                    echo("  ${workout.name} \u2014 ${workout.scheduledDate ?: "no date"} [${workout.type ?: "unknown"}] [${workout.status ?: "planned"}]")
+                    totalWorkouts++
+                }
+            }
+
+            echo("\n$totalWorkouts workout(s) across ${plans.size} plan(s)\n")
+        }
     }
 
     /**

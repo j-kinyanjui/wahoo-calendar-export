@@ -6,15 +6,14 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.util.logging.KtorSimpleLogger
-import io.ktor.util.logging.Logger
+import org.slf4j.LoggerFactory
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import nesski.de.models.GraphQLRequest
 import nesski.de.models.GraphQLResponse
 import nesski.de.plugins.SYSTM_GRAPHQL_ENDPOINT
 
-internal val logger: Logger = KtorSimpleLogger("SystmAuthService")
+private val logger = LoggerFactory.getLogger("SystmAuthService")
 
 /**
  * GraphQL response wrapper for the loginUser mutation.

@@ -7,7 +7,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.util.logging.KtorSimpleLogger
+import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import nesski.de.models.GetUserPlansRangeResponse
@@ -17,7 +17,7 @@ import nesski.de.models.GraphQLResponse
 import nesski.de.models.Plan
 import nesski.de.plugins.SYSTM_GRAPHQL_ENDPOINT
 
-internal val log = KtorSimpleLogger("SystmPlansService")
+private val log = LoggerFactory.getLogger("SystmPlansService")
 
 /**
  * Exception thrown when GraphQL returns errors
