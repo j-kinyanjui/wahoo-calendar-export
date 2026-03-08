@@ -33,6 +33,11 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **DISP-02**: Each plan shows name and scheduled date
 - [x] **DISP-03**: Application displays error messages for failed requests
 
+### CLI
+
+- [x] **CLI-01**: Application runs as a Clikt CLI with `--range`, `--from`/`--to`, `--config` options (no web server)
+- [x] **CLI-02**: CLI loads credentials and settings from TOML config file (`~/.config/wahoo-cli/config`) with env var overrides (`SYSTM_USER`, `SYSTM_PASSWORD`)
+
 ## v2 Requirements
 
 Deferred to future release. Tracked but not in current roadmap.
@@ -79,14 +84,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DISP-01     | Phase 2 | Complete |
 | DISP-02     | Phase 2 | Complete |
 | DISP-03     | Phase 2 | Complete |
+| CLI-01      | Phase 2 | Complete |
+| CLI-02      | Phase 2 | Complete |
 
 **Coverage:**
 
-- v1 requirements: 14 total
-- Mapped to phases: 14
+- v1 requirements: 16 total
+- Mapped to phases: 16
 - Unmapped: 0 ✓
 
 ---
 
 _Requirements defined: 2026-03-01_
-_Last updated: 2026-03-02 after plan 01-03 completion_
+_Last updated: 2026-03-08 after plan 02-03 completion_
