@@ -61,9 +61,10 @@
 8. nginx/Docker infrastructure removed
 9. Clear error messages for auth failures, API errors, and invalid ranges
 
-**Plans:** 2 plans
+**Plans:** 3 plans
 - [x] 02-01-PLAN.md — CLI foundation: build migration, Clikt entry point, TOML config, date range parsing
-- [ ] 02-02-PLAN.md — Integration: wire auth → fetch → display, remove server files
+- [x] 02-02-PLAN.md — Integration: wire auth → fetch → display, remove server files
+- [ ] 02-03-PLAN.md — Gap closure: add CLI-01/CLI-02 requirements, fix credential prompt flow
 
 ---
 
@@ -93,7 +94,7 @@
 | Phase                     | Plans Complete | Status      | Completed |
 | ------------------------- | -------------- | ----------- | --------- |
 | 1 - Auth & GraphQL Setup  | 3/3            | Complete    | 2026-03-02 |
-| 2 - CLI Migration               | 1/2            | In Progress | -         |
+| 2 - CLI Migration               | 2/3            | In Progress | -         |
 | 3 - ICS Export & Email          | 0/?            | Not started | -         |
 
 ---
