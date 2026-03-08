@@ -62,7 +62,7 @@
 9. Clear error messages for auth failures, API errors, and invalid ranges
 
 **Plans:** 2 plans
-- [ ] 02-01-PLAN.md — CLI foundation: build migration, Clikt entry point, TOML config, date range parsing
+- [x] 02-01-PLAN.md — CLI foundation: build migration, Clikt entry point, TOML config, date range parsing
 - [ ] 02-02-PLAN.md — Integration: wire auth → fetch → display, remove server files
 
 ---
@@ -93,7 +93,7 @@
 | Phase                     | Plans Complete | Status      | Completed |
 | ------------------------- | -------------- | ----------- | --------- |
 | 1 - Auth & GraphQL Setup  | 3/3            | Complete    | 2026-03-02 |
-| 2 - CLI Migration               | 0/2            | Planned     | -         |
+| 2 - CLI Migration               | 1/2            | In Progress | -         |
 | 3 - ICS Export & Email          | 0/?            | Not started | -         |
 
 ---

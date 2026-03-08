@@ -12,10 +12,10 @@
 
 | Field | Value |
 |-------|-------|
-| **Phase** | 1 - Authentication & GraphQL Setup |
-| **Plan** | 01-03 complete |
-| **Status** | Complete |
-| **Progress** | ██████████ 100% |
+| **Phase** | 2 - CLI Migration & Plan Export |
+| **Plan** | 01 of 02 complete |
+| **Status** | In Progress |
+| **Progress** | █████░░░░░ 50% |
 
 ---
 
@@ -25,11 +25,13 @@
 |--------|-------|-------|
 | v1 Requirements | 14 | All mapped to phases |
 | Phases | 2 | Quick depth approach |
-| Current Phase Progress | 3/3 | All plans complete |
+| Current Phase Progress | 1/2 | Plan 01 complete |
 | Blockers | 0 | None identified |
 
----
+| Phase-Plan | Duration | Tasks | Files |
+|------------|----------|-------|-------|
 | Phase 01-authentication-graphql-setup P03 | 3 min | 3 tasks | 4 files |
+| Phase 02-cli-migration-plan-export P01 | 21 min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -45,13 +47,14 @@
 | Config-based auth for Systm | YAML file for credentials, auto-login on startup | Implemented in 01-02 |
 | Default date range for plans | Past 7 + next 14 days for practical workout planning | Implemented in 01-03 |
 | GraphQLException on errors | Handle HTTP 200 with errors field properly | Implemented in 01-03 |
-| Migrate to CLI (drop Ktor server) | No server routes needed; app is a batch/CLI process | Decided for Phase 2 |
-| Clikt for CLI framework | Kotlin-native, subcommands, typed options, clean API | Decided for Phase 2 |
+| Migrate to CLI (drop Ktor server) | No server routes needed; app is a batch/CLI process | Implemented in 02-01 |
+| Clikt 5.0.3 for CLI framework | Kotlin-native, typed options, clean API; 5.x API differs from 4.x | Implemented in 02-01 |
 | Single command flow | Auto-login + fetch + export in one invocation | Decided for Phase 2 |
 | VTODO .ics for Apple Reminders | Workouts appear as tasks with due dates | Decided for Phase 2 |
 | Email .ics delivery | Send generated .ics to user-provided email via SMTP | Decided for Phase 2 |
-| Env vars + config file for creds | SYSTM_USER/SYSTM_PASSWORD env vars, fallback to ~/.wahoo-cli/config | Decided for Phase 2 |
-| Relative + absolute time ranges | Support now/1w/1m/2m shorthand and --from/--to dates, max 2 months | Decided for Phase 2 |
+| TOML config at ~/.config/wahoo-cli/config | XDG convention, env var overrides, graceful defaults | Implemented in 02-01 |
+| Relative + absolute time ranges | now/1w/2w/1m/2m shorthand and --from/--to dates, max 2 months | Implemented in 02-01 |
+| Serialization plugin version match | Updated from 1.4.32 to 2.3.10 to match Kotlin version | Implemented in 02-01 |
 
 ### Technical Notes
 
@@ -84,13 +87,13 @@ No pending todos.
 - Phase 1 Plan 01 completed: Session infrastructure + GraphQL client
 - Phase 1 Plan 02 completed: Config-based auth with auto-login
 - Phase 1 Plan 03 completed: GetUserPlansRange query + error handling
+- Phase 2 Plan 01 completed: CLI migration — build, entry point, config, date range parser
 
 ### What's Next
 
-- Phase 2: CLI Migration & Plan Export
-  - Remove Ktor server, migrate to Clikt CLI
-  - Single command: auto-login, fetch plans, generate .ics VTODO, email to user
-  - Time range support: now, 1w, 2w, 1m, 2m, or explicit --from/--to (max 2 months)
+- Phase 2 Plan 02: Wire auth/fetch/display into CLI
+  - Connect SystmAuthService + SystmPlansService to WahooCli.run()
+  - Console display of fetched training plans
 
 ### User Preferences
 
@@ -102,4 +105,4 @@ No pending todos.
 
 ---
 
-*State updated: 2026-03-07*
+*State updated: 2026-03-08*
