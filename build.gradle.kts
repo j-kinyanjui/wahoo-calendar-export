@@ -4,18 +4,15 @@ val logback_version: String by project
 
 plugins {
     kotlin("jvm") version "2.3.10"
-    id("io.ktor.plugin") version "3.4.1"
-    kotlin("plugin.serialization") version "1.4.32"
+    application
+    kotlin("plugin.serialization") version "2.3.10"
 }
 
 group = "nesski.de"
 version = "0.0.1"
 
 application {
-    mainClass.set("io.ktor.server.netty.EngineMain")
-
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+    mainClass.set("nesski.de.ApplicationKt")
 }
 
 repositories {
@@ -23,17 +20,25 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core-jvm")
-    implementation("io.ktor:ktor-server-auth:$ktor_version")
-    implementation("io.ktor:ktor-server-netty-jvm")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("io.ktor:ktor-server-config-yaml:2.3.10")
+    // CLI framework
+    implementation("com.github.ajalt.clikt:clikt:5.0.3")
+
+    // TOML config parsing
+    implementation("com.akuleshov7:ktoml-core:0.7.0")
+    implementation("com.akuleshov7:ktoml-file:0.7.0")
+
+    // Ktor client (retained for GraphQL API calls)
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+
+    // Logging
+    implementation("ch.qos.logback:logback-classic:$logback_version")
+
+    // Kotlin stdlib
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
 
-    testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
+    // Test
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 }
