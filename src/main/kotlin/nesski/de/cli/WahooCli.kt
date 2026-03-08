@@ -6,6 +6,9 @@ import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 import kotlinx.coroutines.runBlocking
 import nesski.de.config.AppConfig
 import nesski.de.plugins.TokenStorage
@@ -115,10 +118,7 @@ class WahooCli : CliktCommand(
 
     /** Format a duration (in hours, fractional) into a human-readable string. */
     private fun formatDuration(hours: Double?): String {
-        if (hours == null) return ""
-        val totalMinutes = (hours * 60).toInt()
-        val h = totalMinutes / 60
-        val m = totalMinutes % 60
-        return if (h > 0) "${h}h${m}m" else "${m}m"
+        return hours?.toDuration(DurationUnit.HOURS)?.absoluteValue?.toString().orEmpty()
+
     }
 }
