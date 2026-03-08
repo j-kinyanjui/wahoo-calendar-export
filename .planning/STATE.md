@@ -12,10 +12,9 @@
 
 | Field | Value |
 |-------|-------|
-| **Phase** | 2 - CLI Migration & Plan Export |
-| **Plan** | 04 of 04 complete |
-| **Status** | Phase Complete |
-| **Progress** | ██████████ 100% |
+| **Phase** | 3 - ICS Export & Email |
+| **Status** | Context gathered, ready for planning |
+| **Progress** | Context complete |
 
 ---
 
@@ -63,6 +62,12 @@
 | SLF4J for service logging | Decouple from Ktor server utilities; logback-classic provides SLF4J | Implemented in 02-02 |
 | CLI-01/CLI-02 marked complete | Functionality already implemented; definitions were missing from REQUIREMENTS.md | Documented in 02-03 |
 | Default --config path to ~/.config/wahoo-cli/config | Match CLI-02 spec; XDG convention for user config | Implemented in 02-04 |
+| ICS export file-based only (no email) | Simplify Phase 3 to focus on .ics generation; email delivery deferred | Decided for Phase 3 |
+| Combined .ics file per run | All workouts in single file rather than one per workout | Decided for Phase 3 |
+| Filename format with range | workouts_{range}_{date}.ics shows date range fetched | Decided for Phase 3 |
+| Save to current directory by default | CWD is default, configurable via config file | Decided for Phase 3 |
+| VTODO with date-only due dates | DUE-DATE format, no time component for Apple Reminders | Decided for Phase 3 |
+| Error summary + detailed log | Console summary of successes/failures; separate error log file | Decided for Phase 3 |
 
 ### Technical Notes
 
@@ -103,7 +108,8 @@ No pending todos.
 ### What's Next
 
 - Phase 2 complete. All 4 plans executed (including gap closure).
-- Future work: ICS export, email delivery (Phase 3)
+- Phase 3 context gathered: ICS export (file-based, no email in this phase)
+- Next: Plan Phase 3 with research, then execute
 
 ### User Preferences
 
@@ -111,8 +117,8 @@ No pending todos.
 - On-demand/daily sync (not real-time)
 - CLI app, not a web server
 - Apple Reminders integration via VTODO .ics tasks
-- Email delivery of .ics files
+- ICS file-based export (email delivery deferred to future phase)
 
 ---
 
-*State updated: 2026-03-08 (02-04 complete)*
+*State updated: 2026-03-08 (Phase 3 context gathered)*
