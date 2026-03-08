@@ -13,7 +13,7 @@
 | Field | Value |
 |-------|-------|
 | **Phase** | 2 - CLI Migration & Plan Export |
-| **Plan** | 02 of 02 complete |
+| **Plan** | 03 of 03 complete |
 | **Status** | Phase Complete |
 | **Progress** | ██████████ 100% |
 
@@ -23,9 +23,9 @@
 
 | Metric | Value | Notes |
 |--------|-------|-------|
-| v1 Requirements | 14 | All mapped to phases |
+| v1 Requirements | 16 | All mapped to phases |
 | Phases | 2 | Quick depth approach |
-| Current Phase Progress | 2/2 | Phase complete |
+| Current Phase Progress | 3/3 | Phase complete |
 | Blockers | 0 | None identified |
 
 | Phase-Plan | Duration | Tasks | Files |
@@ -33,6 +33,7 @@
 | Phase 01-authentication-graphql-setup P03 | 3 min | 3 tasks | 4 files |
 | Phase 02-cli-migration-plan-export P01 | 21 min | 2 tasks | 6 files |
 | Phase 02-cli-migration-plan-export P02 | 2 min | 2 tasks | 5 files |
+| Phase 02-cli-migration-plan-export P03 | 1 min | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -59,6 +60,7 @@
 | runBlocking for CLI suspend bridging | Ktor client calls are suspend; runBlocking bridges to Clikt sync run() | Implemented in 02-02 |
 | ProgramResult for exit codes | Clikt's recommended way to exit with non-zero code | Implemented in 02-02 |
 | SLF4J for service logging | Decouple from Ktor server utilities; logback-classic provides SLF4J | Implemented in 02-02 |
+| CLI-01/CLI-02 marked complete | Functionality already implemented; definitions were missing from REQUIREMENTS.md | Documented in 02-03 |
 
 ### Technical Notes
 
@@ -85,7 +87,7 @@ No pending todos.
 ### What's Been Done
 
 - Project initialized with core value defined
-- 14 v1 requirements documented across 4 categories
+- 16 v1 requirements documented across 5 categories (added CLI section)
 - Research completed on GraphQL Kotlin client and JWT handling
 - Roadmap created with 2 phases
 - Phase 1 Plan 01 completed: Session infrastructure + GraphQL client
@@ -93,11 +95,12 @@ No pending todos.
 - Phase 1 Plan 03 completed: GetUserPlansRange query + error handling
 - Phase 2 Plan 01 completed: CLI migration — build, entry point, config, date range parser
 - Phase 2 Plan 02 completed: CLI wired end-to-end — auth, fetch, console display, server cleanup
+- Phase 2 Plan 03 completed: Gap closure — added CLI-01/CLI-02 requirement definitions and traceability
 
 ### What's Next
 
-- Phase 2 complete. All plans executed.
-- Future work: ICS export, email delivery (if new phases added)
+- Phase 2 complete. All 3 plans executed.
+- Future work: ICS export, email delivery (Phase 3)
 
 ### User Preferences
 
@@ -109,4 +112,4 @@ No pending todos.
 
 ---
 
-*State updated: 2026-03-08 (02-02 complete)*
+*State updated: 2026-03-08 (02-03 complete)*
