@@ -103,16 +103,4 @@ class SystmPlansService(
         log.info("Successfully fetched ${plansData.plans.size} plans")
         return plansData.plans
     }
-
-    /**
-     * Fetch plans using default date range (past 7 days + next 14 days)
-     * @param token The Bearer token for authentication
-     * @return List of plans within the default date range
-     */
-    suspend fun fetchPlans(token: String): List<Plan> {
-        val today = LocalDate.now()
-        val startDate = today.minusDays(7)
-        val endDate = today.plusDays(14)
-        return fetchPlans(token, startDate, endDate)
-    }
 }

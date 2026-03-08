@@ -1,0 +1,6 @@
+[credentials]
+username = "user@example.com"
+password = "your-secret-password"
+[output]
+# Where exported .ics files will be written (default: ".")
+ics_save_path = "~/Downloads"

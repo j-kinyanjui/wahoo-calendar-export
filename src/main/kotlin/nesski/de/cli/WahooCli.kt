@@ -27,7 +27,7 @@ class WahooCli : CliktCommand(
     private val from by option("--from", help = "Start date (YYYY-MM-DD)")
     private val to by option("--to", help = "End date (YYYY-MM-DD)")
     private val configPath by option("--config", "-c", help = "Config file path")
-        .default("~/.config/wahoo-cli/config")
+        .default("~/.config/wahoo-cli/config.toml")
 
     override fun run() {
         // 1. Resolve config path (expand ~ to user home)
@@ -59,15 +59,15 @@ class WahooCli : CliktCommand(
                 val authService = SystmAuthService(wahooHttpClient, username, password)
                 val result = authService.login()
                 if (result == null) {
-                    echo("\u2717 Authentication failed: no token received")
+                    echo("Authentication failed: no token received")
                     throw ProgramResult(1)
                 }
                 token = result
-                echo("\u2713 Authenticated as $username")
+                echo("Authenticated as $username")
             } catch (e: ProgramResult) {
                 throw e
             } catch (e: Exception) {
-                echo("\u2717 Authentication failed: ${e.message}")
+                echo("Authentication failed: ${e.message}")
                 throw ProgramResult(1)
             }
 
@@ -76,10 +76,10 @@ class WahooCli : CliktCommand(
                 val plansService = SystmPlansService(wahooHttpClient)
                 plansService.fetchPlans(token, dateRange.start, dateRange.end)
             } catch (e: GraphQLException) {
-                echo("\u2717 API error: ${e.message}")
+                echo("API error: ${e.message}")
                 throw ProgramResult(1)
             } catch (e: Exception) {
-                echo("\u2717 Failed to fetch plans: ${e.message}")
+                echo("Failed to fetch plans: ${e.message}")
                 throw ProgramResult(1)
             }
 
