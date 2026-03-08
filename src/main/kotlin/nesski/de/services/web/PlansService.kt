@@ -30,7 +30,8 @@ class GraphQLException(val errors: List<GraphQLError>) : Exception(
  * Service for fetching Systm training plans
  */
 class SystmPlansService(
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
+    private val token: String,
 ) {
     companion object {
         // GraphQL query for getting user plans within a date range
@@ -68,7 +69,6 @@ class SystmPlansService(
      * @throws GraphQLException if the GraphQL query returns errors
      */
     suspend fun fetchPlans(
-        token: String,
         startDate: LocalDate,
         endDate: LocalDate
     ): List<Plan> {

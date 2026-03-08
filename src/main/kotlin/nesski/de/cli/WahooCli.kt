@@ -11,6 +11,7 @@ import com.github.ajalt.mordant.terminal.StringPrompt
 import com.github.ajalt.mordant.terminal.YesNoPrompt
 import kotlinx.coroutines.runBlocking
 import nesski.de.config.AppConfig
+import nesski.de.plugins.TokenStorage
 import nesski.de.plugins.wahooHttpClient
 import nesski.de.services.web.GraphQLException
 import nesski.de.services.web.SystmAuthService
@@ -30,51 +31,41 @@ class WahooCli : CliktCommand(
         .default("~/.config/wahoo-cli/config.toml")
 
     override fun run() {
-        // 1. Resolve config path (expand ~ to user home)
         val resolvedConfigPath = configPath.replaceFirst("~", System.getProperty("user.home"))
-
-        // 2. Load config from TOML file
         val config = AppConfig.load(resolvedConfigPath)
 
-        // 3. Resolve credentials: env vars override config values
         val (username, password) = AppConfig.resolveCredentials(config)
-
-        // If no credentials found anywhere, prompt interactively
         if (username.isBlank() || password.isBlank()) {
-            promptForCredentials()
-            return
+            throw UsageError("Credentials must not be empty")
         }
 
-        // 4. Parse date range (mutual exclusion validated inside)
         val dateRange = try {
             parseDateRange(range, from, to)
         } catch (e: IllegalArgumentException) {
             throw UsageError(e.message ?: "Invalid date range options")
         }
 
-        runBlocking {
-            // 5. Authenticate with SYSTM API
-            val token: String
+        TokenStorage.token = runBlocking {
             try {
-                val authService = SystmAuthService(wahooHttpClient, username, password)
-                val result = authService.login()
+                val result = SystmAuthService(wahooHttpClient, username, password).login()
                 if (result == null) {
                     echo("Authentication failed: no token received")
                     throw ProgramResult(1)
                 }
-                token = result
                 echo("Authenticated as $username")
+                result
             } catch (e: ProgramResult) {
                 throw e
             } catch (e: Exception) {
                 echo("Authentication failed: ${e.message}")
                 throw ProgramResult(1)
             }
+        }
 
-            // 6. Fetch plans for date range
+        runBlocking {
             val plans = try {
-                val plansService = SystmPlansService(wahooHttpClient)
-                plansService.fetchPlans(token, dateRange.start, dateRange.end)
+                val plansService = SystmPlansService(wahooHttpClient, TokenStorage.token)
+                plansService.fetchPlans(dateRange.start, dateRange.end)
             } catch (e: GraphQLException) {
                 echo("API error: ${e.message}")
                 throw ProgramResult(1)
@@ -102,26 +93,5 @@ class WahooCli : CliktCommand(
 
             echo("\n$totalWorkouts workout(s) across ${plans.size} plan(s)\n")
         }
-    }
-
-    /**
-     * Prompt user for credentials when none found in env vars or config.
-     * Offers to save credentials to the config file.
-     */
-    private fun promptForCredentials() {
-        echo("No credentials found. Please enter your SYSTM credentials.")
-        val t = terminal
-        val user = StringPrompt("SYSTM username (email)", t).ask()
-            ?: throw UsageError("Username is required")
-        val pass = StringPrompt("SYSTM password", t, hideInput = true).ask()
-            ?: throw UsageError("Password is required")
-
-        val save = YesNoPrompt("Save credentials to config file?", t).ask() ?: false
-        if (save) {
-            echo("Note: Credentials will be stored in plain text. Consider running: chmod 600 ${configPath.replaceFirst("~", System.getProperty("user.home"))}")
-            // TODO: Write credentials to config file
-        }
-
-        echo("Credentials received. Re-run the command to fetch plans.")
     }
 }
