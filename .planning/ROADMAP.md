@@ -3,7 +3,8 @@
 ## Phases
 
 - [x] **Phase 1: Authentication & GraphQL Setup** - JWT token management and GraphQL client (completed 2026-03-02)
-- [ ] **Phase 2: CLI Migration & Plan Export** - Migrate to Ktor client-only CLI, fetch plans, export as .ics tasks to email
+- [ ] **Phase 2: CLI Migration** - Migrate from Ktor server to Clikt CLI, fetch and display plans
+- [ ] **Phase 3: ICS Export & Email** - Generate .ics VTODO entries and email them
 
 ## Overview
 
@@ -40,31 +41,50 @@
 
 ---
 
-### Phase 2: CLI Migration & Plan Export
+### Phase 2: CLI Migration
 
-**Goal:** Migrate from Ktor server to a Clikt-based CLI application that auto-authenticates, fetches training plans for a user-specified time range, generates .ics VTODO entries (Apple Reminders tasks), and emails them to a provided address
+**Goal:** Migrate from Ktor server to a Clikt-based CLI application that auto-authenticates, fetches training plans for a user-specified time range, and displays them in the console
 
 **Depends on:** Phase 1
 
-**Requirements:** PARSE-01, PARSE-02, PARSE-03, PARSE-04, DISP-01, DISP-02, DISP-03, CLI-01, CLI-02, EXPORT-01
+**Requirements:** PARSE-01, PARSE-02, PARSE-03, PARSE-04, DISP-01, DISP-02, DISP-03, CLI-01, CLI-02
 
 **Success Criteria** (what must be TRUE):
 
 1. Ktor server dependencies removed (server-core, netty, auth, config-yaml)
-2. Application runs as a CLI via Clikt with `--email`, `--range`, `--from`/`--to` options
-3. Credentials loaded from env vars (`SYSTM_USER`, `SYSTM_PASSWORD`) with fallback to `~/.wahoo-cli/config`
+2. Application runs as a CLI via Clikt with `--range`, `--from`/`--to`, `--config` options
+3. Credentials loaded from env vars (`SYSTM_USER`, `SYSTM_PASSWORD`) with fallback to `~/.config/wahoo-cli/config`
 4. Auto-login on each run using existing SystmAuthService
 5. Plans fetched for specified range: `now`, `1w`, `2w`, `1m`, `2m`, or explicit `--from`/`--to` (max 2 months)
-6. Each workout generates a VTODO .ics entry with due date (compatible with Apple Reminders)
-7. .ics file emailed to the provided `--email` address via SMTP
-8. Application extracts workout name, date, type, and status from GraphQL response
-9. nginx/Docker infrastructure removed
-10. Clear error messages for auth failures, API errors, invalid ranges, and email delivery issues
+6. Application extracts workout name, date, type, and status from GraphQL response
+7. User sees formatted list of workouts in the console
+8. nginx/Docker infrastructure removed
+9. Clear error messages for auth failures, API errors, and invalid ranges
 
-**Plans:** 3 plans
+**Plans:** 2 plans
 - [ ] 02-01-PLAN.md — CLI foundation: build migration, Clikt entry point, TOML config, date range parsing
-- [ ] 02-02-PLAN.md — Export services: ICS VTODO generation + SMTP email delivery
-- [ ] 02-03-PLAN.md — End-to-end integration: wire full flow, console display, cleanup server files
+- [ ] 02-02-PLAN.md — Integration: wire auth → fetch → display, remove server files
+
+---
+
+### Phase 3: ICS Export & Email
+
+**Goal:** Generate .ics VTODO entries (Apple Reminders tasks) from fetched workouts and email them to a provided address
+
+**Depends on:** Phase 2
+
+**Requirements:** EXPORT-01
+
+**Success Criteria** (what must be TRUE):
+
+1. Each workout generates a VTODO .ics entry with due date (compatible with Apple Reminders)
+2. .ics file emailed to the provided `--email` address via SMTP
+3. Sport emoji in VTODO SUMMARY (🧘🏽‍♂️ yoga, 🚴 cycling, 🏋🏾‍♀️ strength)
+4. On email failure, .ics saved to disk with error message
+5. .ics save location configurable in config file
+6. Clear error messages for email delivery issues
+
+**Plans:** TBD
 
 ---
 
@@ -73,7 +93,8 @@
 | Phase                     | Plans Complete | Status      | Completed |
 | ------------------------- | -------------- | ----------- | --------- |
 | 1 - Auth & GraphQL Setup  | 3/3            | Complete    | 2026-03-02 |
-| 2 - CLI Migration & Plan Export | 0/3            | Planned     | -         |
+| 2 - CLI Migration               | 0/2            | Planned     | -         |
+| 3 - ICS Export & Email          | 0/?            | Not started | -         |
 
 ---
 
@@ -86,4 +107,4 @@
 ---
 
 _Roadmap created: 2026-03-01_
-_Depth: quick (2 phases)_
+_Depth: quick (3 phases)_
