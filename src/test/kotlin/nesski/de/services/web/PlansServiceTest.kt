@@ -16,12 +16,13 @@ import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class PlansServiceTest {
 
     private fun createMockClient(responseBody: String, statusCode: HttpStatusCode = HttpStatusCode.OK): HttpClient {
-        val mockEngine = MockEngine { request ->
+        val mockEngine = MockEngine { _ ->
             respond(
                 content = responseBody,
                 status = statusCode,
@@ -52,47 +53,49 @@ class PlansServiceTest {
     }
 
     @Test
-    fun `fetchPlans returns plan items`() = runBlocking {
+    fun `fetchPlans returns plan items with VTODO-relevant fields`() = runBlocking {
         val responseJson = """
             {
                 "data": {
                     "userPlan": [
                         {
-                            "day": 1,
-                            "plannedDate": "2026-03-10T00:00:00.000Z",
-                            "rank": 0,
-                            "status": "planned",
-                            "type": "workout",
+                            "plannedDate": "2026-03-17T00:00:00.000Z",
+                            "agendaId": "xu8fKNWU5M_7",
+                            "status": "Planned",
+                            "type": "Cycling",
                             "prospects": [
                                 {
-                                    "name": "The Shovel",
-                                    "style": "cycling",
-                                    "plannedDuration": 3600
+                                    "type": "Cycling",
+                                    "name": "Costa Blanca: Puerto de la Vall de Ebo (Recharger Ride)",
+                                    "style": null,
+                                    "plannedDuration": 0.6011111111111112,
+                                    "workoutId": "rUrrfvb8ii"
                                 }
                             ],
                             "plan": {
-                                "id": "plan-001",
-                                "name": "All-Purpose Road",
-                                "level": "intermediate"
+                                "id": "xu8fKNWU5M",
+                                "name": "6 Week - Fitness Kickstarter ",
+                                "level": ""
                             }
                         },
                         {
-                            "day": 2,
-                            "plannedDate": "2026-03-11T00:00:00.000Z",
-                            "rank": 0,
-                            "status": "planned",
-                            "type": "workout",
+                            "plannedDate": "2026-03-18T00:00:00.000Z",
+                            "agendaId": "xu8fKNWU5M_29",
+                            "status": "Planned",
+                            "type": "Yoga",
                             "prospects": [
                                 {
-                                    "name": "Cadence Builds",
-                                    "style": "cycling",
-                                    "plannedDuration": 2700
+                                    "type": "Yoga",
+                                    "name": "Morning Yoga Routine",
+                                    "style": null,
+                                    "plannedDuration": 0.25305555555555553,
+                                    "workoutId": "3dSiDxhXEJ"
                                 }
                             ],
                             "plan": {
-                                "id": "plan-001",
-                                "name": "All-Purpose Road",
-                                "level": "intermediate"
+                                "id": "xu8fKNWU5M",
+                                "name": "6 Week - Fitness Kickstarter ",
+                                "level": ""
                             }
                         }
                     ]
@@ -110,13 +113,19 @@ class PlansServiceTest {
 
         assertEquals(2, result.size)
 
-        assertEquals("The Shovel", result[0].prospects!![0].name)
-        assertEquals(3600.0, result[0].prospects!![0].plannedDuration)
-        assertEquals("planned", result[0].status)
-        assertEquals("2026-03-10T00:00:00.000Z", result[0].plannedDate)
+        // VTODO-relevant fields — cycling workout
+        assertEquals("Costa Blanca: Puerto de la Vall de Ebo (Recharger Ride)", result[0].prospects!![0].name)
+        assertEquals("Cycling", result[0].prospects!![0].type)
+        assertNull(result[0].prospects!![0].style)
+        assertEquals(0.6011111111111112, result[0].prospects!![0].plannedDuration)
+        assertEquals("rUrrfvb8ii", result[0].prospects!![0].workoutId)
+        assertEquals("Planned", result[0].status)
+        assertEquals("2026-03-17T00:00:00.000Z", result[0].plannedDate)
+        assertEquals("xu8fKNWU5M_7", result[0].agendaId)
 
-        assertEquals("Cadence Builds", result[1].prospects!![0].name)
-        assertEquals("All-Purpose Road", result[1].plan?.name)
+        // Yoga workout
+        assertEquals("Morning Yoga Routine", result[1].prospects!![0].name)
+        assertEquals("6 Week - Fitness Kickstarter ", result[1].plan?.name)
     }
 
     @Test
@@ -202,6 +211,17 @@ class PlansServiceTest {
         assertTrue(body.contains("Europe/Berlin"), "Should include timezone")
         // Verify queryParams with limit
         assertTrue(body.contains("1000"), "Should include limit in queryParams")
+        // Verify trimmed query requests VTODO-relevant fields only
+        assertTrue(body.contains("plannedDate"), "Should request plannedDate")
+        assertTrue(body.contains("agendaId"), "Should request agendaId")
+        assertTrue(body.contains("status"), "Should request status")
+        // Verify removed fields are not in the query
+        assertTrue(!body.contains("completionData"), "Should NOT request completionData")
+        assertTrue(!body.contains("linkData"), "Should NOT request linkData")
+        assertTrue(!body.contains("fourDPWorkoutGraph"), "Should NOT request fourDPWorkoutGraph")
+        assertTrue(!body.contains("intensity"), "Should NOT request intensity")
+        assertTrue(!body.contains("trainerSetting"), "Should NOT request trainerSetting")
+        assertTrue(!body.contains("metrics"), "Should NOT request metrics")
     }
 
     @Test
@@ -232,33 +252,28 @@ class PlansServiceTest {
     }
 
     @Test
-    fun `fetchPlans handles items with completion data`() = runBlocking {
+    fun `fetchPlans handles completed workout items`() = runBlocking {
         val responseJson = """
             {
                 "data": {
                     "userPlan": [
                         {
-                            "day": 5,
                             "plannedDate": "2026-03-12T00:00:00.000Z",
-                            "status": "completed",
-                            "type": "workout",
-                            "completionData": {
-                                "name": "Morning Ride",
-                                "date": "2026-03-12T07:00:00.000Z",
-                                "activityId": "act-123",
-                                "durationSeconds": 3700,
-                                "style": "cycling",
-                                "deleted": false
-                            },
+                            "agendaId": "xu8fKNWU5M_5",
+                            "status": "Completed",
+                            "type": "Cycling",
                             "prospects": [
                                 {
+                                    "type": "Cycling",
                                     "name": "The Shovel",
-                                    "plannedDuration": 3600
+                                    "style": null,
+                                    "plannedDuration": 0.6,
+                                    "workoutId": "wo-5"
                                 }
                             ],
                             "plan": {
-                                "id": "p1",
-                                "name": "Test Plan"
+                                "id": "xu8fKNWU5M",
+                                "name": "6 Week - Fitness Kickstarter "
                             }
                         }
                     ]
@@ -275,8 +290,72 @@ class PlansServiceTest {
         )
 
         assertEquals(1, result.size)
-        assertEquals("completed", result[0].status)
-        assertEquals("Morning Ride", result[0].completionData?.name)
-        assertEquals(3700, result[0].completionData?.durationSeconds)
+        assertEquals("Completed", result[0].status)
+        assertEquals("The Shovel", result[0].prospects!![0].name)
+        assertEquals("xu8fKNWU5M_5", result[0].agendaId)
+    }
+
+    @Test
+    fun `fetchPlans handles strength and yoga workout types`() = runBlocking {
+        val responseJson = """
+            {
+                "data": {
+                    "userPlan": [
+                        {
+                            "plannedDate": "2026-03-20T00:00:00.000Z",
+                            "agendaId": "xu8fKNWU5M_22",
+                            "status": "Planned",
+                            "type": "Strength",
+                            "prospects": [
+                                {
+                                    "type": "Strength",
+                                    "name": "Full Body 02",
+                                    "style": null,
+                                    "plannedDuration": 0.19555555555555557,
+                                    "workoutId": "oysCVNFmCC"
+                                }
+                            ],
+                            "plan": {
+                                "id": "xu8fKNWU5M",
+                                "name": "6 Week - Fitness Kickstarter "
+                            }
+                        },
+                        {
+                            "plannedDate": "2026-03-22T00:00:00.000Z",
+                            "agendaId": "xu8fKNWU5M_30",
+                            "status": "Planned",
+                            "type": "Yoga",
+                            "prospects": [
+                                {
+                                    "type": "Yoga",
+                                    "name": "Side Bends",
+                                    "style": null,
+                                    "plannedDuration": 0.24138888888888888,
+                                    "workoutId": "PvHKAMB04y"
+                                }
+                            ],
+                            "plan": {
+                                "id": "xu8fKNWU5M",
+                                "name": "6 Week - Fitness Kickstarter "
+                            }
+                        }
+                    ]
+                }
+            }
+        """.trimIndent()
+
+        val client = createMockClient(responseJson)
+        val service = PlansService(client, "test-token")
+
+        val result = service.fetchPlans(
+            LocalDate.of(2026, 3, 1),
+            LocalDate.of(2026, 3, 31)
+        )
+
+        assertEquals(2, result.size)
+        assertEquals("Strength", result[0].type)
+        assertEquals("Full Body 02", result[0].prospects!![0].name)
+        assertEquals("Yoga", result[1].type)
+        assertEquals("Side Bends", result[1].prospects!![0].name)
     }
 }

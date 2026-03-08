@@ -72,21 +72,21 @@ class WahooCli : CliktCommand(
                 throw ProgramResult(1)
             }
 
-            echo("\nTraining Plans (${dateRange.start} to ${dateRange.end}):\n")
-
             if (items.isEmpty()) {
                 echo("No plans found for this date range.")
                 return@runBlocking
             }
 
+            echo("\nWorkouts for period (${dateRange.start} to ${dateRange.end}):\n")
             // Group items by plan name for a nicer display
             val byPlan = items.groupBy { it.plan?.name ?: "Unassigned" }
 
             var totalItems = 0
             for ((planName, planItems) in byPlan) {
                 val planInfo = planItems.firstNotNullOfOrNull { it.plan }
-                val planLevel = planInfo?.level?.let { " [$it]" } ?: ""
-                echo("$planName$planLevel")
+                planInfo?.level
+                    ?.let { echo("$planName [$it]")  }
+                    ?:  echo(planName)
 
                 for (item in planItems.sortedBy { it.plannedDate }) {
                     totalItems++
@@ -94,14 +94,15 @@ class WahooCli : CliktCommand(
                     val date = formatPlannedDate(item.plannedDate)
                     val duration = formatDuration(item.prospects?.firstOrNull()?.plannedDuration)
                     val status = item.status ?: "planned"
-                    val style = item.prospects?.firstOrNull()?.style?.let { " ($it)" } ?: ""
+                    val prospect = item.prospects?.firstOrNull()
+                    val style = (prospect?.style ?: prospect?.type ?: item.type)?.let { " ($it)" } ?: ""
 
-                    echo("  $date  $workoutName$style  ${duration}  [$status]")
+                    echo("  $date  $workoutName$style  $duration  [$status]")
                 }
                 echo("")
             }
 
-            echo("${totalItems} workout(s) across ${byPlan.size} plan(s)\n")
+            echo("$totalItems workout(s) across ${byPlan.size} plan(s)\n")
         }
     }
 

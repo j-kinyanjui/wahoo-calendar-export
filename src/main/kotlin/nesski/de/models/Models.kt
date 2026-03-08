@@ -49,194 +49,60 @@ data class GetUserPlansRangeResponse(
 /**
  * A single item from the user's training agenda.
  * Each item represents one planned workout slot on a specific day.
+ *
  */
 @Serializable
 data class UserPlanItem(
-    /** Day number within the plan (1-based). */
-    val day: Int? = null,
-
-    /** ISO-8601 date string (e.g. "2026-03-10T00:00:00.000Z"). */
+    /** ISO-8601 date string (e.g. "2026-03-10T00:00:00.000Z"). Maps to VTODO DUE. */
     val plannedDate: String? = null,
 
-    /** Ordering rank when multiple items share the same day. */
-    val rank: Int? = null,
-
-    /** Internal agenda row ID. */
+    /** Internal agenda row ID. Maps to VTODO UID. */
     val agendaId: String? = null,
 
-    /** Status of this agenda entry (e.g. "planned", "completed"). */
+    /** Status of this agenda entry (e.g. "planned", "completed"). Maps to VTODO STATUS. */
     val status: String? = null,
 
-    /** High-level type tag (e.g. "workout", "rest"). */
+    /** High-level type tag (e.g. "workout", "rest"). Used to filter out rest days. */
     val type: String? = null,
-
-    /** The timezone that was applied to date calculations. */
-    val appliedTimeZone: String? = null,
-
-    /** Wahoo device workout ID, if synced. */
-    val wahooWorkoutId: String? = null,
-
-    /** Data about a linked completed activity, if any. */
-    val completionData: CompletionData? = null,
 
     /** Candidate workouts for this slot (usually exactly one). */
     val prospects: List<Prospect>? = null,
 
     /** The plan this item belongs to. */
-    val plan: PlanInfo? = null,
-
-    /** Data about a manually linked activity. */
-    val linkData: LinkData? = null
+    val plan: PlanInfo? = null
 )
-
-// ── Prospect (the actual workout details) ───────────────────────────
 
 /**
  * A prospect represents a workout that can fill a plan slot.
+ *
+ * Trimmed to fields needed for VTODO SUMMARY, emoji mapping, and duration display.
  */
 @Serializable
 data class Prospect(
-    /** Workout type (e.g. "cycling", "strength"). */
+    /** Workout type (e.g. "Cycling", "Yoga", "Strength"). Primary field for sport emoji mapping. */
     val type: String? = null,
 
-    /** Display name of the workout. */
+    /** Display name of the workout. Maps to VTODO SUMMARY. */
     val name: String? = null,
 
-    /** How well this workout matches the athlete's profile. */
-    val compatibility: String? = null,
-
-    /** Short description of the workout. */
-    val description: String? = null,
-
-    /** Activity style (e.g. "cycling", "running"). */
+    /** Activity style — often null in real API responses. Fallback for emoji mapping. */
     val style: String? = null,
 
-    /** Power/intensity targets. */
-    val intensity: Intensity? = null,
-
-    /** Indoor trainer configuration. */
-    val trainerSetting: TrainerSetting? = null,
-
-    /** Planned duration in hours (fractional). */
+    /** Planned duration in fractional hours (e.g. 0.601 = ~36 min). */
     val plannedDuration: Double? = null,
 
-    /** How the duration is measured (e.g. "time", "distance"). */
-    val durationType: String? = null,
-
-    /** Performance metrics / ratings. */
-    val metrics: Metrics? = null,
-
-    /** SYSTM content library ID. */
-    val contentId: String? = null,
-
-    /** Workout ID within the plan. */
-    val workoutId: String? = null,
-
-    /** Coach notes for this workout. */
-    val notes: String? = null,
-
-    /** 4DP workout graph data points. */
-    val fourDPWorkoutGraph: List<WorkoutGraphPoint>? = null
+    /** Workout ID within the plan. Fallback for VTODO UID. */
+    val workoutId: String? = null
 )
-
-// ── Intensity ───────────────────────────────────────────────────────
-
-@Serializable
-data class Intensity(
-    val master: Double? = null,
-    val nm: Double? = null,
-    val ac: Double? = null,
-    val map: Double? = null,
-    val ftp: Double? = null
-)
-
-// ── TrainerSetting ──────────────────────────────────────────────────
-
-@Serializable
-data class TrainerSetting(
-    val mode: String? = null,
-    val level: Int? = null
-)
-
-// ── Metrics ─────────────────────────────────────────────────────────
-
-@Serializable
-data class Metrics(
-    val ratings: Ratings? = null
-)
-
-@Serializable
-data class Ratings(
-    val nm: Double? = null,
-    val ac: Double? = null,
-    val map: Double? = null,
-    val ftp: Double? = null
-)
-
-// ── WorkoutGraphPoint ───────────────────────────────────────────────
-
-@Serializable
-data class WorkoutGraphPoint(
-    val time: Double? = null,
-    val value: Double? = null,
-    val type: String? = null
-)
-
-// ── CompletionData ──────────────────────────────────────────────────
-
-/**
- * Data about the activity that completed this plan slot.
- */
-@Serializable
-data class CompletionData(
-    val name: String? = null,
-    val date: String? = null,
-    val activityId: String? = null,
-    val durationSeconds: Int? = null,
-    val style: String? = null,
-    val deleted: Boolean? = null
-)
-
-// ── LinkData ────────────────────────────────────────────────────────
-
-/**
- * Data about a manually linked activity.
- */
-@Serializable
-data class LinkData(
-    val name: String? = null,
-    val date: String? = null,
-    val activityId: String? = null,
-    val durationSeconds: Int? = null,
-    val style: String? = null,
-    val deleted: Boolean? = null
-)
-
-// ── PlanInfo (metadata about the plan an item belongs to) ───────────
 
 /**
  * Metadata about the training plan.
+ *
+ * Trimmed to fields needed for CLI display grouping and email body.
  */
 @Serializable
 data class PlanInfo(
     val id: String? = null,
     val name: String? = null,
-    val color: String? = null,
-    val deleted: Boolean? = null,
-    val durationDays: Int? = null,
-    val startDate: String? = null,
-    val endDate: String? = null,
-    val addons: String? = null,
-    val level: String? = null,
-    val subcategory: String? = null,
-    val weakness: String? = null,
-    val description: String? = null,
-    val category: String? = null,
-    val grouping: String? = null,
-    val option: String? = null,
-    val uniqueToPlan: Boolean? = null,
-    val type: String? = null,
-    val progression: String? = null,
-    val planDescription: String? = null,
-    val volume: String? = null
+    val level: String? = null
 )

@@ -42,6 +42,15 @@ class PlansService(
          * The query field is `userPlan` (NOT `userPlansRange`).
          * Variable types use the custom scalars `Date`, `QueryParams`, and `TimeZone`.
          */
+        /**
+         * Trimmed to only the fields needed for VTODO/VCALENDAR generation (Phase 3):
+         *  - plannedDate  → VTODO DUE
+         *  - agendaId     → VTODO UID
+         *  - status       → VTODO STATUS (planned/completed)
+         *  - type         → filter out "rest" days
+         *  - prospect: type, name, style, plannedDuration, workoutId → SUMMARY, emoji, duration, UID fallback
+         *  - plan: id, name, level → grouping / email body
+         */
         private val GET_USER_PLANS_QUERY = $$"""
             query GetUserPlansRange($startDate: Date, $endDate: Date, $queryParams: QueryParams, $timezone: TimeZone) {
               userPlan(
@@ -56,95 +65,22 @@ class PlansService(
             }
 
             fragment userPlanItemFragment on UserPlanItem {
-              day
               plannedDate
-              rank
               agendaId
               status
               type
-              appliedTimeZone
-              wahooWorkoutId
-              completionData {
-                name
-                date
-                activityId
-                durationSeconds
-                style
-                deleted
-                __typename
-              }
               prospects {
                 type
                 name
-                compatibility
-                description
                 style
-                intensity {
-                  master
-                  nm
-                  ac
-                  map
-                  ftp
-                  __typename
-                }
-                trainerSetting {
-                  mode
-                  level
-                  __typename
-                }
                 plannedDuration
-                durationType
-                metrics {
-                  ratings {
-                    nm
-                    ac
-                    map
-                    ftp
-                    __typename
-                  }
-                  __typename
-                }
-                contentId
                 workoutId
-                notes
-                fourDPWorkoutGraph {
-                  time
-                  value
-                  type
-                  __typename
-                }
                 __typename
               }
               plan {
                 id
                 name
-                color
-                deleted
-                durationDays
-                startDate
-                endDate
-                addons
                 level
-                subcategory
-                weakness
-                description
-                category
-                grouping
-                option
-                uniqueToPlan
-                type
-                progression
-                planDescription
-                volume
-                __typename
-              }
-              linkData {
-                name
-                date
-                activityId
-                durationSeconds
-                style
-                deleted
                 __typename
               }
               __typename
@@ -189,8 +125,6 @@ class PlansService(
                 header("Authorization", "Bearer $token")
                 setBody(request)
             }.body()
-
-        log.info("Response body: {}", response.toString())
 
         // Check for GraphQL errors first
         if (!response.errors.isNullOrEmpty()) {
