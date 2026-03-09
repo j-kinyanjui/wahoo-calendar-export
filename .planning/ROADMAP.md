@@ -5,6 +5,7 @@
 - [x] **Phase 1: Authentication & GraphQL Setup** - JWT token management and GraphQL client (completed 2026-03-02)
 - [x] **Phase 2: CLI Migration** - Migrate from Ktor server to Clikt CLI, fetch and display plans (completed 2026-03-08)
 - [x] **Phase 3: ICS Export & Email** - Generate .ics VTODO entries and email them (completed 2026-03-09)
+- [ ] **Phase 4: Calendar Export v2** - Migrate from VTODO reminders to VEVENT calendar events using ical4j
 
 ## Overview
 
@@ -91,6 +92,30 @@
 
 ---
 
+### Phase 4: Calendar Export v2
+
+**Goal:** Migrate .ics export from VTODO (reminders) to VEVENT (calendar events) using ical4j for universal calendar compatibility
+
+**Depends on:** Phase 3
+
+**Requirements:** EXPORT-02
+
+**Success Criteria** (what must be TRUE):
+
+1. IcsBuilder generates VEVENT entries (not VTODO)
+2. Events use all-day DATE format (DTSTART;VALUE=DATE / DTEND;VALUE=DATE)
+3. Duration communicated in SUMMARY text (e.g. "Workout Name (30 min)")
+4. Events marked TRANSP:TRANSPARENT (don't block whole day)
+5. ical4j used for RFC 5545 compliant output
+6. .ics imports cleanly into Apple Calendar, Google Calendar, Outlook
+7. No VTODO, DUE, NEEDS-ACTION in generated output
+8. All existing tests updated and passing
+
+**Plans:** 0/1 plans complete
+- [ ] 04-01-PLAN.md — Migrate VTODO to VEVENT using ical4j
+
+---
+
 ## Progress
 
 | Phase                     | Plans Complete | Status      | Completed |
@@ -98,6 +123,7 @@
 | 1 - Auth & GraphQL Setup  | 3/3            | Complete    | 2026-03-02 |
 | 2 - CLI Migration               | 3/3            | Complete    | 2026-03-08 |
 | 3 - ICS Export & Email          | 2/2            | Complete    | 2026-03-09 |
+| 4 - Calendar Export v2          | 0/1            | In Progress |           |
 
 ---
 
