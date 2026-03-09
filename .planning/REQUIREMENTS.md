@@ -38,6 +38,10 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CLI-01**: Application runs as a Clikt CLI with `--range`, `--from`/`--to`, `--config` options (no web server)
 - [x] **CLI-02**: CLI loads credentials and settings from TOML config file (`~/.config/wahoo-cli/config`) with env var overrides (`SYSTM_USER`, `SYSTM_PASSWORD`)
 
+### ICS Export
+
+- [x] **EXPORT-01**: Application generates RFC 5545-compliant .ics file with VTODO entries from fetched workouts (Apple Reminders compatible, sport emoji in SUMMARY, date-only DUE)
+
 ## v2 Requirements
 
 Deferred to future release. Tracked but not in current roadmap.
@@ -61,7 +65,6 @@ Explicitly excluded. Documented to prevent scope creep.
 | Feature                | Reason                                                      |
 | ---------------------- | ----------------------------------------------------------- |
 | Real-time sync         | On-demand/daily sync sufficient per requirements            |
-| Calendar export        | Explicitly deferred to future phase                         |
 | Wahoo REST API removal | Keep existing functionality, add Systm as additional source |
 
 ## Traceability
@@ -86,14 +89,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DISP-03     | Phase 2 | Complete |
 | CLI-01      | Phase 2 | Complete |
 | CLI-02      | Phase 2 | Complete |
+| EXPORT-01   | Phase 3 | Complete |
 
 **Coverage:**
 
-- v1 requirements: 16 total
-- Mapped to phases: 16
+- v1 requirements: 17 total
+- Mapped to phases: 17
 - Unmapped: 0 ✓
 
 ---
 
 _Requirements defined: 2026-03-01_
-_Last updated: 2026-03-08 after plan 02-03 completion_
+_Last updated: 2026-03-09 after plan 03-01 completion_

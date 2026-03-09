@@ -4,7 +4,7 @@
 
 **Core Value:** Allow users to view their Wahoo/Systm training plans in their personal calendar for better workout scheduling and tracking.
 
-**Current Focus:** Phase 2 - CLI Migration & Plan Export
+**Current Focus:** Phase 3 - ICS Export & Email
 
 ---
 
@@ -13,8 +13,9 @@
 | Field | Value |
 |-------|-------|
 | **Phase** | 3 - ICS Export & Email |
-| **Status** | Context gathered, ready for planning |
-| **Progress** | Context complete |
+| **Current Plan** | 2 of 2 |
+| **Status** | In progress |
+| **Progress** | Plan 1 complete, Plan 2 remaining |
 
 ---
 
@@ -24,7 +25,7 @@
 |--------|-------|-------|
 | v1 Requirements | 16 | All mapped to phases |
 | Phases | 2 | Quick depth approach |
-| Current Phase Progress | 4/4 | Phase complete |
+| Current Phase Progress | 1/2 | Plan 1 complete |
 | Blockers | 0 | None identified |
 
 | Phase-Plan | Duration | Tasks | Files |
@@ -34,6 +35,7 @@
 | Phase 02-cli-migration-plan-export P02 | 2 min | 2 tasks | 5 files |
 | Phase 02-cli-migration-plan-export P03 | 1 min | 1 tasks | 2 files |
 | Phase 02-cli-migration-plan-export P04 | 1 min | 1 tasks | 1 files |
+| Phase 03-ics-export-email P01 | 4 min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -68,6 +70,10 @@
 | Save to current directory by default | CWD is default, configurable via config file | Decided for Phase 3 |
 | VTODO with date-only due dates | DUE-DATE format, no time component for Apple Reminders | Decided for Phase 3 |
 | Error summary + detailed log | Console summary of successes/failures; separate error log file | Decided for Phase 3 |
+| Object singletons for IcsBuilder/SportEmoji | Stateless builders need no instantiation | Implemented in 03-01 |
+| IcsBuildResult with export statistics | Track exported/skipped counts + reasons for console reporting | Implemented in 03-01 |
+| UID priority: agendaId > workoutId > generated | Best available unique ID for each VTODO entry | Implemented in 03-01 |
+| 10 sport-to-emoji mappings | Cover all known Wahoo SYSTM workout types | Implemented in 03-01 |
 
 ### Technical Notes
 
@@ -104,12 +110,12 @@ No pending todos.
 - Phase 2 Plan 02 completed: CLI wired end-to-end — auth, fetch, console display, server cleanup
 - Phase 2 Plan 03 completed: Gap closure — added CLI-01/CLI-02 requirement definitions and traceability
 - Phase 2 Plan 04 completed: Gap closure — changed default --config path to ~/.config/wahoo-cli/config
+- Phase 3 Plan 01 completed: IcsBuilder + SportEmoji — RFC 5545 VTODO builder with sport emoji mapping
 
 ### What's Next
 
-- Phase 2 complete. All 4 plans executed (including gap closure).
-- Phase 3 context gathered: ICS export (file-based, no email in this phase)
-- Next: Plan Phase 3 with research, then execute
+- Phase 3 Plan 01 complete: IcsBuilder + SportEmoji with 45 tests
+- Next: Phase 3 Plan 02 — CLI integration (wire IcsBuilder into WahooCli, file I/O)
 
 ### User Preferences
 
@@ -121,4 +127,4 @@ No pending todos.
 
 ---
 
-*State updated: 2026-03-08 (Phase 3 context gathered)*
+*State updated: 2026-03-09 (Phase 3 Plan 01 complete)*
