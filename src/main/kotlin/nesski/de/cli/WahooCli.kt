@@ -14,6 +14,7 @@ import kotlinx.coroutines.runBlocking
 import nesski.de.config.AppConfig
 import nesski.de.email.EmailService
 import nesski.de.ics.IcsBuilder
+import nesski.de.ics.IcsFileWriter
 import nesski.de.plugins.TokenStorage
 import nesski.de.plugins.wahooHttpClient
 import nesski.de.services.web.GraphQLException
@@ -153,16 +154,13 @@ class WahooCli : CliktCommand(
     /**
      * Save .ics content to disk at the configured path.
      * Auto-creates directories if they don't exist.
+     *
+     * @return The absolute path of the saved file
      */
-    internal fun saveIcsToDisk(savePath: String, filename: String, icsContent: String) {
-        val resolvedPath = savePath.replaceFirst("~", System.getProperty("user.home"))
-        val dir = File(resolvedPath)
-        if (!dir.exists()) {
-            dir.mkdirs()
-        }
-        val file = File(dir, filename)
-        file.writeText(icsContent, Charsets.UTF_8)
-        echo("ICS file saved to: ${file.absolutePath}")
+    internal fun saveIcsToDisk(savePath: String, filename: String, icsContent: String): String {
+        val savedPath = IcsFileWriter.write(savePath, filename, icsContent)
+        echo("ICS file saved to: $savedPath")
+        return savedPath
     }
 
     /** Extract just the date portion from an ISO-8601 datetime string. */
