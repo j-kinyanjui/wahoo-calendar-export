@@ -4,7 +4,7 @@
 
 - [x] **Phase 1: Authentication & GraphQL Setup** - JWT token management and GraphQL client (completed 2026-03-02)
 - [x] **Phase 2: CLI Migration** - Migrate from Ktor server to Clikt CLI, fetch and display plans (completed 2026-03-08)
-- [ ] **Phase 3: ICS Export & Email** - Generate .ics VTODO entries and email them
+- [x] **Phase 3: ICS Export & Email** - Generate .ics VTODO entries and email them (completed 2026-03-09)
 
 ## Overview
 
@@ -85,7 +85,9 @@
 5. .ics save location configurable in config file
 6. Clear error messages for email delivery issues
 
-**Plans:** TBD
+**Plans:** 2/2 plans complete
+- [x] 03-01-PLAN.md — ICS builder: RFC 5545 VTODO builder with sport emoji mapping
+- [x] 03-02-PLAN.md — SMTP email with .ics attachment and disk fallback
 
 ---
 
@@ -95,7 +97,7 @@
 | ------------------------- | -------------- | ----------- | --------- |
 | 1 - Auth & GraphQL Setup  | 3/3            | Complete    | 2026-03-02 |
 | 2 - CLI Migration               | 3/3            | Complete    | 2026-03-08 |
-| 3 - ICS Export & Email          | 0/?            | Not started | -         |
+| 3 - ICS Export & Email          | 2/2            | Complete    | 2026-03-09 |
 
 ---
 

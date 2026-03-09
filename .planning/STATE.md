@@ -14,8 +14,8 @@
 |-------|-------|
 | **Phase** | 3 - ICS Export & Email |
 | **Current Plan** | 2 of 2 |
-| **Status** | In progress |
-| **Progress** | Plan 1 complete, Plan 2 remaining |
+| **Status** | Phase complete |
+| **Progress** | All plans complete |
 
 ---
 
@@ -36,6 +36,7 @@
 | Phase 02-cli-migration-plan-export P03 | 1 min | 1 tasks | 2 files |
 | Phase 02-cli-migration-plan-export P04 | 1 min | 1 tasks | 1 files |
 | Phase 03-ics-export-email P01 | 4 min | 2 tasks | 5 files |
+| Phase 03-ics-export-email P02 | 5 min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,11 @@
 | IcsBuildResult with export statistics | Track exported/skipped counts + reasons for console reporting | Implemented in 03-01 |
 | UID priority: agendaId > workoutId > generated | Best available unique ID for each VTODO entry | Implemented in 03-01 |
 | 10 sport-to-emoji mappings | Cover all known Wahoo SYSTM workout types | Implemented in 03-01 |
+| Simple Java Mail for SMTP | Lightweight, no Jakarta EE server needed | Implemented in 03-02 |
+| Env var overrides for SMTP creds | SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM, SMTP_TO | Implemented in 03-02 |
+| Email disabled by default | Opt-in via config.toml email.enabled=true | Implemented in 03-02 |
+| Disk fallback on email failure | Save .ics to configured path when SMTP fails | Implemented in 03-02 |
+| IcsFileWriter extracted singleton | Testable file I/O without Clikt context | Implemented in 03-02 |
 
 ### Technical Notes
 
@@ -111,11 +117,13 @@ No pending todos.
 - Phase 2 Plan 03 completed: Gap closure — added CLI-01/CLI-02 requirement definitions and traceability
 - Phase 2 Plan 04 completed: Gap closure — changed default --config path to ~/.config/wahoo-cli/config
 - Phase 3 Plan 01 completed: IcsBuilder + SportEmoji — RFC 5545 VTODO builder with sport emoji mapping
+- Phase 3 Plan 02 completed: SMTP email with .ics attachment, disk fallback, IcsFileWriter
 
 ### What's Next
 
-- Phase 3 Plan 01 complete: IcsBuilder + SportEmoji with 45 tests
-- Next: Phase 3 Plan 02 — CLI integration (wire IcsBuilder into WahooCli, file I/O)
+- Phase 3 complete: all plans executed
+- All 80 tests passing across project
+- Ready for milestone completion
 
 ### User Preferences
 
@@ -127,4 +135,4 @@ No pending todos.
 
 ---
 
-*State updated: 2026-03-09 (Phase 3 Plan 01 complete)*
+*State updated: 2026-03-09 (Phase 3 Plan 02 complete — phase complete)*
