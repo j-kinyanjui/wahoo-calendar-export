@@ -6,10 +6,14 @@ import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
+import java.io.File
+import java.time.LocalDate
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 import kotlinx.coroutines.runBlocking
 import nesski.de.config.AppConfig
+import nesski.de.email.EmailService
+import nesski.de.ics.IcsBuilder
 import nesski.de.plugins.TokenStorage
 import nesski.de.plugins.wahooHttpClient
 import nesski.de.services.web.GraphQLException
@@ -21,7 +25,7 @@ class WahooCli : CliktCommand(
     name = "wahoo-cli"
 ) {
     override fun help(context: Context): String =
-        "Fetch Wahoo SYSTM training plans and display them"
+        "Fetch Wahoo SYSTM training plans and export as .ics"
 
     private val range by option("--range", "-r", help = "Time range shorthand: now, 1w, 2w, 1m, 2m")
     private val from by option("--from", help = "Start date (YYYY-MM-DD)")
@@ -104,7 +108,61 @@ class WahooCli : CliktCommand(
             }
 
             echo("$totalItems workout(s) across ${byPlan.size} plan(s)\n")
+
+            // Build ICS content
+            val result = IcsBuilder.build(items)
+            echo("ICS export: ${result.exportedCount} workouts exported, ${result.skippedCount} skipped")
+
+            if (result.exportedCount == 0) {
+                echo("No workouts to export.")
+                return@runBlocking
+            }
+
+            // Generate filename: workouts_{range}_{date}.ics
+            val rangeLabel = range ?: "${dateRange.start}_${dateRange.end}"
+            val filename = "workouts_${rangeLabel}_${LocalDate.now()}.ics"
+
+            // Try email if configured
+            if (config.email.enabled) {
+                val emailResult = EmailService.send(
+                    config = config.email,
+                    icsContent = result.icsContent,
+                    filename = filename
+                )
+
+                if (emailResult.success) {
+                    echo("Email sent successfully with $filename attached")
+                } else {
+                    echo("Email failed: ${emailResult.errorMessage}")
+                    // Fallback: save to disk
+                    saveIcsToDisk(config.output.icsSavePath, filename, result.icsContent)
+                }
+            } else {
+                // No email configured — save to disk directly
+                saveIcsToDisk(config.output.icsSavePath, filename, result.icsContent)
+            }
+
+            // Report skipped items
+            if (result.skippedReasons.isNotEmpty()) {
+                echo("\nSkipped items:")
+                result.skippedReasons.forEach { echo("  - $it") }
+            }
         }
+    }
+
+    /**
+     * Save .ics content to disk at the configured path.
+     * Auto-creates directories if they don't exist.
+     */
+    internal fun saveIcsToDisk(savePath: String, filename: String, icsContent: String) {
+        val resolvedPath = savePath.replaceFirst("~", System.getProperty("user.home"))
+        val dir = File(resolvedPath)
+        if (!dir.exists()) {
+            dir.mkdirs()
+        }
+        val file = File(dir, filename)
+        file.writeText(icsContent, Charsets.UTF_8)
+        echo("ICS file saved to: ${file.absolutePath}")
     }
 
     /** Extract just the date portion from an ISO-8601 datetime string. */

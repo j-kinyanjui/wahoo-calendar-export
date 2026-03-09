@@ -4,3 +4,15 @@ password = "your-secret-password"
 [output]
 # Where exported .ics files will be written (default: ".")
 ics_save_path = "~/Downloads"
+[email]
+# Set enabled = true and configure SMTP to email .ics files
+# Env var overrides: SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM, SMTP_TO
+enabled = false
+smtp_host = ""
+smtp_port = 587
+smtp_username = ""
+smtp_password = ""
+from_address = ""
+to_address = ""
+subject = "Wahoo SYSTM Workout Plan"
+use_tls = true

@@ -11,7 +11,8 @@ private val logger = LoggerFactory.getLogger("AppConfig")
 @Serializable
 data class AppConfig(
     val credentials: CredentialsConfig = CredentialsConfig(),
-    val output: OutputConfig = OutputConfig()
+    val output: OutputConfig = OutputConfig(),
+    val email: EmailConfig = EmailConfig()
 ) {
     companion object {
         /**
@@ -58,4 +59,24 @@ data class CredentialsConfig(
 data class OutputConfig(
     @SerialName("ics_save_path")
     val icsSavePath: String = "."
+)
+
+@Serializable
+data class EmailConfig(
+    val enabled: Boolean = false,
+    @SerialName("smtp_host")
+    val smtpHost: String = "",
+    @SerialName("smtp_port")
+    val smtpPort: Int = 587,
+    @SerialName("smtp_username")
+    val smtpUsername: String = "",
+    @SerialName("smtp_password")
+    val smtpPassword: String = "",
+    @SerialName("from_address")
+    val fromAddress: String = "",
+    @SerialName("to_address")
+    val toAddress: String = "",
+    val subject: String = "Wahoo SYSTM Workout Plan",
+    @SerialName("use_tls")
+    val useTls: Boolean = true
 )

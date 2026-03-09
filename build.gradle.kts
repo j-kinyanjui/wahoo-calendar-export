@@ -33,6 +33,9 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 
+    // Email (Simple Java Mail for SMTP with .ics attachment)
+    implementation("org.simplejavamail:simple-java-mail:8.12.4")
+
     // Logging
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
