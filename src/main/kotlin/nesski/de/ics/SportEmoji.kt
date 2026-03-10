@@ -1,7 +1,7 @@
 package nesski.de.ics
 
 /**
- * Maps Wahoo SYSTM workout sport types to emoji for VTODO SUMMARY display.
+ * Maps Wahoo SYSTM workout sport types to emoji for VEVENT SUMMARY display.
  *
  * The mapping uses the `prospect.type` field (or fallback `item.type`)
  * which contains values like "Cycling", "Yoga", "Strength", "Running", etc.

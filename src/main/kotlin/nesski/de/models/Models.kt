@@ -53,13 +53,13 @@ data class GetUserPlansRangeResponse(
  */
 @Serializable
 data class UserPlanItem(
-    /** ISO-8601 date string (e.g. "2026-03-10T00:00:00.000Z"). Maps to VTODO DUE. */
+    /** ISO-8601 date string (e.g. "2026-03-10T00:00:00.000Z"). Maps to VEVENT DTSTART. */
     val plannedDate: String? = null,
 
-    /** Internal agenda row ID. Maps to VTODO UID. */
+    /** Internal agenda row ID. Maps to VEVENT UID. */
     val agendaId: String? = null,
 
-    /** Status of this agenda entry (e.g. "planned", "completed"). Maps to VTODO STATUS. */
+    /** Status of this agenda entry (e.g. "planned", "completed"). */
     val status: String? = null,
 
     /** High-level type tag (e.g. "workout", "rest"). Used to filter out rest days. */
@@ -75,14 +75,14 @@ data class UserPlanItem(
 /**
  * A prospect represents a workout that can fill a plan slot.
  *
- * Trimmed to fields needed for VTODO SUMMARY, emoji mapping, and duration display.
+ * Trimmed to fields needed for VEVENT SUMMARY, emoji mapping, and duration display.
  */
 @Serializable
 data class Prospect(
     /** Workout type (e.g. "Cycling", "Yoga", "Strength"). Primary field for sport emoji mapping. */
     val type: String? = null,
 
-    /** Display name of the workout. Maps to VTODO SUMMARY. */
+    /** Display name of the workout. Maps to VEVENT SUMMARY. */
     val name: String? = null,
 
     /** Activity style — often null in real API responses. Fallback for emoji mapping. */
@@ -91,7 +91,7 @@ data class Prospect(
     /** Planned duration in fractional hours (e.g. 0.601 = ~36 min). */
     val plannedDuration: Double? = null,
 
-    /** Workout ID within the plan. Fallback for VTODO UID. */
+    /** Workout ID within the plan. Fallback for VEVENT UID. */
     val workoutId: String? = null
 )
 

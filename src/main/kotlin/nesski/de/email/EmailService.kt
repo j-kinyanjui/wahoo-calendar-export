@@ -41,7 +41,7 @@ object EmailService {
         config: EmailConfig,
         icsContent: String,
         filename: String,
-        bodyText: String = "Your Wahoo SYSTM workout plan is attached as an .ics file.\n\nImport it into Apple Reminders or any calendar application."
+        bodyText: String = "Your Wahoo SYSTM workout plan is attached as an .ics file.\n\nImport it into your calendar app (Apple Calendar, Google Calendar, Outlook, etc.).\nEach workout appears as an all-day event — drag it to the time that works for you."
     ): EmailResult {
         if (!config.enabled) {
             log.info("Email sending is disabled in config")

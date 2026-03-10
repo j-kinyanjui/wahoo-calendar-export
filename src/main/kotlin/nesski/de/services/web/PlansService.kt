@@ -43,10 +43,10 @@ class PlansService(
          * Variable types use the custom scalars `Date`, `QueryParams`, and `TimeZone`.
          */
         /**
-         * Trimmed to only the fields needed for VTODO/VCALENDAR generation (Phase 3):
-         *  - plannedDate  → VTODO DUE
-         *  - agendaId     → VTODO UID
-         *  - status       → VTODO STATUS (planned/completed)
+         * Trimmed to only the fields needed for VEVENT/VCALENDAR generation:
+         *  - plannedDate  → VEVENT DTSTART/DTEND
+         *  - agendaId     → VEVENT UID
+         *  - status       → filtering
          *  - type         → filter out "rest" days
          *  - prospect: type, name, style, plannedDuration, workoutId → SUMMARY, emoji, duration, UID fallback
          *  - plan: id, name, level → grouping / email body
