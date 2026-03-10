@@ -9,23 +9,25 @@ import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 
 /**
- * Tests for IcsBuilder — converting UserPlanItems to RFC 5545 VCALENDAR/VTODO.
+ * Tests for IcsBuilder — converting UserPlanItems to RFC 5545 VCALENDAR/VEVENT.
  *
  * Tests verify:
- * - Valid VCALENDAR envelope wrapping
- * - VTODO structure with correct fields (UID, DUE, SUMMARY, STATUS, DESCRIPTION)
- * - Date-only DUE format (Apple Reminders compatible)
+ * - Valid VCALENDAR envelope wrapping (VERSION, PRODID, CALSCALE)
+ * - VEVENT structure with correct fields (UID, DTSTART, DTEND, SUMMARY, STATUS, DESCRIPTION)
+ * - DATE-only DTSTART/DTEND format (all-day placeholder events)
+ * - TRANSP:TRANSPARENT (doesn't block the whole day)
+ * - STATUS:CONFIRMED for all events
  * - Skipping of rest days, missing dates, missing workout details
- * - Status mapping (Completed → COMPLETED, else → NEEDS-ACTION)
- * - UID resolution priority (agendaId > workoutId > generated)
- * - ICS text escaping
+ * - UID resolution priority (agendaId > workoutId > generated) with @wahoo suffix
+ * - Duration hint in SUMMARY text
+ * - ical4j-generated output (RFC 5545 compliant)
  */
 class IcsBuilderTest {
 
     // ── VCALENDAR envelope ──────────────────────────────────────────
 
     @Test
-    fun `build produces valid VCALENDAR wrapper`() {
+    fun `build produces valid VCALENDAR wrapper with CALSCALE`() {
         val items = listOf(
             createCyclingItem("2026-03-10T00:00:00.000Z", "agenda-1")
         )
@@ -35,42 +37,46 @@ class IcsBuilderTest {
         assertTrue(result.icsContent.startsWith("BEGIN:VCALENDAR"))
         assertTrue(result.icsContent.contains("VERSION:2.0"))
         assertTrue(result.icsContent.contains("PRODID:-//WahooCLI//SYSTM Plan Export//EN"))
-        assertTrue(result.icsContent.endsWith("END:VCALENDAR"))
+        assertTrue(result.icsContent.contains("CALSCALE:GREGORIAN"))
+        assertTrue(result.icsContent.trimEnd().endsWith("END:VCALENDAR"))
     }
 
     @Test
-    fun `build with empty list produces calendar with no VTODOs`() {
+    fun `build with empty list produces calendar with no VEVENTs`() {
         val result = IcsBuilder.build(emptyList())
 
         assertTrue(result.icsContent.contains("BEGIN:VCALENDAR"))
         assertTrue(result.icsContent.contains("END:VCALENDAR"))
-        assertFalse(result.icsContent.contains("BEGIN:VTODO"))
+        assertFalse(result.icsContent.contains("BEGIN:VEVENT"))
+        assertFalse(result.icsContent.contains("BEGIN:VTODO"), "Should not contain VTODO")
         assertEquals(0, result.exportedCount)
         assertEquals(0, result.skippedCount)
     }
 
-    // ── VTODO structure ─────────────────────────────────────────────
+    // ── VEVENT structure ────────────────────────────────────────────
 
     @Test
-    fun `build produces VTODO with correct DUE DATE format`() {
+    fun `build produces VEVENT with DATE-only DTSTART and DTEND`() {
         val items = listOf(
             createCyclingItem("2026-03-10T00:00:00.000Z", "agenda-1")
         )
 
         val result = IcsBuilder.build(items)
 
-        assertTrue(result.icsContent.contains("DUE;VALUE=DATE:20260310"))
+        assertTrue(result.icsContent.contains("DTSTART;VALUE=DATE:20260310"))
+        assertTrue(result.icsContent.contains("DTEND;VALUE=DATE:20260311"))
+        assertFalse(result.icsContent.contains("DUE"), "Should not contain DUE property")
     }
 
     @Test
-    fun `build produces VTODO with UID from agendaId`() {
+    fun `build produces VEVENT with UID from agendaId plus wahoo suffix`() {
         val items = listOf(
             createCyclingItem("2026-03-10T00:00:00.000Z", "xu8fKNWU5M_7")
         )
 
         val result = IcsBuilder.build(items)
 
-        assertTrue(result.icsContent.contains("UID:xu8fKNWU5M_7"))
+        assertTrue(result.icsContent.contains("UID:xu8fKNWU5M_7@wahoo"))
     }
 
     @Test
@@ -87,7 +93,7 @@ class IcsBuilderTest {
 
         val result = IcsBuilder.build(listOf(item))
 
-        assertTrue(result.icsContent.contains("UID:wo-123"))
+        assertTrue(result.icsContent.contains("UID:wo-123@wahoo"))
     }
 
     @Test
@@ -105,38 +111,35 @@ class IcsBuilderTest {
         val result = IcsBuilder.build(listOf(item))
 
         assertTrue(result.icsContent.contains("UID:wahoo-"))
+        assertTrue(result.icsContent.contains("@wahoo"))
     }
 
     @Test
-    fun `build maps completed status to COMPLETED`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = "a1",
-            status = "Completed",
-            type = "Cycling",
-            prospects = listOf(
-                Prospect(type = "Cycling", name = "Test Ride")
-            )
-        )
-
-        val result = IcsBuilder.build(listOf(item))
-
-        assertTrue(result.icsContent.contains("STATUS:COMPLETED"))
-    }
-
-    @Test
-    fun `build maps planned status to NEEDS-ACTION`() {
+    fun `build sets STATUS CONFIRMED for all events`() {
         val items = listOf(
             createCyclingItem("2026-03-10T00:00:00.000Z", "a1")
         )
 
         val result = IcsBuilder.build(items)
 
-        assertTrue(result.icsContent.contains("STATUS:NEEDS-ACTION"))
+        assertTrue(result.icsContent.contains("STATUS:CONFIRMED"))
+        assertFalse(result.icsContent.contains("STATUS:NEEDS-ACTION"), "Should not contain NEEDS-ACTION")
+        assertFalse(result.icsContent.contains("STATUS:COMPLETED"), "Should not use VTODO status mapping")
     }
 
     @Test
-    fun `build includes DTSTAMP in VTODO`() {
+    fun `build sets TRANSP TRANSPARENT for all events`() {
+        val items = listOf(
+            createCyclingItem("2026-03-10T00:00:00.000Z", "a1")
+        )
+
+        val result = IcsBuilder.build(items)
+
+        assertTrue(result.icsContent.contains("TRANSP:TRANSPARENT"))
+    }
+
+    @Test
+    fun `build includes DTSTAMP in VEVENT`() {
         val items = listOf(
             createCyclingItem("2026-03-10T00:00:00.000Z", "a1")
         )
@@ -148,7 +151,7 @@ class IcsBuilderTest {
     }
 
     @Test
-    fun `build includes DESCRIPTION with workout type and plan info`() {
+    fun `build includes DESCRIPTION with workout details and drag instruction`() {
         val item = UserPlanItem(
             plannedDate = "2026-03-10T00:00:00.000Z",
             agendaId = "a1",
@@ -162,10 +165,27 @@ class IcsBuilderTest {
 
         val result = IcsBuilder.build(listOf(item))
 
-        assertTrue(result.icsContent.contains("DESCRIPTION:"))
-        assertTrue(result.icsContent.contains("Type: Cycling"))
-        assertTrue(result.icsContent.contains("Plan: 6 Week - Fitness Kickstarter"))
-        assertTrue(result.icsContent.contains("Duration: 30min"))
+        // ical4j uses RFC 5545 line folding at 75 chars — unfold before asserting
+        val unfolded = unfoldIcs(result.icsContent)
+        assertTrue(unfolded.contains("DESCRIPTION:"))
+        assertTrue(unfolded.contains("Type: Cycling"))
+        assertTrue(unfolded.contains("Plan: 6 Week - Fitness Kickstarter"))
+        assertTrue(unfolded.contains("Duration: 30 min"))
+        assertTrue(unfolded.contains("Drag this event to a time that works for you"))
+    }
+
+    @Test
+    fun `build uses VEVENT not VTODO`() {
+        val items = listOf(
+            createCyclingItem("2026-03-10T00:00:00.000Z", "a1")
+        )
+
+        val result = IcsBuilder.build(items)
+
+        assertTrue(result.icsContent.contains("BEGIN:VEVENT"))
+        assertTrue(result.icsContent.contains("END:VEVENT"))
+        assertFalse(result.icsContent.contains("BEGIN:VTODO"), "Must not contain VTODO")
+        assertFalse(result.icsContent.contains("END:VTODO"), "Must not contain VTODO")
     }
 
     // ── Skipping logic ──────────────────────────────────────────────
@@ -182,7 +202,7 @@ class IcsBuilderTest {
 
         val result = IcsBuilder.build(listOf(item))
 
-        assertFalse(result.icsContent.contains("BEGIN:VTODO"))
+        assertFalse(result.icsContent.contains("BEGIN:VEVENT"))
         assertEquals(0, result.exportedCount)
         assertEquals(1, result.skippedCount)
         assertTrue(result.skippedReasons[0].contains("Rest day"))
@@ -200,7 +220,7 @@ class IcsBuilderTest {
 
         val result = IcsBuilder.build(listOf(item))
 
-        assertFalse(result.icsContent.contains("BEGIN:VTODO"))
+        assertFalse(result.icsContent.contains("BEGIN:VEVENT"))
         assertEquals(0, result.exportedCount)
         assertEquals(1, result.skippedCount)
     }
@@ -278,9 +298,9 @@ class IcsBuilderTest {
 
         assertEquals(2, result.exportedCount)
         assertEquals(1, result.skippedCount) // rest day
-        // Count VTODO blocks
-        val vtodoCount = Regex("BEGIN:VTODO").findAll(result.icsContent).count()
-        assertEquals(2, vtodoCount)
+        // Count VEVENT blocks
+        val veventCount = Regex("BEGIN:VEVENT").findAll(result.icsContent).count()
+        assertEquals(2, veventCount)
     }
 
     @Test
@@ -302,26 +322,46 @@ class IcsBuilderTest {
         assertEquals(2, result.skippedCount)
     }
 
-    // ── ICS text escaping ───────────────────────────────────────────
+    // ── Duration hint in SUMMARY ────────────────────────────────────
 
     @Test
-    fun `build escapes special characters in description`() {
+    fun `build includes duration hint in SUMMARY when duration available`() {
+        val items = listOf(
+            createCyclingItem("2026-03-10T00:00:00.000Z", "a1")
+        )
+
+        val result = IcsBuilder.build(items)
+
+        // 0.6 hours = 36 min
+        assertTrue(result.icsContent.contains("(36 min)"))
+    }
+
+    @Test
+    fun `build omits duration hint in SUMMARY when no duration`() {
         val item = UserPlanItem(
             plannedDate = "2026-03-10T00:00:00.000Z",
             agendaId = "a1",
             status = "Planned",
             type = "Cycling",
-            prospects = listOf(Prospect(type = "Cycling", name = "Test Ride")),
-            plan = PlanInfo(id = "p1", name = "Plan; with, special chars")
+            prospects = listOf(
+                Prospect(type = "Cycling", name = "Easy Spin", plannedDuration = null)
+            )
         )
 
         val result = IcsBuilder.build(listOf(item))
 
-        // Semicolons and commas should be escaped in DESCRIPTION
-        assertTrue(result.icsContent.contains("Plan\\; with\\, special chars"))
+        assertFalse(result.icsContent.contains("min)"))
     }
 
     // ── Helpers ──────────────────────────────────────────────────────
+
+    /**
+     * Unfold RFC 5545 line folding — continuation lines start with a space.
+     * This lets assertions check content without worrying about line breaks.
+     */
+    private fun unfoldIcs(icsContent: String): String {
+        return icsContent.replace("\r\n ", "").replace("\n ", "")
+    }
 
     private fun createCyclingItem(date: String, agendaId: String): UserPlanItem {
         return UserPlanItem(

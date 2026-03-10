@@ -8,23 +8,25 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
- * Tests for VTODO SUMMARY formatting — emoji + workout name.
+ * Tests for VEVENT SUMMARY formatting — emoji + workout name + duration hint.
  *
- * Context format per CONTEXT.md: "Emoji + workout name"
- * Examples: "🚴 Costa Blanca: Puerto de la Vall de Ebo", "🧘 Morning Yoga Routine"
+ * Format: "emoji WorkoutName (Xmin)" when duration is available.
+ * Format: "emoji WorkoutName" when no duration.
+ * Examples: "🚴 Costa Blanca (36 min)", "🧘 Morning Yoga Routine (30 min)"
  *
  * Verifies:
  * - Emoji from prospect.type takes priority
  * - Falls back to prospect.style, then item.type
  * - Workout name from prospect.name, fallback to item.type
+ * - Duration hint appended when plannedDuration is available
  * - SUMMARY appears correctly in generated ICS output
  */
 class SummaryFormattingTest {
 
-    // ── Format: emoji + workout name ────────────────────────────────
+    // ── Format: emoji + workout name + duration ─────────────────────
 
     @Test
-    fun `summary uses emoji from prospect type and prospect name`() {
+    fun `summary uses emoji from prospect type and prospect name with duration`() {
         val item = createItem(
             prospectType = "Cycling",
             prospectName = "Costa Blanca: Puerto de la Vall de Ebo"
@@ -33,8 +35,8 @@ class SummaryFormattingTest {
 
         val summary = IcsBuilder.formatSummary(item, prospect)
 
-        // Should be cycling emoji + space + workout name
-        assertEquals("\uD83D\uDEB4 Costa Blanca: Puerto de la Vall de Ebo", summary)
+        // Should be cycling emoji + space + workout name + duration hint
+        assertEquals("\uD83D\uDEB4 Costa Blanca: Puerto de la Vall de Ebo (30 min)", summary)
     }
 
     @Test
@@ -44,7 +46,7 @@ class SummaryFormattingTest {
 
         val summary = IcsBuilder.formatSummary(item, prospect)
 
-        assertEquals("\uD83E\uDDD8 Morning Yoga Routine", summary)
+        assertEquals("\uD83E\uDDD8 Morning Yoga Routine (30 min)", summary)
     }
 
     @Test
@@ -54,7 +56,7 @@ class SummaryFormattingTest {
 
         val summary = IcsBuilder.formatSummary(item, prospect)
 
-        assertEquals("\uD83C\uDFCB\uFE0F Full Body 02", summary)
+        assertEquals("\uD83C\uDFCB\uFE0F Full Body 02 (30 min)", summary)
     }
 
     // ── Fallback priority ───────────────────────────────────────────
@@ -67,7 +69,7 @@ class SummaryFormattingTest {
             status = "Planned",
             type = "Cycling",
             prospects = listOf(
-                Prospect(type = null, name = "Recovery Spin", style = "cycling")
+                Prospect(type = null, name = "Recovery Spin", style = "cycling", plannedDuration = 0.5)
             )
         )
         val prospect = item.prospects!!.first()
@@ -75,7 +77,7 @@ class SummaryFormattingTest {
         val summary = IcsBuilder.formatSummary(item, prospect)
 
         // Should use cycling emoji from style fallback
-        assertEquals("\uD83D\uDEB4 Recovery Spin", summary)
+        assertEquals("\uD83D\uDEB4 Recovery Spin (30 min)", summary)
     }
 
     @Test
@@ -93,7 +95,7 @@ class SummaryFormattingTest {
 
         val summary = IcsBuilder.formatSummary(item, prospect)
 
-        // Should use yoga emoji from item.type fallback
+        // No duration → no hint
         assertEquals("\uD83E\uDDD8 Stretch Session", summary)
     }
 
@@ -109,7 +111,7 @@ class SummaryFormattingTest {
 
         val summary = IcsBuilder.formatSummary(item, null)
 
-        // Should use cycling emoji and "Cycling" as name
+        // Should use cycling emoji and "Cycling" as name, no duration
         assertEquals("\uD83D\uDEB4 Cycling", summary)
     }
 
@@ -128,32 +130,32 @@ class SummaryFormattingTest {
 
         val summary = IcsBuilder.formatSummary(item, prospect)
 
-        // Default emoji + actual name
+        // Default emoji + actual name, no duration
         assertEquals("\uD83C\uDFCB\uFE0F Mystery Session", summary)
     }
 
     // ── Integration: SUMMARY in ICS output ──────────────────────────
 
     @Test
-    fun `generated ICS contains correct SUMMARY line for cycling`() {
+    fun `generated ICS contains correct SUMMARY line for cycling with duration`() {
         val items = listOf(
             createItem(prospectType = "Cycling", prospectName = "The Shovel")
         )
 
         val result = IcsBuilder.build(items)
 
-        assertTrue(result.icsContent.contains("SUMMARY:\uD83D\uDEB4 The Shovel"))
+        assertTrue(result.icsContent.contains("The Shovel (30 min)"))
     }
 
     @Test
-    fun `generated ICS contains correct SUMMARY line for yoga`() {
+    fun `generated ICS contains correct SUMMARY line for yoga with duration`() {
         val items = listOf(
             createItem(prospectType = "Yoga", prospectName = "Side Bends")
         )
 
         val result = IcsBuilder.build(items)
 
-        assertTrue(result.icsContent.contains("SUMMARY:\uD83E\uDDD8 Side Bends"))
+        assertTrue(result.icsContent.contains("Side Bends (30 min)"))
     }
 
     @Test
@@ -166,9 +168,9 @@ class SummaryFormattingTest {
 
         val result = IcsBuilder.build(items)
 
-        assertTrue(result.icsContent.contains("SUMMARY:\uD83D\uDEB4 Cadence Builds"))
-        assertTrue(result.icsContent.contains("SUMMARY:\uD83E\uDDD8 Morning Yoga Routine"))
-        assertTrue(result.icsContent.contains("SUMMARY:\uD83C\uDFCB\uFE0F Full Body 02"))
+        assertTrue(result.icsContent.contains("Cadence Builds"))
+        assertTrue(result.icsContent.contains("Morning Yoga Routine"))
+        assertTrue(result.icsContent.contains("Full Body 02"))
     }
 
     // ── Helpers ──────────────────────────────────────────────────────

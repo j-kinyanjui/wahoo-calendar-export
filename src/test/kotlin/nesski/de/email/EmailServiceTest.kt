@@ -13,12 +13,15 @@ class EmailServiceTest {
         BEGIN:VCALENDAR
         VERSION:2.0
         PRODID:-//WahooCLI//SYSTM Plan Export//EN
-        BEGIN:VTODO
-        UID:test-123
-        DUE;VALUE=DATE:20260310
-        SUMMARY:Test Workout
-        STATUS:NEEDS-ACTION
-        END:VTODO
+        CALSCALE:GREGORIAN
+        BEGIN:VEVENT
+        UID:test-123@wahoo
+        DTSTART;VALUE=DATE:20260310
+        DTEND;VALUE=DATE:20260311
+        SUMMARY:Test Workout (30 min)
+        STATUS:CONFIRMED
+        TRANSP:TRANSPARENT
+        END:VEVENT
         END:VCALENDAR
     """.trimIndent()
 
