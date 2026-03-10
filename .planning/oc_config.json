@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "presets": {
+      "genius": {
+        "planning": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat",
+        "execution": "portkey-anthropic/@vertex-ai/anthropic.claude-opus-4-6",
+        "verification": "portkey-openai/@azure-openai-foundry/gpt-5.3-codex"
+      }
+    }
+  },
+  "current_oc_profile": "genius"
+}
