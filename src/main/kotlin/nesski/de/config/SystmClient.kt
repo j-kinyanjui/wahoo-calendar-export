@@ -1,4 +1,4 @@
-package nesski.de.plugins
+package nesski.de.config
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -13,7 +13,7 @@ object TokenStorage {
     lateinit var token: String
 }
 
-val wahooHttpClient = HttpClient(CIO) {
+val wahooClient = HttpClient(CIO) {
     install(ContentNegotiation) {
         json(Json {
             prettyPrint = true

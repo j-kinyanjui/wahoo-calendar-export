@@ -1,4 +1,4 @@
-package nesski.de.services.web
+package nesski.de.wahoo
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine

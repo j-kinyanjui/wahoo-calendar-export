@@ -64,7 +64,7 @@ object EmailService {
             return EmailResult(success = false, errorMessage = "To address is not configured")
         }
 
-        return try {
+        runCatching {
             val email = EmailBuilder.startingBlank()
                 .from(fromAddress)
                 .to(toAddress)
@@ -98,13 +98,15 @@ object EmailService {
             }
 
             mailer.sendMail(email)
-
-            log.info("Email sent successfully to $toAddress with attachment $filename")
-            EmailResult(success = true)
-        } catch (e: Exception) {
-            val errorMsg = "Failed to send email: ${e.message}"
-            log.error(errorMsg, e)
-            EmailResult(success = false, errorMessage = errorMsg)
-        }
+        }.fold(
+            onFailure = { e ->
+                val errorMsg = "Failed to send email: ${e.message}"
+                return EmailResult(success = false, errorMessage = errorMsg)
+            },
+            onSuccess = {
+                log.info("Email sent successfully to $toAddress with attachment $filename")
+                return EmailResult(success = true)
+            }
+        )
     }
 }

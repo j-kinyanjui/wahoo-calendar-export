@@ -1,4 +1,4 @@
-package nesski.de.services.web
+package nesski.de.wahoo
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -11,7 +11,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import nesski.de.models.GraphQLRequest
 import nesski.de.models.GraphQLResponse
-import nesski.de.plugins.SYSTM_GRAPHQL_ENDPOINT
+import nesski.de.config.SYSTM_GRAPHQL_ENDPOINT
 
 private val logger = LoggerFactory.getLogger("SystmAuthService")
 
@@ -80,7 +80,7 @@ class SystmAuthService(
      * Login to Systm using credentials from config.
      * @return token on success, or null if login fails.
      */
-    suspend fun login(): String? {
+    suspend fun login(): String {
         logger.info("Attempting Systm login for user: $username")
 
         val request = GraphQLRequest(
@@ -113,6 +113,6 @@ class SystmAuthService(
         }
 
         logger.info("Successfully logged in as: ${result?.user?.fullName}")
-        return result?.token
+        return result?.token!!
     }
 }

@@ -1,4 +1,4 @@
-package nesski.de.services.web
+package nesski.de.wahoo
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -16,7 +16,7 @@ import nesski.de.models.GraphQLError
 import nesski.de.models.GraphQLRequest
 import nesski.de.models.GraphQLResponse
 import nesski.de.models.UserPlanItem
-import nesski.de.plugins.SYSTM_GRAPHQL_ENDPOINT
+import nesski.de.config.SYSTM_GRAPHQL_ENDPOINT
 
 private val log = LoggerFactory.getLogger("SystmPlansService")
 
@@ -138,7 +138,7 @@ class PlansService(
             return emptyList()
         }
 
-        log.info("Successfully fetched ${items.size} plan item(s)")
+        log.info("Successfully fetched ${items.size} wahoo calendar item(s)")
         return items
     }
 }

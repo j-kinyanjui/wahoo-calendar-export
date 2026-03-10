@@ -43,17 +43,9 @@ object AnySerializer : KSerializer<Any> {
 
     override fun deserialize(decoder: Decoder): Any {
         return when (val element = (decoder as JsonDecoder).decodeJsonElement()) {
-            is JsonPrimitive -> {
-                element.content
-            }
-            is JsonObject -> {
-                // You can parse JsonObject into a Map or some other object
-                // If you just want the string representation of the object, do this:
-                element.toString()
-                // Or if you need a map representation:
-                element.entries.associate { it.key to it.value }
-            }
-            else -> element.toString() // Default case
+            is JsonPrimitive -> element.content
+            is JsonObject -> element.entries.associate { it.key to it.value }
+            else -> element.toString()
         }
     }
 }

@@ -6,7 +6,6 @@ import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
-import java.io.File
 import java.time.LocalDate
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -15,11 +14,12 @@ import nesski.de.config.AppConfig
 import nesski.de.email.EmailService
 import nesski.de.ics.IcsBuilder
 import nesski.de.ics.IcsFileWriter
-import nesski.de.plugins.TokenStorage
-import nesski.de.plugins.wahooHttpClient
-import nesski.de.services.web.GraphQLException
-import nesski.de.services.web.PlansService
-import nesski.de.services.web.SystmAuthService
+import nesski.de.models.UserPlanItem
+import nesski.de.config.TokenStorage
+import nesski.de.config.wahooClient
+import nesski.de.wahoo.PlansService
+import nesski.de.wahoo.SystmAuthService
+import nesski.de.utils.DateRange
 import nesski.de.utils.parseDateRange
 
 class WahooCli : CliktCommand(
@@ -50,80 +50,52 @@ class WahooCli : CliktCommand(
         }
 
         TokenStorage.token = runBlocking {
-            try {
-                val result = SystmAuthService(wahooHttpClient, username, password).login()
-                if (result == null) {
-                    echo("Authentication failed: no token received")
-                    throw ProgramResult(1)
-                }
-                echo("Authenticated as $username")
-                result
-            } catch (e: ProgramResult) {
-                throw e
-            } catch (e: Exception) {
+            runCatching {
+                SystmAuthService(wahooClient, username, password).login()
+            }
+        }.fold(
+            onSuccess = { it },
+            onFailure = { e ->
                 echo("Authentication failed: ${e.message}")
                 throw ProgramResult(1)
             }
-        }
+        )
 
-        runBlocking {
-            val items = try {
-                val plansService = PlansService(wahooHttpClient, TokenStorage.token)
-                plansService.fetchPlans(dateRange.start, dateRange.end)
-            } catch (e: GraphQLException) {
+        val items = runBlocking {
+            runCatching {
+                PlansService(wahooClient, TokenStorage.token)
+                    .fetchPlans(dateRange.start, dateRange.end)
+            }
+        }.fold(
+            onSuccess = { it },
+            onFailure = { e ->
                 echo("API error: ${e.message}")
                 throw ProgramResult(1)
-            } catch (e: Exception) {
-                echo("Failed to fetch plans: ${e.message}")
-                throw ProgramResult(1)
             }
+        )
 
+        informUser(items, dateRange)
+
+        val icsBuildResult = runCatching {
             if (items.isEmpty()) {
                 echo("No plans found for this date range.")
-                return@runBlocking
+                return@runCatching null
             }
-
-            echo("\nWorkouts for period (${dateRange.start} to ${dateRange.end}):\n")
-            // Group items by plan name for a nicer display
-            val byPlan = items.groupBy { it.plan?.name ?: "Unassigned" }
-
-            var totalItems = 0
-            for ((planName, planItems) in byPlan) {
-                val planInfo = planItems.firstNotNullOfOrNull { it.plan }
-                planInfo?.level
-                    ?.let { echo("$planName [$it]")  }
-                    ?:  echo(planName)
-
-                for (item in planItems.sortedBy { it.plannedDate }) {
-                    totalItems++
-                    val workoutName = item.prospects?.firstOrNull()?.name ?: item.type ?: "unknown"
-                    val date = formatPlannedDate(item.plannedDate)
-                    val duration = formatDuration(item.prospects?.firstOrNull()?.plannedDuration)
-                    val status = item.status ?: "planned"
-                    val prospect = item.prospects?.firstOrNull()
-                    val style = (prospect?.style ?: prospect?.type ?: item.type)?.let { " ($it)" } ?: ""
-
-                    echo("  $date  $workoutName$style  $duration  [$status]")
-                }
-                echo("")
-            }
-
-            echo("$totalItems workout(s) across ${byPlan.size} plan(s)\n")
-
-            // Build ICS content
-            val result = IcsBuilder.build(items)
+            IcsBuilder.build(items)
+        }.getOrElse { e ->
+            echo("Encountered an exception building the ics file: ${e.message}")
+            throw ProgramResult(1)
+        }?.let { result ->
             echo("ICS export: ${result.exportedCount} workouts exported, ${result.skippedCount} skipped")
 
             if (result.exportedCount == 0) {
                 echo("No workouts to export.")
-                return@runBlocking
+                ProgramResult(0)
             }
 
-            // Generate filename: workouts_{range}_{date}.ics
             val rangeLabel = range ?: "${dateRange.start}_${dateRange.end}"
             val filename = "workouts_${rangeLabel}_${LocalDate.now()}.ics"
 
-            // Try email if configured
             if (config.email.enabled) {
                 val emailResult = EmailService.send(
                     config = config.email,
@@ -157,10 +129,43 @@ class WahooCli : CliktCommand(
      *
      * @return The absolute path of the saved file
      */
-    internal fun saveIcsToDisk(savePath: String, filename: String, icsContent: String): String {
+    private fun saveIcsToDisk(savePath: String, filename: String, icsContent: String): String {
         val savedPath = IcsFileWriter.write(savePath, filename, icsContent)
         echo("ICS file saved to: $savedPath")
         return savedPath
+    }
+
+    private fun informUser(items: List<UserPlanItem>, dateRange: DateRange) {
+        if (items.isEmpty()) {
+            echo("No plans found for this date range.")
+        }
+
+        echo("\nWorkouts for period (${dateRange.start} to ${dateRange.end}):\n")
+        // Group items by plan name for a nicer display
+        val byPlan = items.groupBy { it.plan?.name ?: "Unassigned" }
+
+        var totalItems = 0
+        for ((planName, planItems) in byPlan) {
+            val planInfo = planItems.firstNotNullOfOrNull { it.plan }
+            planInfo?.level
+                ?.let { echo("$planName [$it]")  }
+                ?:  echo(planName)
+
+            for (item in planItems.sortedBy { it.plannedDate }) {
+                totalItems++
+                val workoutName = item.prospects?.firstOrNull()?.name ?: item.type ?: "unknown"
+                val date = formatPlannedDate(item.plannedDate)
+                val duration = formatDuration(item.prospects?.firstOrNull()?.plannedDuration)
+                val status = item.status ?: "planned"
+                val prospect = item.prospects?.firstOrNull()
+                val style = (prospect?.style ?: prospect?.type ?: item.type)?.let { " ($it)" } ?: ""
+
+                echo("  $date  $workoutName$style  $duration  [$status]")
+            }
+            echo("")
+        }
+
+        echo("$totalItems workout(s) across ${byPlan.size} plan(s)\n")
     }
 
     /** Extract just the date portion from an ISO-8601 datetime string. */
@@ -173,6 +178,5 @@ class WahooCli : CliktCommand(
     /** Format a duration (in hours, fractional) into a human-readable string. */
     private fun formatDuration(hours: Double?): String {
         return hours?.toDuration(DurationUnit.HOURS)?.absoluteValue?.toString().orEmpty()
-
     }
 }
