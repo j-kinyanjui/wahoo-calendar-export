@@ -5,7 +5,7 @@
 - [x] **Phase 1: Authentication & GraphQL Setup** - JWT token management and GraphQL client (completed 2026-03-02)
 - [x] **Phase 2: CLI Migration** - Migrate from Ktor server to Clikt CLI, fetch and display plans (completed 2026-03-08)
 - [x] **Phase 3: ICS Export & Email** - Generate .ics VTODO entries and email them (completed 2026-03-09)
-- [ ] **Phase 4: Calendar Export v2** - Migrate from VTODO reminders to VEVENT calendar events using ical4j
+- [x] **Phase 4: Calendar Export v2** - Migrate from VTODO reminders to VEVENT calendar events using ical4j (completed 2026-03-10)
 
 ## Overview
 
@@ -111,8 +111,8 @@
 7. No VTODO, DUE, NEEDS-ACTION in generated output
 8. All existing tests updated and passing
 
-**Plans:** 0/1 plans complete
-- [ ] 04-01-PLAN.md — Migrate VTODO to VEVENT using ical4j
+**Plans:** 1/1 plans complete
+- [x] 04-01-PLAN.md — Migrate VTODO to VEVENT using ical4j
 
 ---
 
@@ -123,7 +123,7 @@
 | 1 - Auth & GraphQL Setup  | 3/3            | Complete    | 2026-03-02 |
 | 2 - CLI Migration               | 3/3            | Complete    | 2026-03-08 |
 | 3 - ICS Export & Email          | 2/2            | Complete    | 2026-03-09 |
-| 4 - Calendar Export v2          | 0/1            | In Progress |           |
+| 4 - Calendar Export v2          | 1/1            | Complete    | 2026-03-10 |
 
 ---
 

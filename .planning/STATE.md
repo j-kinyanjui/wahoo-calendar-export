@@ -4,7 +4,7 @@
 
 **Core Value:** Allow users to view their Wahoo/Systm training plans in their personal calendar for better workout scheduling and tracking.
 
-**Current Focus:** Phase 3 - ICS Export & Email
+**Current Focus:** Phase 4 - Calendar Export v2 (complete)
 
 ---
 
@@ -12,8 +12,8 @@
 
 | Field | Value |
 |-------|-------|
-| **Phase** | 3 - ICS Export & Email |
-| **Current Plan** | 2 of 2 |
+| **Phase** | 4 - Calendar Export v2 |
+| **Current Plan** | 1 of 1 |
 | **Status** | Phase complete |
 | **Progress** | All plans complete |
 
@@ -23,9 +23,9 @@
 
 | Metric | Value | Notes |
 |--------|-------|-------|
-| v1 Requirements | 16 | All mapped to phases |
-| Phases | 2 | Quick depth approach |
-| Current Phase Progress | 1/2 | Plan 1 complete |
+| v1 Requirements | 17 | All mapped to phases (incl. EXPORT-02) |
+| Phases | 4 | Quick depth approach |
+| Current Phase Progress | 1/1 | Phase 4 complete |
 | Blockers | 0 | None identified |
 
 | Phase-Plan | Duration | Tasks | Files |
@@ -37,6 +37,7 @@
 | Phase 02-cli-migration-plan-export P04 | 1 min | 1 tasks | 1 files |
 | Phase 03-ics-export-email P01 | 4 min | 2 tasks | 5 files |
 | Phase 03-ics-export-email P02 | 5 min | 2 tasks | 8 files |
+| Phase 04-calendar-export-v2 P01 | 8 min | 4 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,11 @@
 | Email disabled by default | Opt-in via config.toml email.enabled=true | Implemented in 03-02 |
 | Disk fallback on email failure | Save .ics to configured path when SMTP fails | Implemented in 03-02 |
 | IcsFileWriter extracted singleton | Testable file I/O without Clikt context | Implemented in 03-02 |
+| ical4j 4.0.8 for ICS generation | RFC 5545 compliance, replaces hand-rolled ICS strings | Implemented in 04-01 |
+| VEVENT all-day events | DATE-only DTSTART/DTEND — users drag to preferred time | Implemented in 04-01 |
+| TRANSP:TRANSPARENT for all-day events | Don't block calendar when events are all-day placeholders | Implemented in 04-01 |
+| UID @wahoo suffix | Domain uniqueness per RFC 5545 | Implemented in 04-01 |
+| Duration hint in SUMMARY text | Communicates workout length without enforcing it | Implemented in 04-01 |
 
 ### Technical Notes
 
@@ -88,6 +94,8 @@
 - Bearer token in Authorization header
 - GraphQL endpoint: https://api.thesufferfest.com/graphql
 - Key query: GetUserPlansRange
+- ICS generation via ical4j 4.0.8 (VEVENT all-day events, CalendarOutputter)
+- ical4j 4.x API: `Version(ParameterList(), VALUE_2_0)`, `CalScale(VALUE_GREGORIAN)` — differs from 3.x docs
 
 ### Pending Todos
 
@@ -118,21 +126,22 @@ No pending todos.
 - Phase 2 Plan 04 completed: Gap closure — changed default --config path to ~/.config/wahoo-cli/config
 - Phase 3 Plan 01 completed: IcsBuilder + SportEmoji — RFC 5545 VTODO builder with sport emoji mapping
 - Phase 3 Plan 02 completed: SMTP email with .ics attachment, disk fallback, IcsFileWriter
+- Phase 4 Plan 01 completed: VTODO→VEVENT migration using ical4j 4.0.8
 
 ### What's Next
 
-- Phase 3 complete: all plans executed
-- All 80 tests passing across project
-- Ready for milestone completion
+- Phase 4 complete: all plans executed
+- All 82 tests passing across project
+- All 4 phases complete — ready for milestone completion
 
 ### User Preferences
 
 - Manual JWT input acceptable (no OAuth flow needed)
 - On-demand/daily sync (not real-time)
 - CLI app, not a web server
-- Apple Reminders integration via VTODO .ics tasks
-- ICS file-based export (email delivery deferred to future phase)
+- VEVENT calendar events via ical4j (replaces VTODO reminders)
+- Cross-calendar compatible: Apple, Google, Outlook, Yahoo
 
 ---
 
-*State updated: 2026-03-09 (Phase 3 Plan 02 complete — phase complete)*
+*State updated: 2026-03-10 (Phase 4 Plan 01 complete — all phases complete)*

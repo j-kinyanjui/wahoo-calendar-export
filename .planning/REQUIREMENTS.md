@@ -41,7 +41,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### ICS Export
 
 - [x] **EXPORT-01**: Application generates RFC 5545-compliant .ics file with VTODO entries from fetched workouts (Apple Reminders compatible, sport emoji in SUMMARY, date-only DUE)
-- [ ] **EXPORT-02**: Application generates RFC 5545-compliant .ics file with VEVENT all-day entries using ical4j (cross-calendar compatible: Apple, Google, Outlook, Yahoo; sport emoji + duration in SUMMARY)
+- [x] **EXPORT-02**: Application generates RFC 5545-compliant .ics file with VEVENT all-day entries using ical4j (cross-calendar compatible: Apple, Google, Outlook, Yahoo; sport emoji + duration in SUMMARY)
 
 ## v2 Requirements
 
@@ -91,16 +91,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CLI-01      | Phase 2 | Complete |
 | CLI-02      | Phase 2 | Complete |
 | EXPORT-01   | Phase 3 | Complete |
-| EXPORT-02   | Phase 4 | Planned  |
+| EXPORT-02   | Phase 4 | Complete |
 
 **Coverage:**
 
-- v1 requirements: 17 total
-- v2 requirements: 1 (EXPORT-02)
+- v1 requirements: 17 total (all complete)
+- v2 requirements: 1 (EXPORT-02 — complete)
 - Mapped to phases: 18
 - Unmapped: 0 ✓
 
 ---
 
 _Requirements defined: 2026-03-01_
-_Last updated: 2026-03-09 after plan 03-01 completion_
+_Last updated: 2026-03-10 after plan 04-01 completion_
