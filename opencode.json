@@ -1,16 +1,43 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "agent": {
-    "gsd-planner": { "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat" },
-    "gsd-plan-checker": { "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat" },
-    "gsd-phase-researcher": { "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat" },
-    "gsd-roadmapper": { "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat" },
-    "gsd-project-researcher": { "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat" },
-    "gsd-research-synthesizer": { "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat" },
-    "gsd-codebase-mapper": { "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat" },
-    "gsd-executor": { "model": "portkey-anthropic/@vertex-ai/anthropic.claude-opus-4-6" },
-    "gsd-debugger": { "model": "portkey-anthropic/@vertex-ai/anthropic.claude-opus-4-6" },
-    "gsd-verifier": { "model": "portkey-openai/@azure-openai-foundry/gpt-5.3-codex" },
-    "gsd-integration-checker": { "model": "portkey-openai/@azure-openai-foundry/gpt-5.3-codex" }
+    "gsd-planner": {
+      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+    },
+    "gsd-plan-checker": {
+      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+    },
+    "gsd-phase-researcher": {
+      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+    },
+    "gsd-roadmapper": {
+      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+    },
+    "gsd-project-researcher": {
+      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+    },
+    "gsd-research-synthesizer": {
+      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+    },
+    "gsd-codebase-mapper": {
+      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+    },
+    "gsd-executor": {
+      "model": "portkey-anthropic/@vertex-ai/anthropic.claude-opus-4-6"
+    },
+    "gsd-debugger": {
+      "model": "portkey-anthropic/@vertex-ai/anthropic.claude-opus-4-6"
+    },
+    "gsd-verifier": {
+      "model": "portkey-openai/@azure-openai-foundry/gpt-5.3-codex"
+    },
+    "gsd-integration-checker": {
+      "model": "portkey-openai/@azure-openai-foundry/gpt-5.3-codex"
+    }
+  },
+  "permission": {
+    "external_directory": {
+      "/Users/kaethe/.config/opencode/get-shit-done/**": "allow"
+    }
   }
 }
