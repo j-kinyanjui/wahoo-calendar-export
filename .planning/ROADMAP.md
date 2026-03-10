@@ -1,139 +1,49 @@
 # Roadmap: Wahoo Plan to Calendar
 
-## Phases
+## Milestones
 
-- [x] **Phase 1: Authentication & GraphQL Setup** - JWT token management and GraphQL client (completed 2026-03-02)
-- [x] **Phase 2: CLI Migration** - Migrate from Ktor server to Clikt CLI, fetch and display plans (completed 2026-03-08)
-- [x] **Phase 3: ICS Export & Email** - Generate .ics VTODO entries and email them (completed 2026-03-09)
-- [x] **Phase 4: Calendar Export v2** - Migrate from VTODO reminders to VEVENT calendar events using ical4j (completed 2026-03-10)
+- ✅ **v1.0 MVP** — Phases 1-4 (shipped 2026-03-10)
+- 📋 **v1.1 Email & Filtering** — Phases 5-7 (planned)
 
-## Overview
+## Shipped Milestones
 
-| Phase            | Goal                                                                                                           | Requirements                                                      |
-| ---------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 1 - Auth & Fetch | 3/3 | Complete    | 2026-03-02 | User can view parsed workout data with error handling                                                          | PARSE-01, PARSE-02, PARSE-03, PARSE-04, DISP-01, DISP-02, DISP-03 |
+<details>
+<summary>✅ v1.0 MVP (Phases 1-4) — SHIPPED 2026-03-10</summary>
 
----
+- [x] Phase 1: Authentication & GraphQL Setup (3/3 plans) — completed 2026-03-02
+- [x] Phase 2: CLI Migration (3/3 plans) — completed 2026-03-08
+- [x] Phase 3: ICS Export & Email (2/2 plans) — completed 2026-03-09
+- [x] Phase 4: Calendar Export v2 (1/1 plan) — completed 2026-03-10
 
-## Phase Details
+**Archive:** See `.planning/milestones/v1.0-ROADMAP.md` for full details
 
-### Phase 1: Authentication & GraphQL Setup
+</details>
 
-**Goal:** User can authenticate by euther using OAuth 2 or input JWT token and application can fetch training plans via GraphQL
+## Active Phases
 
-**Depends on:** Nothing (first phase)
+## Progress Summary
 
-**Requirements:** AUTH-01, AUTH-02, AUTH-03, DATA-01, DATA-02, DATA-03, DATA-04
+| Milestone  | Phases | Plans | Status    | Shipped    |
+| ---------- | ------ | ----- | --------- | ---------- |
+| v1.0 MVP   | 1-4    | 10    | Complete  | 2026-03-10 |
+| v1.1 TBD   | 5-7    | TBD   | Planned   | —          |
 
-**Success Criteria** (what must be TRUE):
+## v1.0 Requirements Coverage
 
-1. User can authenticate by eiher inputing a Systm JWT token via web form and submit or OAuth flow for Systm
-2. User's Systm token is persisted in encrypted session storage
-3. User can clear/reset their Systm token at any time
-4. Application can make HTTP POST requests to api.thesufferfest.com/graphql
-5. Application sends Bearer JWT token in Authorization header with GraphQL requests
-6. Application executes GetUserPlansRange GraphQL query with date parameters
-7. Application handles GraphQL error responses (HTTP 200 with errors field) gracefully
+- ✓ 17 v1.0 requirements shipped (100%)
+- ✓ 0 requirements deferred or in progress
+- ✓ 0 unmapped requirements
 
-**Plans:** 3/3 plans complete
-- [x] 01-01-PLAN.md — Session infrastructure + GraphQL client
-- [x] 01-02-PLAN.md — Login form + JWT validation + logout
-- [x] 01-03-PLAN.md — GetUserPlansRange query + error handling
-
----
-
-### Phase 2: CLI Migration
-
-**Goal:** Migrate from Ktor server to a Clikt-based CLI application that auto-authenticates, fetches training plans for a user-specified time range, and displays them in the console
-
-**Depends on:** Phase 1
-
-**Requirements:** PARSE-01, PARSE-02, PARSE-03, PARSE-04, DISP-01, DISP-02, DISP-03, CLI-01, CLI-02
-
-**Success Criteria** (what must be TRUE):
-
-1. Ktor server dependencies removed (server-core, netty, auth, config-yaml)
-2. Application runs as a CLI via Clikt with `--range`, `--from`/`--to`, `--config` options
-3. Credentials loaded from env vars (`SYSTM_USER`, `SYSTM_PASSWORD`) with fallback to `~/.config/wahoo-cli/config`
-4. Auto-login on each run using existing SystmAuthService
-5. Plans fetched for specified range: `now`, `1w`, `2w`, `1m`, `2m`, or explicit `--from`/`--to` (max 2 months)
-6. Application extracts workout name, date, type, and status from GraphQL response
-7. User sees formatted list of workouts in the console
-8. nginx/Docker infrastructure removed
-9. Clear error messages for auth failures, API errors, and invalid ranges
-
-**Plans:** 3/3 plans complete
-- [x] 02-01-PLAN.md — CLI foundation: build migration, Clikt entry point, TOML config, date range parsing
-- [x] 02-02-PLAN.md — Integration: wire auth → fetch → display, remove server files
-- [x] 02-03-PLAN.md — Gap closure: add CLI-01/CLI-02 requirement definitions and traceability
+**Categories shipped:**
+- Authentication (3) — OAuth 2 / JWT token input ✓
+- Data Fetching (4) — GraphQL API integration ✓
+- Data Parsing (4) — Workout extraction and parsing ✓
+- Display (3) — Console formatting ✓
+- CLI (2) — Clikt framework with config ✓
+- Export (2) — VTODO and VEVENT calendar formats ✓
 
 ---
 
-### Phase 3: ICS Export & Email
+_For v1.0 phase details, see `.planning/milestones/v1.0-ROADMAP.md`_
 
-**Goal:** Generate .ics VTODO entries (Apple Reminders tasks) from fetched workouts and email them to a provided address
-
-**Depends on:** Phase 2
-
-**Requirements:** EXPORT-01
-
-**Success Criteria** (what must be TRUE):
-
-1. Each workout generates a VTODO .ics entry with due date (compatible with Apple Reminders)
-2. .ics file emailed to the provided `--email` address via SMTP
-3. Sport emoji in VTODO SUMMARY (🧘🏽‍♂️ yoga, 🚴 cycling, 🏋🏾‍♀️ strength)
-4. On email failure, .ics saved to disk with error message
-5. .ics save location configurable in config file
-6. Clear error messages for email delivery issues
-
-**Plans:** 2/2 plans complete
-- [x] 03-01-PLAN.md — ICS builder: RFC 5545 VTODO builder with sport emoji mapping
-- [x] 03-02-PLAN.md — SMTP email with .ics attachment and disk fallback
-
----
-
-### Phase 4: Calendar Export v2
-
-**Goal:** Migrate .ics export from VTODO (reminders) to VEVENT (calendar events) using ical4j for universal calendar compatibility
-
-**Depends on:** Phase 3
-
-**Requirements:** EXPORT-02
-
-**Success Criteria** (what must be TRUE):
-
-1. IcsBuilder generates VEVENT entries (not VTODO)
-2. Events use all-day DATE format (DTSTART;VALUE=DATE / DTEND;VALUE=DATE)
-3. Duration communicated in SUMMARY text (e.g. "Workout Name (30 min)")
-4. Events marked TRANSP:TRANSPARENT (don't block whole day)
-5. ical4j used for RFC 5545 compliant output
-6. .ics imports cleanly into Apple Calendar, Google Calendar, Outlook
-7. No VTODO, DUE, NEEDS-ACTION in generated output
-8. All existing tests updated and passing
-
-**Plans:** 1/1 plans complete
-- [x] 04-01-PLAN.md — Migrate VTODO to VEVENT using ical4j
-
----
-
-## Progress
-
-| Phase                     | Plans Complete | Status      | Completed |
-| ------------------------- | -------------- | ----------- | --------- |
-| 1 - Auth & GraphQL Setup  | 3/3            | Complete    | 2026-03-02 |
-| 2 - CLI Migration               | 3/3            | Complete    | 2026-03-08 |
-| 3 - ICS Export & Email          | 2/2            | Complete    | 2026-03-09 |
-| 4 - Calendar Export v2          | 1/1            | Complete    | 2026-03-10 |
-
----
-
-## Coverage
-
-- v1 requirements: 16 total
-- Mapped to phases: 16 ✓
-- Unmapped: 0 ✓
-
----
-
-_Roadmap created: 2026-03-01_
-_Depth: quick (3 phases)_
+_Roadmap created: 2026-03-01 | Last updated: 2026-03-10 after v1.0 completion_

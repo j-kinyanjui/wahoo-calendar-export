@@ -2,11 +2,11 @@
 
 ## What This Is
 
-A command-line application that fetches Wahoo Systm training plans via GraphQL API and displays them in the console. Auto-authenticates using stored credentials or environment variables, supports flexible date range queries, and formats workouts by plan with key details (date, type, duration, status).
+A command-line application that fetches Wahoo Systm training plans via GraphQL API, displays them in the console, and exports them as RFC 5545-compliant calendar events. Auto-authenticates using stored credentials or environment variables, supports flexible date range queries, and integrates with calendar applications (Apple Calendar, Google Calendar, Outlook).
 
 ## Core Value
 
-Simple, non-interactive CLI access to training plans — authenticate once, fetch plans for any date range, see them immediately formatted in console.
+Simple, non-interactive CLI access to training plans with instant calendar export — authenticate once, fetch plans for any date range, export as .ics for any calendar application.
 
 ## Requirements
 
@@ -21,12 +21,15 @@ Simple, non-interactive CLI access to training plans — authenticate once, fetc
 - ✓ Date range support: shorthand (now, 1w, 2w, 1m, 2m) and explicit (--from/--to YYYY-MM-DD)
 - ✓ Maximum 2-month date range validation
 - ✓ Clear error messages for auth failures and invalid input
+- ✓ ICS file export (.ics VTODO entries for Apple Reminders) — v1.0
+- ✓ Email delivery of workouts to provided address via SMTP — v1.0
+- ✓ RFC 5545-compliant .ics export with VEVENT all-day entries (cross-calendar: Apple, Google, Outlook, Yahoo) — v1.0
 
 ### Active (v1.1+)
 
-- [ ] ICS file export (.ics VTODO entries for Apple Reminders)
-- [ ] Email delivery of workouts to provided address
-- [ ] Custom date range presets (add to config)
+- [ ] Email scheduling (daily/weekly digest of upcoming workouts)
+- [ ] Workout filtering by type (cycling, strength, yoga, etc.)
+- [ ] Custom date range presets in config
 - [ ] Quiet/verbose output modes
 
 ### Out of Scope
@@ -34,19 +37,22 @@ Simple, non-interactive CLI access to training plans — authenticate once, fetc
 - Web UI — CLI-first approach
 - Real-time sync — fetch on-demand only
 - OAuth flow — manual token input acceptable
+- Two-way sync (calendar → Systm) — export only
 
 ## Current State (v1.0 Shipped)
 
 **Codebase:**
-- 7 completed plans across 2 phases
-- ~17k LOC added (Kotlin, build config, tests)
-- 69 files modified, Ktor server removed, nginx/Docker removed
+- 10 completed plans across 4 phases
+- ~2,900 LOC Kotlin + Gradle (including 100+ tests)
+- 86 commits, 2024-02-17 to 2026-03-10
 
 **Tech Stack:**
 - Kotlin 1.9.23
 - Clikt 5.0.3 for CLI framework
 - ktoml 0.7.0 for TOML config parsing
 - kotlinx.coroutines for async/await
+- ical4j 4.0.8 for RFC 5545 calendar generation
+- simple-java-mail 8.12.4 for SMTP delivery
 - SLF4J for logging
 
 **Architecture:**
@@ -54,12 +60,16 @@ Simple, non-interactive CLI access to training plans — authenticate once, fetc
 - AppConfig for credential and config file management
 - SystmAuthService for JWT token authentication
 - PlansService for GraphQL plan fetching
+- IcsBuilder for RFC 5545 calendar event generation (VEVENT)
+- EmailService for SMTP delivery with disk fallback
 - DateRangeParser for flexible date input
 
 **Production Ready:**
 - Credentials loaded from env vars or ~/.config/wahoo-cli/config (XDG convention)
 - Auto-retry on auth, graceful error messages on auth/API failures
-- All 16 v1.0 requirements validated and shipped
+- Email fallback: on SMTP failure, .ics saved to disk instead of lost
+- RFC 5545 compliant .ics output with duration hints in SUMMARY
+- All 17 v1.0 requirements validated and shipped
 
 ## Constraints
 
@@ -70,28 +80,52 @@ Simple, non-interactive CLI access to training plans — authenticate once, fetc
 
 ## Key Decisions (v1.0)
 
-| Decision                          | Rationale                                                   | Outcome        |
-| --------------------------------- | ----------------------------------------------------------- | -------------- |
-| CLI-first (no web UI)             | Simpler scope, faster iteration, easier testing             | ✓ Shipped v1.0 |
-| Clikt framework                   | Mature, well-documented, supports Kotlin idioms             | ✓ Shipped v1.0 |
-| TOML config with env var override | Flexible credential management, security-conscious default  | ✓ Shipped v1.0 |
-| On-demand fetch (no sync daemon)  | Aligns with CLI design, user controls when to fetch         | ✓ Shipped v1.0 |
-| XDG config path (~/.config/)      | Standard Linux/Unix convention, future-proofs for standards | ✓ Shipped v1.0 |
-| Gap closure for CLI-02            | Config path mismatch found in UAT, fixed before v1.0 ship   | ✓ Resolved      |
+| Decision                                    | Rationale                                                        | Outcome           |
+| ------------------------------------------- | ---------------------------------------------------------------- | ----------------- |
+| CLI-first (no web UI)                       | Simpler scope, faster iteration, easier testing                  | ✓ Shipped v1.0    |
+| Clikt 5.0.3 framework                       | Mature, well-documented, supports Kotlin idioms                  | ✓ Shipped v1.0    |
+| TOML config with env var override           | Flexible credential management, security-conscious default       | ✓ Shipped v1.0    |
+| On-demand fetch (no sync daemon)            | Aligns with CLI design, user controls when to fetch              | ✓ Shipped v1.0    |
+| XDG config path (~/.config/)                | Standard Linux/Unix convention, future-proofs for standards      | ✓ Shipped v1.0    |
+| Manual JWT input (no OAuth)                 | Simpler, acceptable for CLI tool without browser integration     | ✓ Shipped v1.0    |
+| RFC 5545 VEVENT (not VTODO)                 | Universal calendar compatibility (Apple, Google, Outlook, Yahoo) | ✓ Shipped v1.0    |
+| ical4j 4.0.8 for ICS generation             | RFC 5545 compliance, no hand-rolled ICS strings                  | ✓ Shipped v1.0    |
+| SMTP email with disk fallback               | Robust delivery: email on success, .ics on SMTP failure          | ✓ Shipped v1.0    |
+| All-day DATE events (not timed)             | Users drag to preferred time, doesn't block whole day            | ✓ Shipped v1.0    |
+| Sport emoji in SUMMARY                      | Visual identification of workout type in calendar                | ✓ Shipped v1.0    |
+| Duration hint in SUMMARY text               | Communicates workout length without enforcing calendar blocking  | ✓ Shipped v1.0    |
+
+## Patterns Established
+
+- **Config pattern:** TOML file with env var override precedence
+- **Builder pattern:** Object singleton builders for stateless operations (IcsBuilder, SportEmoji)
+- **Result type pattern:** Data classes tracking success counts + skip reasons for partial operations
+- **Email fallback:** Try primary delivery → on failure save locally with error message
+- **ICS output:** ical4j CalendarOutputter for all ICS generation (no hand-rolled strings)
+
+## Technical Debt & Future Work
+
+- Phase directories remain in `.planning/phases/` — archive retroactively via `/gsd-cleanup`
+- Email service uses config.toml for SMTP settings — production users should use env vars only
+- No token refresh mechanism — Systm tokens expire, users must re-run with fresh credentials
 
 ---
 
 ## Next Milestone (v1.1+)
 
-**ICS Export & Email** — Convert fetched training plans to iCalendar format and email them.
+**Email Scheduling & Filtering** — Add recurring email delivery and workout type filtering.
 
-- Generate .ics VTODO entries formatted for Apple Reminders task import
-- Accept recipient email address via CLI option
-- Integrate with mail service (SMTP or platform-specific)
-- Extend date range support to include export in the same invocation
+**Planned features:**
+- [ ] Daily/weekly email digest of upcoming workouts
+- [ ] Workout filtering by type (cycling, strength, yoga, running, etc.)
+- [ ] Custom date range presets in TOML config
+- [ ] Quiet/verbose output modes for different use cases
 
-Depends on: v1.0 CLI foundation
+**Depends on:** v1.0 core platform (CLI, ICS, email)
+
+**Timeline:** 3-4 phases with research, planning, and implementation
 
 ---
 
-_Last updated: 2026-03-08 after v1.0 milestone completion_
+_Last updated: 2026-03-10 after v1.0 milestone completion_
+_Shipped: 4 phases, 10 plans, 17 requirements validated, 2,900 LOC_
