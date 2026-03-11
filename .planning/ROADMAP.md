@@ -3,7 +3,6 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-4 (shipped 2026-03-10)
-- 📋 **v1.1 Email & Filtering** — Phases 5-7 (planned)
 
 ## Shipped Milestones
 
@@ -26,7 +25,6 @@
 | Milestone  | Phases | Plans | Status    | Shipped    |
 | ---------- | ------ | ----- | --------- | ---------- |
 | v1.0 MVP   | 1-4    | 10    | Complete  | 2026-03-10 |
-| v1.1 TBD   | 5-7    | TBD   | Planned   | —          |
 
 ## v1.0 Requirements Coverage
 
