@@ -1,9 +1,11 @@
 package nesski.de.cli
 
+import com.github.ajalt.clikt.core.Abort
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.UsageError
+import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import java.time.LocalDate
@@ -28,9 +30,22 @@ class WahooCli : CliktCommand(
     override fun help(context: Context): String =
         "Fetch Wahoo SYSTM training plans and export as .ics"
 
-    private val range by option("--range", "-r", help = "Time range shorthand: now, 1w, 2w, 1m, 2m")
+    private val range by option("--range", "-r", help = "Time range shorthand: now, 1w, 2w, 1m, 2m. Default 2w")
+        .convert { input ->
+            try {
+                Range.parse(input)
+            } catch (e: IllegalArgumentException) {
+                fail(e.message ?: "Invalid date range")
+            }
+        }
     private val from by option("--from", help = "Start date (YYYY-MM-DD)")
+        .convert { input ->
+            parseDate(input) ?: fail("Invalid date")
+        }
     private val to by option("--to", help = "End date (YYYY-MM-DD)")
+        .convert { input ->
+            parseDate(input) ?: fail("Invalid date")
+        }
     private val configPath by option("--config", "-c", help = "Config file path")
         .default("src/main/resources/config.toml")
 
@@ -76,16 +91,16 @@ class WahooCli : CliktCommand(
 
         informUser(items, dateRange)
 
-        val icsBuildResult = runCatching {
+        runCatching {
             if (items.isEmpty()) {
                 echo("No plans found for this date range.")
-                return@runCatching null
+                Abort()
             }
             IcsBuilder.build(items)
         }.getOrElse { e ->
             echo("Encountered an exception building the ics file: ${e.message}")
             throw ProgramResult(1)
-        }?.let { result ->
+        }.let { result ->
             echo("ICS export: ${result.exportedCount} workouts exported, ${result.skippedCount} skipped")
 
             if (result.exportedCount == 0) {
