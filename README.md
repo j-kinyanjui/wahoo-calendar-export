@@ -1,30 +1,16 @@
 # Wahoo Plan to Calendar
 
-A lightweight CLI tool that fetches your Wahoo Systm training plans and exports them to your calendar.
-
-## Features
-
-- 🏃 **Fetch Plans** — Query Wahoo Systm API for training plans in any date range
-- 📅 **Export to Calendar** — Generate RFC 5545-compliant .ics files for Apple Calendar, Google Calendar, Outlook, or any calendar app
-- 🔐 **Secure Credentials** — Store credentials in config file with environment variable overrides for CI/CD
-- ⚡ **Instant Export** — No web UI, no sync daemon — fetch and export on demand
-- 📧 **Email Delivery** (optional) — Send generated .ics files to your email or save to disk
+A lightweight CLI tool that fetches your Wahoo Systm training plans and exports an .ics files for any calendar app.
 
 ## Installation
 
-### Prerequisites
+### Option 1: Local Build
 
+**Prerequisites:**
 - Java 17+
 - Gradle 9.4+
 
-Or use the Nix flake:
-
-```bash
-nix flake show
-nix develop
-```
-
-### Build
+**Build:**
 
 ```bash
 ./gradlew build
@@ -32,6 +18,48 @@ nix develop
 ```
 
 The CLI is available in `build/install/wahoo-cli/bin/wahoo-cli`.
+
+### Option 2: Docker
+
+**Build the Docker image:**
+
+```bash
+docker build -t wahoo-cli:latest .
+```
+
+**Run with Docker:**
+
+```bash
+# Fetch plans from the past 2 weeks and save to current directory
+docker run -it \
+  -e SYSTM_USER="your-email@example.com" \
+  -e SYSTM_PASSWORD="your-password" \
+  -v "$(pwd)":/app/output \
+  wahoo-cli:latest
+
+# Custom date range
+docker run -it \
+  -e SYSTM_USER="your-email@example.com" \
+  -e SYSTM_PASSWORD="your-password" \
+  -v "$(pwd)":/app/output \
+  wahoo-cli:latest \
+  --from 2026-03-01 --to 2026-04-01
+
+# Using a config file
+docker run -it \
+  -v ~/.config/wahoo-cli/config:/app/config:ro \
+  -v "$(pwd)":/app/output \
+  wahoo-cli:latest
+```
+
+The `.ics` file will be saved to your current directory (`$(pwd)`).
+
+### Option 3: Nix Flake
+
+```bash
+nix flake show
+nix develop
+```
 
 ## Configuration
 
@@ -45,14 +73,6 @@ password = "your-systm-password"
 [output]
 ics_save_path = "."
 
-[email]
-enabled = false
-# smtp_host = "smtp.gmail.com"
-# smtp_port = 587
-# smtp_username = "your-email@gmail.com"
-# smtp_password = "your-app-password"
-# from_address = "your-email@gmail.com"
-# to_address = "recipient@example.com"
 ```
 
 Or use environment variables to override:
@@ -64,14 +84,16 @@ export SYSTM_PASSWORD="your-password"
 
 ## Usage
 
-### Fetch and export plans to .ics
+### Local Installation
+
+**Fetch and export plans to .ics:**
 
 ```bash
 wahoo-cli
 # Exports to: workouts_2w_<date>.ics (past 7 days + next 14 days)
 ```
 
-### Specify date range
+**Specify date range:**
 
 ```bash
 # Using shorthand
@@ -82,13 +104,45 @@ wahoo-cli --range 2w    # Past 2 weeks
 wahoo-cli --from 2026-03-01 --to 2026-05-01
 ```
 
-### Use custom config path
+**Use custom config path:**
 
 ```bash
 wahoo-cli --config /path/to/custom/config
 ```
 
-### Email the .ics file (if configured)
+### Docker
+
+**Basic usage (2-week default range):**
+
+```bash
+docker run -it \
+  -e SYSTM_USER="your-email@example.com" \
+  -e SYSTM_PASSWORD="your-password" \
+  -v "$(pwd)":/app/output \
+  wahoo-cli:latest
+```
+
+**Custom date range:**
+
+```bash
+docker run -it \
+  -e SYSTM_USER="your-email@example.com" \
+  -e SYSTM_PASSWORD="your-password" \
+  -v "$(pwd)":/app/output \
+  wahoo-cli:latest \
+  --from 2026-03-01 --to 2026-04-01
+```
+
+**With config file:**
+
+```bash
+docker run -it \
+  -v ~/.config/wahoo-cli/config:/app/config:ro \
+  -v "$(pwd)":/app/output \
+  wahoo-cli:latest
+```
+
+**Email the .ics file (if configured):**
 
 Enable email in config, then run normally. The .ics will be emailed; if SMTP fails, it saves to disk as backup.
 
@@ -101,44 +155,52 @@ A `.ics` file with all your workouts as calendar events:
 
 ## Examples
 
-### Apple Calendar
+### Apple Calendar (Local)
 
 ```bash
 ./wahoo-cli
-# Open workouts_2w_2026-03-11.ics with Calendar.app
-# Click "Add" → events appear in your calendar
+open workouts_*.ics
 ```
 
-### Google Calendar
+### Apple Calendar (Docker)
+
+```bash
+docker run -it \
+  -e SYSTM_USER="your-email@example.com" \
+  -e SYSTM_PASSWORD="your-password" \
+  -v "$(pwd)":/app/output \
+  wahoo-cli:latest
+
+open workouts_*.ics
+```
+
+### Google Calendar (Local)
 
 ```bash
 ./wahoo-cli --from 2026-03-01 --to 2026-04-01
 # Go to Google Calendar → Settings → Import & Export → Upload workouts_*.ics
 ```
 
-### Command Line (any system)
+### Google Calendar (Docker)
 
 ```bash
-./wahoo-cli && open workouts_*.ics
-# or: ./wahoo-cli && xdg-open workouts_*.ics
+docker run -it \
+  -e SYSTM_USER="your-email@example.com" \
+  -e SYSTM_PASSWORD="your-password" \
+  -v "$(pwd)":/app/output \
+  wahoo-cli:latest \
+  --from 2026-03-01 --to 2026-04-01
 ```
 
-## Project Status
+### Command Line
 
-**v1.0 Shipped** (2026-03-10)
-- ✅ Fetch training plans from Systm GraphQL API
-- ✅ Parse workouts with name, date, type, and status
-- ✅ Export as RFC 5545-compliant .ics (VEVENT all-day events)
-- ✅ Email delivery with disk fallback
-- ✅ Config file + environment variable support
-- ✅ Date range validation (max 2 months)
-- ✅ Clear error messages for invalid input
+```bash
+# Local:
+./wahoo-cli && xdg-open workouts_*.ics
 
-**Future (v1.1+)**
-- Email scheduling (daily/weekly digests)
-- Workout filtering by type
-- Custom date range presets
-- Quiet/verbose output modes
+# Docker:
+docker run -it -e SYSTM_USER="..." -e SYSTM_PASSWORD="..." -v "$(pwd)":/app/output wahoo-cli:latest && xdg-open workouts_*.ics
+```
 
 ## Development
 
@@ -153,27 +215,3 @@ A `.ics` file with all your workouts as calendar events:
 ```bash
 ./gradlew run --args="--from 2026-03-01 --to 2026-03-31"
 ```
-
-### Project structure
-
-```
-src/main/kotlin/nesski/de/
-├── cli/WahooCli.kt                 # CLI entry point (Clikt)
-├── auth/SystmAuthService.kt        # JWT authentication
-├── api/PlansService.kt             # GraphQL API client
-├── config/AppConfig.kt             # Config loading + validation
-├── ics/IcsBuilder.kt               # RFC 5545 calendar builder
-├── email/EmailService.kt           # SMTP delivery
-└── models/                         # GraphQL response models
-```
-
-## License
-
-MIT
-
-## Support
-
-For issues or questions:
-- Check the code in `src/main/kotlin/`
-- Review test files in `src/test/kotlin/`
-- See `.planning/PROJECT.md` for architecture decisions
