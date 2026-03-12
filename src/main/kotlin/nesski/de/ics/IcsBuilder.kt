@@ -3,6 +3,7 @@ package nesski.de.ics
 import nesski.de.models.UserPlanItem
 import net.fortuna.ical4j.data.CalendarOutputter
 import net.fortuna.ical4j.model.Calendar
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.CalScale
 import net.fortuna.ical4j.model.property.Description
@@ -11,7 +12,6 @@ import net.fortuna.ical4j.model.property.Status
 import net.fortuna.ical4j.model.property.Transp
 import net.fortuna.ical4j.model.property.Uid
 import net.fortuna.ical4j.model.property.Version
-import net.fortuna.ical4j.model.ParameterList
 import org.slf4j.LoggerFactory
 import java.io.StringWriter
 import java.time.LocalDate

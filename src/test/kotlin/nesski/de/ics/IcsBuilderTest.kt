@@ -5,8 +5,8 @@ import nesski.de.models.Prospect
 import nesski.de.models.UserPlanItem
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
  * Tests for IcsBuilder — converting UserPlanItems to RFC 5545 VCALENDAR/VEVENT.

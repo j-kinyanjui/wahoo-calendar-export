@@ -6,23 +6,25 @@ import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.parameters.options.convert
-import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.option
-import java.time.LocalDate
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
+import com.github.ajalt.clikt.parameters.types.file
 import kotlinx.coroutines.runBlocking
 import nesski.de.config.AppConfig
+import nesski.de.config.TokenStorage
+import nesski.de.config.wahooClient
 import nesski.de.email.EmailService
 import nesski.de.ics.IcsBuilder
 import nesski.de.ics.IcsFileWriter
 import nesski.de.models.UserPlanItem
-import nesski.de.config.TokenStorage
-import nesski.de.config.wahooClient
-import nesski.de.wahoo.PlansService
-import nesski.de.wahoo.SystmAuthService
 import nesski.de.utils.DateRange
 import nesski.de.utils.parseDateRange
+import nesski.de.wahoo.PlansService
+import nesski.de.wahoo.SystmAuthService
+import java.io.File
+import java.time.LocalDate
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class WahooCli : CliktCommand(
     name = "wahoo-cli"
@@ -146,8 +148,8 @@ class WahooCli : CliktCommand(
      *
      * @return The absolute path of the saved file
      */
-    private fun saveIcsToDisk(savePath: String, filename: String, icsContent: String): String {
-        val savedPath = IcsFileWriter.write(savePath, filename, icsContent)
+    private fun saveIcsToDisk(file: File, icsContent: String): String {
+        val savedPath = IcsFileWriter.write(file, icsContent)
         echo("ICS file saved to: $savedPath")
         return savedPath
     }
