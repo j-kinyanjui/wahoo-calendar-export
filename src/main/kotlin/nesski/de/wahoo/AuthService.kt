@@ -6,12 +6,13 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import org.slf4j.LoggerFactory
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import nesski.de.config.CredentialsConfig
+import nesski.de.config.SYSTM_GRAPHQL_ENDPOINT
 import nesski.de.models.GraphQLRequest
 import nesski.de.models.GraphQLResponse
-import nesski.de.config.SYSTM_GRAPHQL_ENDPOINT
+import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("SystmAuthService")
 
@@ -51,8 +52,7 @@ data class UserData(
  */
 class SystmAuthService(
     private val httpClient: HttpClient,
-    private val username: String,
-    private val password: String
+    private val credentials: CredentialsConfig,
 ) {
     companion object {
         private const val LOGIN_MUTATION = $$"""
@@ -81,7 +81,7 @@ class SystmAuthService(
      * @return token on success, or null if login fails.
      */
     suspend fun login(): String {
-        logger.info("Attempting Systm login for user: $username")
+        logger.info("Attempting Systm login for user: $credentials.username")
 
         val request = GraphQLRequest(
             operationName = "Login",
@@ -92,8 +92,8 @@ class SystmAuthService(
                     "version" to "7.105.0-web.3516-9-g193a6cfb",
                     "installId" to "538496F7A02E17E14DF16ECCE8F5DF04"
                 ),
-                "username" to username,
-                "password" to password
+                "username" to credentials.username,
+                "password" to credentials.password
             )
         )
 

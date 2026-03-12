@@ -30,7 +30,11 @@ class WahooCli : CliktCommand(
     override fun help(context: Context): String =
         "Fetch Wahoo SYSTM training plans and export as .ics"
 
-    private val range by option("--range", "-r", help = "Time range shorthand: now, 1w, 2w, 1m, 2m. Default 2w")
+    private val configFile by option("--config", "-c", help = "Config file path")
+        .file(canBeFile = true, canBeDir = false)
+        .defaultLazy { defaultConfigFile() }
+
+    private val range by option("--range", "-r", help = "Time range shorthand: now, 1w, 2w, 1m, 2m. Default: 2w")
         .convert { input ->
             try {
                 Range.parse(input)
@@ -50,13 +54,7 @@ class WahooCli : CliktCommand(
         .default("src/main/resources/config.toml")
 
     override fun run() {
-        val resolvedConfigPath = configPath.replaceFirst("~", System.getProperty("user.home"))
-        val config = AppConfig.load(resolvedConfigPath)
-
-        val (username, password) = AppConfig.resolveCredentials(config)
-        if (username.isBlank() || password.isBlank()) {
-            throw UsageError("Credentials must not be empty")
-        }
+        val config = AppConfig.load(configFile)
 
         val dateRange = try {
             parseDateRange(range, from, to)
@@ -66,7 +64,7 @@ class WahooCli : CliktCommand(
 
         TokenStorage.token = runBlocking {
             runCatching {
-                SystmAuthService(wahooClient, username, password).login()
+                SystmAuthService(wahooClient, config.resolvedCredentials()).login()
             }
         }.fold(
             onSuccess = { it },
