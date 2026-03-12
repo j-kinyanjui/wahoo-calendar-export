@@ -30,15 +30,19 @@ docker build -t wahoo-cli:latest .
 **Run with Docker:**
 
 ```bash
+docker run --rm wahoo-cli:latest --help 
+```
+
+```bash
 # Fetch plans from the past 2 weeks and save to current directory
-docker run -it \
+docker run -it --rm \
   -e SYSTM_USER="your-email@example.com" \
   -e SYSTM_PASSWORD="your-password" \
   -v "$(pwd)":/app/output \
   wahoo-cli:latest
 
 # Custom date range
-docker run -it \
+docker run -it --rm \
   -e SYSTM_USER="your-email@example.com" \
   -e SYSTM_PASSWORD="your-password" \
   -v "$(pwd)":/app/output \
@@ -46,7 +50,7 @@ docker run -it \
   --from 2026-03-01 --to 2026-04-01
 
 # Using a config file
-docker run -it \
+docker run -it --rm \
   -v ~/.config/wahoo-cli/config:/app/config:ro \
   -v "$(pwd)":/app/output \
   wahoo-cli:latest
