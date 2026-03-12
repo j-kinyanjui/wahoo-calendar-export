@@ -28,9 +28,7 @@ class IcsBuilderTest {
 
     @Test
     fun `build produces valid VCALENDAR wrapper with CALSCALE`() {
-        val items = listOf(
-            createCyclingItem("2026-03-10T00:00:00.000Z", "agenda-1")
-        )
+        val items = listOf(createCyclingItem("2026-03-10T00:00:00.000Z", "agenda-1"))
 
         val result = IcsBuilder.build(items)
 
@@ -57,9 +55,7 @@ class IcsBuilderTest {
 
     @Test
     fun `build produces VEVENT with DATE-only DTSTART and DTEND`() {
-        val items = listOf(
-            createCyclingItem("2026-03-10T00:00:00.000Z", "agenda-1")
-        )
+        val items = listOf(createCyclingItem("2026-03-10T00:00:00.000Z", "agenda-1"))
 
         val result = IcsBuilder.build(items)
 
@@ -70,9 +66,7 @@ class IcsBuilderTest {
 
     @Test
     fun `build produces VEVENT with UID from agendaId plus wahoo suffix`() {
-        val items = listOf(
-            createCyclingItem("2026-03-10T00:00:00.000Z", "xu8fKNWU5M_7")
-        )
+        val items = listOf(createCyclingItem("2026-03-10T00:00:00.000Z", "xu8fKNWU5M_7"))
 
         val result = IcsBuilder.build(items)
 
@@ -81,15 +75,15 @@ class IcsBuilderTest {
 
     @Test
     fun `build uses workoutId as UID fallback when agendaId is null`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = null,
-            status = "Planned",
-            type = "Cycling",
-            prospects = listOf(
-                Prospect(type = "Cycling", name = "Test Ride", workoutId = "wo-123")
+        val item =
+            UserPlanItem(
+                plannedDate = "2026-03-10T00:00:00.000Z",
+                agendaId = null,
+                status = "Planned",
+                type = "Cycling",
+                prospects =
+                    listOf(Prospect(type = "Cycling", name = "Test Ride", workoutId = "wo-123")),
             )
-        )
 
         val result = IcsBuilder.build(listOf(item))
 
@@ -98,15 +92,14 @@ class IcsBuilderTest {
 
     @Test
     fun `build generates UID when both agendaId and workoutId are null`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = null,
-            status = "Planned",
-            type = "Cycling",
-            prospects = listOf(
-                Prospect(type = "Cycling", name = "Test Ride", workoutId = null)
+        val item =
+            UserPlanItem(
+                plannedDate = "2026-03-10T00:00:00.000Z",
+                agendaId = null,
+                status = "Planned",
+                type = "Cycling",
+                prospects = listOf(Prospect(type = "Cycling", name = "Test Ride", workoutId = null)),
             )
-        )
 
         val result = IcsBuilder.build(listOf(item))
 
@@ -116,22 +109,24 @@ class IcsBuilderTest {
 
     @Test
     fun `build sets STATUS CONFIRMED for all events`() {
-        val items = listOf(
-            createCyclingItem("2026-03-10T00:00:00.000Z", "a1")
-        )
+        val items = listOf(createCyclingItem("2026-03-10T00:00:00.000Z", "a1"))
 
         val result = IcsBuilder.build(items)
 
         assertTrue(result.icsContent.contains("STATUS:CONFIRMED"))
-        assertFalse(result.icsContent.contains("STATUS:NEEDS-ACTION"), "Should not contain NEEDS-ACTION")
-        assertFalse(result.icsContent.contains("STATUS:COMPLETED"), "Should not use VTODO status mapping")
+        assertFalse(
+            result.icsContent.contains("STATUS:NEEDS-ACTION"),
+            "Should not contain NEEDS-ACTION",
+        )
+        assertFalse(
+            result.icsContent.contains("STATUS:COMPLETED"),
+            "Should not use VTODO status mapping",
+        )
     }
 
     @Test
     fun `build sets TRANSP TRANSPARENT for all events`() {
-        val items = listOf(
-            createCyclingItem("2026-03-10T00:00:00.000Z", "a1")
-        )
+        val items = listOf(createCyclingItem("2026-03-10T00:00:00.000Z", "a1"))
 
         val result = IcsBuilder.build(items)
 
@@ -140,9 +135,7 @@ class IcsBuilderTest {
 
     @Test
     fun `build includes DTSTAMP in VEVENT`() {
-        val items = listOf(
-            createCyclingItem("2026-03-10T00:00:00.000Z", "a1")
-        )
+        val items = listOf(createCyclingItem("2026-03-10T00:00:00.000Z", "a1"))
 
         val result = IcsBuilder.build(items)
 
@@ -152,16 +145,16 @@ class IcsBuilderTest {
 
     @Test
     fun `build includes DESCRIPTION with workout details and drag instruction`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = "a1",
-            status = "Planned",
-            type = "Cycling",
-            prospects = listOf(
-                Prospect(type = "Cycling", name = "Test Ride", plannedDuration = 0.5)
-            ),
-            plan = PlanInfo(id = "p1", name = "6 Week - Fitness Kickstarter", level = "")
-        )
+        val item =
+            UserPlanItem(
+                plannedDate = "2026-03-10T00:00:00.000Z",
+                agendaId = "a1",
+                status = "Planned",
+                type = "Cycling",
+                prospects =
+                    listOf(Prospect(type = "Cycling", name = "Test Ride", plannedDuration = 0.5)),
+                plan = PlanInfo(id = "p1", name = "6 Week - Fitness Kickstarter", level = ""),
+            )
 
         val result = IcsBuilder.build(listOf(item))
 
@@ -176,9 +169,7 @@ class IcsBuilderTest {
 
     @Test
     fun `build uses VEVENT not VTODO`() {
-        val items = listOf(
-            createCyclingItem("2026-03-10T00:00:00.000Z", "a1")
-        )
+        val items = listOf(createCyclingItem("2026-03-10T00:00:00.000Z", "a1"))
 
         val result = IcsBuilder.build(items)
 
@@ -192,13 +183,14 @@ class IcsBuilderTest {
 
     @Test
     fun `build skips rest days`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = "a1",
-            status = "Planned",
-            type = "Rest",
-            prospects = null
-        )
+        val item =
+            UserPlanItem(
+                plannedDate = "2026-03-10T00:00:00.000Z",
+                agendaId = "a1",
+                status = "Planned",
+                type = "Rest",
+                prospects = null,
+            )
 
         val result = IcsBuilder.build(listOf(item))
 
@@ -210,13 +202,14 @@ class IcsBuilderTest {
 
     @Test
     fun `build skips items with null planned date`() {
-        val item = UserPlanItem(
-            plannedDate = null,
-            agendaId = "a1",
-            status = "Planned",
-            type = "Cycling",
-            prospects = listOf(Prospect(type = "Cycling", name = "Test"))
-        )
+        val item =
+            UserPlanItem(
+                plannedDate = null,
+                agendaId = "a1",
+                status = "Planned",
+                type = "Cycling",
+                prospects = listOf(Prospect(type = "Cycling", name = "Test")),
+            )
 
         val result = IcsBuilder.build(listOf(item))
 
@@ -227,13 +220,14 @@ class IcsBuilderTest {
 
     @Test
     fun `build skips items with blank planned date`() {
-        val item = UserPlanItem(
-            plannedDate = "",
-            agendaId = "a1",
-            status = "Planned",
-            type = "Cycling",
-            prospects = listOf(Prospect(type = "Cycling", name = "Test"))
-        )
+        val item =
+            UserPlanItem(
+                plannedDate = "",
+                agendaId = "a1",
+                status = "Planned",
+                type = "Cycling",
+                prospects = listOf(Prospect(type = "Cycling", name = "Test")),
+            )
 
         val result = IcsBuilder.build(listOf(item))
 
@@ -243,13 +237,14 @@ class IcsBuilderTest {
 
     @Test
     fun `build skips items with no prospect and no type`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = "a1",
-            status = "Planned",
-            type = null,
-            prospects = null
-        )
+        val item =
+            UserPlanItem(
+                plannedDate = "2026-03-10T00:00:00.000Z",
+                agendaId = "a1",
+                status = "Planned",
+                type = null,
+                prospects = null,
+            )
 
         val result = IcsBuilder.build(listOf(item))
 
@@ -259,13 +254,14 @@ class IcsBuilderTest {
 
     @Test
     fun `build exports item with type but no prospect`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = "a1",
-            status = "Planned",
-            type = "Cycling",
-            prospects = emptyList()
-        )
+        val item =
+            UserPlanItem(
+                plannedDate = "2026-03-10T00:00:00.000Z",
+                agendaId = "a1",
+                status = "Planned",
+                type = "Cycling",
+                prospects = emptyList(),
+            )
 
         val result = IcsBuilder.build(listOf(item))
 
@@ -277,22 +273,23 @@ class IcsBuilderTest {
 
     @Test
     fun `build handles multiple workouts correctly`() {
-        val items = listOf(
-            createCyclingItem("2026-03-10T00:00:00.000Z", "a1"),
-            UserPlanItem(
-                plannedDate = "2026-03-11T00:00:00.000Z",
-                agendaId = "a2",
-                status = "Planned",
-                type = "Yoga",
-                prospects = listOf(Prospect(type = "Yoga", name = "Morning Yoga"))
-            ),
-            UserPlanItem(
-                plannedDate = "2026-03-12T00:00:00.000Z",
-                agendaId = "a3",
-                status = "Planned",
-                type = "Rest"
+        val items =
+            listOf(
+                createCyclingItem("2026-03-10T00:00:00.000Z", "a1"),
+                UserPlanItem(
+                    plannedDate = "2026-03-11T00:00:00.000Z",
+                    agendaId = "a2",
+                    status = "Planned",
+                    type = "Yoga",
+                    prospects = listOf(Prospect(type = "Yoga", name = "Morning Yoga")),
+                ),
+                UserPlanItem(
+                    plannedDate = "2026-03-12T00:00:00.000Z",
+                    agendaId = "a3",
+                    status = "Planned",
+                    type = "Rest",
+                ),
             )
-        )
 
         val result = IcsBuilder.build(items)
 
@@ -305,16 +302,26 @@ class IcsBuilderTest {
 
     @Test
     fun `build counts exported and skipped correctly with mixed items`() {
-        val items = listOf(
-            createCyclingItem("2026-03-10T00:00:00.000Z", "a1"),        // exported
-            UserPlanItem(plannedDate = null, type = "Cycling",          // skipped: no date
-                prospects = listOf(Prospect(type = "Cycling", name = "X"))),
-            UserPlanItem(plannedDate = "2026-03-11T00:00:00.000Z",      // skipped: rest
-                type = "Rest"),
-            UserPlanItem(plannedDate = "2026-03-12T00:00:00.000Z",      // exported
-                agendaId = "a4", status = "Completed", type = "Strength",
-                prospects = listOf(Prospect(type = "Strength", name = "Full Body")))
-        )
+        val items =
+            listOf(
+                createCyclingItem("2026-03-10T00:00:00.000Z", "a1"), // exported
+                UserPlanItem(
+                    plannedDate = null,
+                    type = "Cycling", // skipped: no date
+                    prospects = listOf(Prospect(type = "Cycling", name = "X")),
+                ),
+                UserPlanItem(
+                    plannedDate = "2026-03-11T00:00:00.000Z", // skipped: rest
+                    type = "Rest",
+                ),
+                UserPlanItem(
+                    plannedDate = "2026-03-12T00:00:00.000Z", // exported
+                    agendaId = "a4",
+                    status = "Completed",
+                    type = "Strength",
+                    prospects = listOf(Prospect(type = "Strength", name = "Full Body")),
+                ),
+            )
 
         val result = IcsBuilder.build(items)
 
@@ -326,9 +333,7 @@ class IcsBuilderTest {
 
     @Test
     fun `build includes duration hint in SUMMARY when duration available`() {
-        val items = listOf(
-            createCyclingItem("2026-03-10T00:00:00.000Z", "a1")
-        )
+        val items = listOf(createCyclingItem("2026-03-10T00:00:00.000Z", "a1"))
 
         val result = IcsBuilder.build(items)
 
@@ -338,15 +343,15 @@ class IcsBuilderTest {
 
     @Test
     fun `build omits duration hint in SUMMARY when no duration`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = "a1",
-            status = "Planned",
-            type = "Cycling",
-            prospects = listOf(
-                Prospect(type = "Cycling", name = "Easy Spin", plannedDuration = null)
+        val item =
+            UserPlanItem(
+                plannedDate = "2026-03-10T00:00:00.000Z",
+                agendaId = "a1",
+                status = "Planned",
+                type = "Cycling",
+                prospects =
+                    listOf(Prospect(type = "Cycling", name = "Easy Spin", plannedDuration = null)),
             )
-        )
 
         val result = IcsBuilder.build(listOf(item))
 
@@ -356,8 +361,8 @@ class IcsBuilderTest {
     // ── Helpers ──────────────────────────────────────────────────────
 
     /**
-     * Unfold RFC 5545 line folding — continuation lines start with a space.
-     * This lets assertions check content without worrying about line breaks.
+     * Unfold RFC 5545 line folding — continuation lines start with a space. This lets assertions
+     * check content without worrying about line breaks.
      */
     private fun unfoldIcs(icsContent: String): String {
         return icsContent.replace("\r\n ", "").replace("\n ", "")
@@ -369,16 +374,17 @@ class IcsBuilderTest {
             agendaId = agendaId,
             status = "Planned",
             type = "Cycling",
-            prospects = listOf(
-                Prospect(
-                    type = "Cycling",
-                    name = "Costa Blanca: Puerto de la Vall de Ebo",
-                    style = null,
-                    plannedDuration = 0.6,
-                    workoutId = "rUrrfvb8ii"
-                )
-            ),
-            plan = PlanInfo(id = "xu8fKNWU5M", name = "6 Week - Fitness Kickstarter", level = "")
+            prospects =
+                listOf(
+                    Prospect(
+                        type = "Cycling",
+                        name = "Costa Blanca: Puerto de la Vall de Ebo",
+                        style = null,
+                        plannedDuration = 0.6,
+                        workoutId = "rUrrfvb8ii",
+                    )
+                ),
+            plan = PlanInfo(id = "xu8fKNWU5M", name = "6 Week - Fitness Kickstarter", level = ""),
         )
     }
 }

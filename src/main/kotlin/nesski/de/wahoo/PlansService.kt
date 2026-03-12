@@ -20,16 +20,11 @@ import java.time.format.DateTimeFormatter
 
 private val log = LoggerFactory.getLogger("SystmPlansService")
 
-/**
- * Exception thrown when GraphQL returns errors
- */
-class GraphQLException(val errors: List<GraphQLError>) : Exception(
-    errors.joinToString(", ") { it.message }
-)
+/** Exception thrown when GraphQL returns errors */
+class GraphQLException(val errors: List<GraphQLError>) :
+    Exception(errors.joinToString(", ") { it.message })
 
-/**
- * Service for fetching Systm training plans via the `userPlan` GraphQL query.
- */
+/** Service for fetching Systm training plans via the `userPlan` GraphQL query. */
 class PlansService(
     private val httpClient: HttpClient,
     private val token: String,
@@ -39,19 +34,21 @@ class PlansService(
         /**
          * GraphQL query matching the real Wahoo SYSTM API.
          *
-         * The query field is `userPlan` (NOT `userPlansRange`).
-         * Variable types use the custom scalars `Date`, `QueryParams`, and `TimeZone`.
+         * The query field is `userPlan` (NOT `userPlansRange`). Variable types use the custom
+         * scalars `Date`, `QueryParams`, and `TimeZone`.
          */
         /**
          * Trimmed to only the fields needed for VEVENT/VCALENDAR generation:
-         *  - plannedDate  → VEVENT DTSTART/DTEND
-         *  - agendaId     → VEVENT UID
-         *  - status       → filtering
-         *  - type         → filter out "rest" days
-         *  - prospect: type, name, style, plannedDuration, workoutId → SUMMARY, emoji, duration, UID fallback
-         *  - plan: id, name, level → grouping / email body
+         * - plannedDate → VEVENT DTSTART/DTEND
+         * - agendaId → VEVENT UID
+         * - status → filtering
+         * - type → filter out "rest" days
+         * - prospect: type, name, style, plannedDuration, workoutId → SUMMARY, emoji, duration, UID
+         *   fallback
+         * - plan: id, name, level → grouping / email body
          */
-        private val GET_USER_PLANS_QUERY = $$"""
+        private val GET_USER_PLANS_QUERY =
+            $$"""
             query GetUserPlansRange($startDate: Date, $endDate: Date, $queryParams: QueryParams, $timezone: TimeZone) {
               userPlan(
                 startDate: $startDate
@@ -85,7 +82,8 @@ class PlansService(
               }
               __typename
             }
-        """.trimIndent()
+            """
+                .trimIndent()
 
         /** The API expects ISO-8601 datetime strings with time portion. */
         private val START_OF_DAY_FORMATTER: DateTimeFormatter =
@@ -98,33 +96,34 @@ class PlansService(
      * Fetch plan items for a given date range.
      *
      * @param startDate Start date for the range (inclusive)
-     * @param endDate   End date for the range (inclusive)
+     * @param endDate End date for the range (inclusive)
      * @return List of [UserPlanItem]s within the range
      * @throws GraphQLException if the GraphQL query returns errors
      */
-    suspend fun fetchPlans(
-        startDate: LocalDate,
-        endDate: LocalDate
-    ): List<UserPlanItem> {
+    suspend fun fetchPlans(startDate: LocalDate, endDate: LocalDate): List<UserPlanItem> {
         log.info("Fetching plans from $startDate to $endDate (tz=$timezone)")
 
-        val request = GraphQLRequest(
-            operationName = "GetUserPlansRange",
-            query = GET_USER_PLANS_QUERY,
-            variables = mapOf(
-                "startDate" to startDate.format(START_OF_DAY_FORMATTER),
-                "endDate" to endDate.format(END_OF_DAY_FORMATTER),
-                "queryParams" to mapOf("limit" to 1000),
-                "timezone" to timezone
+        val request =
+            GraphQLRequest(
+                operationName = "GetUserPlansRange",
+                query = GET_USER_PLANS_QUERY,
+                variables =
+                    mapOf(
+                        "startDate" to startDate.format(START_OF_DAY_FORMATTER),
+                        "endDate" to endDate.format(END_OF_DAY_FORMATTER),
+                        "queryParams" to mapOf("limit" to 1000),
+                        "timezone" to timezone,
+                    ),
             )
-        )
 
         val response: GraphQLResponse<GetUserPlansRangeResponse> =
-            httpClient.post(SYSTM_GRAPHQL_ENDPOINT) {
-                contentType(ContentType.Application.Json)
-                header("Authorization", "Bearer $token")
-                setBody(request)
-            }.body()
+            httpClient
+                .post(SYSTM_GRAPHQL_ENDPOINT) {
+                    contentType(ContentType.Application.Json)
+                    header("Authorization", "Bearer $token")
+                    setBody(request)
+                }
+                .body()
 
         // Check for GraphQL errors first
         if (!response.errors.isNullOrEmpty()) {

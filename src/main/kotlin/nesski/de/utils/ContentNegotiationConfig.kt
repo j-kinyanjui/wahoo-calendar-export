@@ -13,11 +13,10 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-/**
- * Serializer for Any type to handle GraphQL variables
- */
+/** Serializer for Any type to handle GraphQL variables */
 object AnySerializer : KSerializer<Any> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Any", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("Any", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Any) {
         when (value) {

@@ -14,17 +14,13 @@ private val log = LoggerFactory.getLogger("EmailService")
  * @property success Whether the email was sent successfully
  * @property errorMessage Error details if sending failed, null on success
  */
-data class EmailResult(
-    val success: Boolean,
-    val errorMessage: String? = null
-)
+data class EmailResult(val success: Boolean, val errorMessage: String? = null)
 
 /**
  * Sends .ics calendar content as an email attachment via SMTP.
  *
- * Uses Simple Java Mail for SMTP transport. Configuration is driven by
- * [EmailConfig] from the TOML config file, with env var overrides for
- * sensitive values (SMTP_USERNAME, SMTP_PASSWORD).
+ * Uses Simple Java Mail for SMTP transport. Configuration is driven by [EmailConfig] from the TOML
+ * config file, with env var overrides for sensitive values (SMTP_USERNAME, SMTP_PASSWORD).
  */
 object EmailService {
 
@@ -41,11 +37,15 @@ object EmailService {
         config: EmailConfig,
         icsContent: String,
         filename: String,
-        bodyText: String = "Your Wahoo SYSTM workout plan is attached as an .ics file.\n\nImport it into your calendar app (Apple Calendar, Google Calendar, Outlook, etc.).\nEach workout appears as an all-day event — drag it to the time that works for you."
+        bodyText: String =
+            "Your Wahoo SYSTM workout plan is attached as an .ics file.\n\nImport it into your calendar app (Apple Calendar, Google Calendar, Outlook, etc.).\nEach workout appears as an all-day event — drag it to the time that works for you.",
     ): EmailResult {
         if (!config.enabled) {
             log.info("Email sending is disabled in config")
-            return EmailResult(success = false, errorMessage = "Email sending is disabled in config")
+            return EmailResult(
+                success = false,
+                errorMessage = "Email sending is disabled in config",
+            )
         }
 
         // Resolve credentials with env var overrides
@@ -65,48 +65,52 @@ object EmailService {
         }
 
         runCatching {
-            val email = EmailBuilder.startingBlank()
-                .from(fromAddress)
-                .to(toAddress)
-                .withSubject(config.subject)
-                .withPlainText(bodyText)
-                .withAttachment(
-                    filename,
-                    icsContent.toByteArray(Charsets.UTF_8),
-                    "text/calendar; charset=UTF-8"
-                )
-                .buildEmail()
+                val email =
+                    EmailBuilder.startingBlank()
+                        .from(fromAddress)
+                        .to(toAddress)
+                        .withSubject(config.subject)
+                        .withPlainText(bodyText)
+                        .withAttachment(
+                            filename,
+                            icsContent.toByteArray(Charsets.UTF_8),
+                            "text/calendar; charset=UTF-8",
+                        )
+                        .buildEmail()
 
-            val transportStrategy = if (config.useTls) {
-                TransportStrategy.SMTP_TLS
-            } else {
-                TransportStrategy.SMTP
+                val transportStrategy =
+                    if (config.useTls) {
+                        TransportStrategy.SMTP_TLS
+                    } else {
+                        TransportStrategy.SMTP
+                    }
+
+                val mailerBuilder =
+                    MailerBuilder.withSMTPServer(config.smtpHost, config.smtpPort)
+                        .withTransportStrategy(transportStrategy)
+
+                // Only add credentials if provided
+                val mailer =
+                    if (smtpUsername.isNotBlank() && smtpPassword.isNotBlank()) {
+                        mailerBuilder
+                            .withSMTPServerUsername(smtpUsername)
+                            .withSMTPServerPassword(smtpPassword)
+                            .buildMailer()
+                    } else {
+                        mailerBuilder.buildMailer()
+                    }
+
+                mailer.sendMail(email)
             }
-
-            val mailerBuilder = MailerBuilder
-                .withSMTPServer(config.smtpHost, config.smtpPort)
-                .withTransportStrategy(transportStrategy)
-
-            // Only add credentials if provided
-            val mailer = if (smtpUsername.isNotBlank() && smtpPassword.isNotBlank()) {
-                mailerBuilder
-                    .withSMTPServerUsername(smtpUsername)
-                    .withSMTPServerPassword(smtpPassword)
-                    .buildMailer()
-            } else {
-                mailerBuilder.buildMailer()
-            }
-
-            mailer.sendMail(email)
-        }.fold(
-            onFailure = { e ->
-                val errorMsg = "Failed to send email: ${e.message}"
-                return EmailResult(success = false, errorMessage = errorMsg)
-            },
-            onSuccess = {
-                log.info("Email sent successfully to $toAddress with attachment $filename")
-                return EmailResult(success = true)
-            }
-        )
+            .fold(
+                onFailure = { e ->
+                    val errorMsg = "Failed to send email: ${e.message}"
+                    return EmailResult(success = false, errorMessage = errorMsg)
+                },
+                onSuccess = {
+                    log.info("Email sent successfully to $toAddress with attachment $filename")
+                    return EmailResult(success = true)
+                },
+            )
     }
 }

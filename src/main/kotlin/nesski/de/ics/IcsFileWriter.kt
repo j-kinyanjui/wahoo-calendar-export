@@ -5,17 +5,14 @@ import java.io.File
 
 private val log = LoggerFactory.getLogger("IcsFileWriter")
 
-/**
- * Writes ICS content to disk files with directory auto-creation.
- */
+/** Writes ICS content to disk files with directory auto-creation. */
 object IcsFileWriter {
 
     /**
-     * Write .ics content to a file at the given save path.
-     * Auto-creates directories if they don't exist.
+     * Write .ics content to a file at the given save path. Auto-creates directories if they don't
+     * exist.
      *
-     * @param savePath The directory to save the file in (~ is expanded to user home)
-     * @param filename The filename (e.g. "workouts_2w_2026-03-08.ics")
+     * @param file The file to save the file in
      * @param icsContent The RFC 5545 VCALENDAR string to write
      * @return The absolute path of the written file
      */

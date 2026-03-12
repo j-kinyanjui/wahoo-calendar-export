@@ -14,26 +14,24 @@ data class DateRange(val start: LocalDate, val end: LocalDate)
  * 2. --from/--to ISO dates (YYYY-MM-DD)
  * 3. Default: next 2 weeks from today
  *
- * --range and --from/--to are mutually exclusive.
- * Maximum range enforced: 2 months (62 days).
+ * --range and --from/--to are mutually exclusive. Maximum range enforced: 2 months (62 days).
  */
 fun parseDateRange(range: Range?, from: LocalDate?, to: LocalDate?): DateRange {
     val today = LocalDate.now()
 
     // Mutual exclusion check
     if (range != null && (from != null || to != null)) {
-        throw IllegalArgumentException(
-            "Cannot use --range with --from/--to. Use one or the other."
-        )
+        throw IllegalArgumentException("Cannot use --range with --from/--to. Use one or the other.")
     }
 
     // Parse --range shorthand
     if (range != null) {
-        val end = when (range) {
-            Range.Now -> today
-            is Range.Weeks -> range.weeks.let { today.plusWeeks(it.toLong()) }
-            is Range.Months -> range.months.let { today.plusMonths(it.toLong()) }
-        }
+        val end =
+            when (range) {
+                Range.Now -> today
+                is Range.Weeks -> range.weeks.let { today.plusWeeks(it.toLong()) }
+                is Range.Months -> range.months.let { today.plusMonths(it.toLong()) }
+            }
         return DateRange(today, end)
     }
 

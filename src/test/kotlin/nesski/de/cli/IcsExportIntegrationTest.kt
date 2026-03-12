@@ -21,17 +21,18 @@ class IcsExportIntegrationTest {
 
     @Test
     fun `EmailConfig can be constructed with all fields`() {
-        val config = EmailConfig(
-            enabled = true,
-            smtpHost = "smtp.gmail.com",
-            smtpPort = 465,
-            smtpUsername = "user@gmail.com",
-            smtpPassword = "app-password",
-            fromAddress = "user@gmail.com",
-            toAddress = "dest@gmail.com",
-            subject = "Custom Subject",
-            useTls = true
-        )
+        val config =
+            EmailConfig(
+                enabled = true,
+                smtpHost = "smtp.gmail.com",
+                smtpPort = 465,
+                smtpUsername = "user@gmail.com",
+                smtpPassword = "app-password",
+                fromAddress = "user@gmail.com",
+                toAddress = "dest@gmail.com",
+                subject = "Custom Subject",
+                useTls = true,
+            )
         assertTrue(config.enabled)
         assertEquals("smtp.gmail.com", config.smtpHost)
         assertEquals(465, config.smtpPort)

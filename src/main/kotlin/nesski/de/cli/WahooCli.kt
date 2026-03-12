@@ -26,125 +26,143 @@ import java.time.LocalDate
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class WahooCli : CliktCommand(
-    name = "wahoo-cli"
-) {
+class WahooCli : CliktCommand(name = "wahoo-cli") {
     override fun help(context: Context): String =
         "Fetch Wahoo SYSTM training plans and export as .ics"
 
-    private val configFile by option("--config", "-c", help = "Config file path: Default will be created at ~/.config/wahoo_sync/config.toml")
-        .file(canBeFile = true, canBeDir = false)
-        .defaultLazy { defaultConfigFile() }
+    private val configFile by
+        option(
+                "--config",
+                "-c",
+                help =
+                    "Config file path: Default will be created at ~/.config/wahoo_sync/config.toml",
+            )
+            .file(canBeFile = true, canBeDir = false)
+            .defaultLazy { defaultConfigFile() }
 
-    private val range by option("--range", "-r", help = "Time range shorthand: now, 1w, 2w, 1m, 2m. Default: 2w")
-        .convert { input ->
-            try {
-                Range.parse(input)
-            } catch (e: IllegalArgumentException) {
-                fail(e.message ?: "Invalid date range")
+    private val range by
+        option("--range", "-r", help = "Time range shorthand: now, 1w, 2w, 1m, 2m. Default: 2w")
+            .convert { input ->
+                try {
+                    Range.parse(input)
+                } catch (e: IllegalArgumentException) {
+                    fail(e.message ?: "Invalid date range")
+                }
             }
-        }
-    private val from by option("--from", help = "Start date (YYYY-MM-DD)")
-        .convert { input ->
+    private val from by
+        option("--from", help = "Start date (YYYY-MM-DD)").convert { input ->
             parseDate(input) ?: fail("Invalid date")
         }
-    private val to by option("--to", help = "End date (YYYY-MM-DD)")
-        .convert { input ->
+    private val to by
+        option("--to", help = "End date (YYYY-MM-DD)").convert { input ->
             parseDate(input) ?: fail("Invalid date")
         }
-    private val outputFile by option("--out", "-o", help = "Output file location.")
-        .file(canBeFile = true, canBeDir = false)
+    private val outputFile by
+        option("--out", "-o", help = "Output file location.")
+            .file(canBeFile = true, canBeDir = false)
 
     override fun run() {
         val config = AppConfig.load(configFile)
 
-        val dateRange = try {
-            parseDateRange(range, from, to)
-        } catch (e: IllegalArgumentException) {
-            throw UsageError(e.message ?: "Invalid date range options")
-        }
+        val dateRange =
+            try {
+                parseDateRange(range, from, to)
+            } catch (e: IllegalArgumentException) {
+                throw UsageError(e.message ?: "Invalid date range options")
+            }
 
-        TokenStorage.token = runBlocking {
-            runCatching {
-                SystmAuthService(wahooClient, config.resolvedCredentials()).login()
-            }
-        }.fold(
-            onSuccess = { it },
-            onFailure = { e ->
-                echo("Authentication failed: ${e.message}")
-                throw ProgramResult(1)
-            }
-        )
+        TokenStorage.token =
+            runBlocking {
+                    runCatching {
+                        SystmAuthService(wahooClient, config.resolvedCredentials()).login()
+                    }
+                }
+                .fold(
+                    onSuccess = { it },
+                    onFailure = { e ->
+                        echo("Authentication failed: ${e.message}")
+                        throw ProgramResult(1)
+                    },
+                )
 
-        val items = runBlocking {
-            runCatching {
-                PlansService(wahooClient, TokenStorage.token)
-                    .fetchPlans(dateRange.start, dateRange.end)
-            }
-        }.fold(
-            onSuccess = { it },
-            onFailure = { e ->
-                echo("API error: ${e.message}")
-                throw ProgramResult(1)
-            }
-        )
+        val items =
+            runBlocking {
+                    runCatching {
+                        PlansService(wahooClient, TokenStorage.token)
+                            .fetchPlans(dateRange.start, dateRange.end)
+                    }
+                }
+                .fold(
+                    onSuccess = { it },
+                    onFailure = { e ->
+                        echo("API error: ${e.message}")
+                        throw ProgramResult(1)
+                    },
+                )
 
         informUser(items, dateRange)
 
         runCatching {
-            if (items.isEmpty()) {
-                echo("No plans found for this date range.")
-                Abort()
+                if (items.isEmpty()) {
+                    echo("No plans found for this date range.")
+                    Abort()
+                }
+                IcsBuilder.build(items)
             }
-            IcsBuilder.build(items)
-        }.getOrElse { e ->
-            echo("Encountered an exception building the ics file: ${e.message}")
-            throw ProgramResult(1)
-        }.let { result ->
-            echo("ICS export: ${result.exportedCount} workouts exported, ${result.skippedCount} skipped")
-
-            if (result.exportedCount == 0) {
-                echo("No workouts to export.")
-                ProgramResult(0)
+            .getOrElse { e ->
+                echo("Encountered an exception building the ics file: ${e.message}")
+                throw ProgramResult(1)
             }
-
-            val rangeLabel = range ?: "${dateRange.start}_${dateRange.end}"
-            val filename = "workouts_${rangeLabel}_${LocalDate.now()}.ics"
-
-            if (config.email.enabled) {
-                val emailResult = EmailService.send(
-                    config = config.email,
-                    icsContent = result.icsContent,
-                    filename = filename
+            .let { result ->
+                echo(
+                    "ICS export: ${result.exportedCount} workouts exported, ${result.skippedCount} skipped"
                 )
 
-                if (emailResult.success) {
-                    echo("Email sent successfully with $filename attached")
+                if (result.exportedCount == 0) {
+                    echo("No workouts to export.")
+                    ProgramResult(0)
+                }
+
+                val rangeLabel = range ?: "${dateRange.start}_${dateRange.end}"
+                val filename = "workouts_${rangeLabel}_${LocalDate.now()}.ics"
+
+                if (config.email.enabled) {
+                    val emailResult =
+                        EmailService.send(
+                            config = config.email,
+                            icsContent = result.icsContent,
+                            filename = filename,
+                        )
+
+                    if (emailResult.success) {
+                        echo("Email sent successfully with $filename attached")
+                    } else {
+                        echo("Email failed: ${emailResult.errorMessage}")
+                        // Fallback: save to disk
+                        saveIcsToDisk(
+                            outputFile ?: File(config.output.icsSavePath, filename),
+                            result.icsContent,
+                        )
+                    }
                 } else {
-                    echo("Email failed: ${emailResult.errorMessage}")
-                    // Fallback: save to disk
+                    // No email configured — save to disk directly
                     saveIcsToDisk(
                         outputFile ?: File(config.output.icsSavePath, filename),
-                        result.icsContent)
+                        result.icsContent,
+                    )
                 }
-            } else {
-                // No email configured — save to disk directly
-                saveIcsToDisk(
-                    outputFile ?: File(config.output.icsSavePath, filename),
-                    result.icsContent)
-            }
 
-            // Report skipped items
-            if (result.skippedReasons.isNotEmpty()) {
-                echo("\nSkipped items:")
-                result.skippedReasons.forEach { echo("  - $it") }
+                // Report skipped items
+                if (result.skippedReasons.isNotEmpty()) {
+                    echo("\nSkipped items:")
+                    result.skippedReasons.forEach { echo("  - $it") }
+                }
             }
-        }
     }
 
     /**
-     * Save .ics content to disk at the configured path.
-     * Auto-creates directories if they don't exist.
+     * Save .ics content to disk at the configured path. Auto-creates directories if they don't
+     * exist.
      *
      * @return The absolute path of the saved file
      */
@@ -166,9 +184,7 @@ class WahooCli : CliktCommand(
         var totalItems = 0
         for ((planName, planItems) in byPlan) {
             val planInfo = planItems.firstNotNullOfOrNull { it.plan }
-            planInfo?.level
-                ?.let { echo("$planName [$it]")  }
-                ?:  echo(planName)
+            planInfo?.level?.let { echo("$planName [$it]") } ?: echo(planName)
 
             for (item in planItems.sortedBy { it.plannedDate }) {
                 totalItems++

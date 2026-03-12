@@ -10,46 +10,37 @@ import nesski.de.utils.AnySerializer
 data class GraphQLRequest(
     val query: String,
     val variables: Map<String, @Serializable(with = AnySerializer::class) Any>? = null,
-    val operationName: String? = null
+    val operationName: String? = null,
 )
 
 @Serializable
 data class GraphQLError(
     val message: String,
     val locations: List<GraphQLLocation>? = null,
-    val path: List<String>? = null
+    val path: List<String>? = null,
 )
 
-@Serializable
-data class GraphQLLocation(
-    val line: Int,
-    val column: Int
-)
+@Serializable data class GraphQLLocation(val line: Int, val column: Int)
 
 @Serializable
-data class GraphQLResponse<T>(
-    val data: T? = null,
-    val errors: List<GraphQLError>? = null
-)
+data class GraphQLResponse<T>(val data: T? = null, val errors: List<GraphQLError>? = null)
 
 // ── GetUserPlansRange response ──────────────────────────────────────
 
 /**
- * Top-level data wrapper for the `userPlan` query.
- * The query returns `{ data: { userPlan: [ ... ] } }`.
+ * Top-level data wrapper for the `userPlan` query. The query returns `{ data: { userPlan: [ ... ] }
+ * }`.
  */
 @Serializable
 data class GetUserPlansRangeResponse(
-    @SerialName("userPlan")
-    val userPlan: List<UserPlanItem>? = null
+    @SerialName("userPlan") val userPlan: List<UserPlanItem>? = null
 )
 
 // ── UserPlanItem (one row per day/workout slot) ─────────────────────
 
 /**
- * A single item from the user's training agenda.
- * Each item represents one planned workout slot on a specific day.
- *
+ * A single item from the user's training agenda. Each item represents one planned workout slot on a
+ * specific day.
  */
 @Serializable
 data class UserPlanItem(
@@ -69,7 +60,7 @@ data class UserPlanItem(
     val prospects: List<Prospect>? = null,
 
     /** The plan this item belongs to. */
-    val plan: PlanInfo? = null
+    val plan: PlanInfo? = null,
 )
 
 /**
@@ -92,7 +83,7 @@ data class Prospect(
     val plannedDuration: Double? = null,
 
     /** Workout ID within the plan. Fallback for VEVENT UID. */
-    val workoutId: String? = null
+    val workoutId: String? = null,
 )
 
 /**
@@ -101,8 +92,4 @@ data class Prospect(
  * Trimmed to fields needed for CLI display grouping and email body.
  */
 @Serializable
-data class PlanInfo(
-    val id: String? = null,
-    val name: String? = null,
-    val level: String? = null
-)
+data class PlanInfo(val id: String? = null, val name: String? = null, val level: String? = null)

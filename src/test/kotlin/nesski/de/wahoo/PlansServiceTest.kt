@@ -21,20 +21,26 @@ import kotlin.test.assertTrue
 
 class PlansServiceTest {
 
-    private fun createMockClient(responseBody: String, statusCode: HttpStatusCode = HttpStatusCode.OK): HttpClient {
+    private fun createMockClient(
+        responseBody: String,
+        statusCode: HttpStatusCode = HttpStatusCode.OK,
+    ): HttpClient {
         val mockEngine = MockEngine { _ ->
             respond(
                 content = responseBody,
                 status = statusCode,
-                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                headers =
+                    headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
             )
         }
         return HttpClient(mockEngine) {
             install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                })
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        isLenient = true
+                    }
+                )
             }
         }
     }
@@ -44,17 +50,15 @@ class PlansServiceTest {
         val client = createMockClient("""{"data":{"userPlan":[]}}""")
         val service = PlansService(client, "test-token")
 
-        val result = service.fetchPlans(
-            LocalDate.of(2026, 3, 1),
-            LocalDate.of(2026, 3, 31)
-        )
+        val result = service.fetchPlans(LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31))
 
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun `fetchPlans returns plan items with VTODO-relevant fields`() = runBlocking {
-        val responseJson = """
+        val responseJson =
+            """
             {
                 "data": {
                     "userPlan": [
@@ -101,20 +105,21 @@ class PlansServiceTest {
                     ]
                 }
             }
-        """.trimIndent()
+            """
+                .trimIndent()
 
         val client = createMockClient(responseJson)
         val service = PlansService(client, "test-token")
 
-        val result = service.fetchPlans(
-            LocalDate.of(2026, 3, 1),
-            LocalDate.of(2026, 3, 31)
-        )
+        val result = service.fetchPlans(LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31))
 
         assertEquals(2, result.size)
 
         // VTODO-relevant fields — cycling workout
-        assertEquals("Costa Blanca: Puerto de la Vall de Ebo (Recharger Ride)", result[0].prospects!![0].name)
+        assertEquals(
+            "Costa Blanca: Puerto de la Vall de Ebo (Recharger Ride)",
+            result[0].prospects!![0].name,
+        )
         assertEquals("Cycling", result[0].prospects!![0].type)
         assertNull(result[0].prospects!![0].style)
         assertEquals(0.6011111111111112, result[0].prospects!![0].plannedDuration)
@@ -130,7 +135,8 @@ class PlansServiceTest {
 
     @Test
     fun `fetchPlans throws GraphQLException on errors`() = runBlocking {
-        val responseJson = """
+        val responseJson =
+            """
             {
                 "data": null,
                 "errors": [
@@ -140,17 +146,16 @@ class PlansServiceTest {
                     }
                 ]
             }
-        """.trimIndent()
+            """
+                .trimIndent()
 
         val client = createMockClient(responseJson)
         val service = PlansService(client, "bad-token")
 
-        val exception = assertFailsWith<GraphQLException> {
-            service.fetchPlans(
-                LocalDate.of(2026, 3, 1),
-                LocalDate.of(2026, 3, 31)
-            )
-        }
+        val exception =
+            assertFailsWith<GraphQLException> {
+                service.fetchPlans(LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31))
+            }
 
         assertEquals("Not authenticated", exception.message)
         assertEquals(1, exception.errors.size)
@@ -163,10 +168,7 @@ class PlansServiceTest {
         val client = createMockClient(responseJson)
         val service = PlansService(client, "test-token")
 
-        val result = service.fetchPlans(
-            LocalDate.of(2026, 3, 1),
-            LocalDate.of(2026, 3, 31)
-        )
+        val result = service.fetchPlans(LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31))
 
         assertTrue(result.isEmpty())
     }
@@ -180,23 +182,24 @@ class PlansServiceTest {
             respond(
                 content = """{"data":{"userPlan":[]}}""",
                 status = HttpStatusCode.OK,
-                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                headers =
+                    headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
             )
         }
-        val client = HttpClient(mockEngine) {
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                })
+        val client =
+            HttpClient(mockEngine) {
+                install(ContentNegotiation) {
+                    json(
+                        Json {
+                            ignoreUnknownKeys = true
+                            isLenient = true
+                        }
+                    )
+                }
             }
-        }
 
         val service = PlansService(client, "my-token", timezone = "Europe/Berlin")
-        service.fetchPlans(
-            LocalDate.of(2026, 3, 1),
-            LocalDate.of(2026, 3, 31)
-        )
+        service.fetchPlans(LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31))
 
         val body = capturedBody!!
         // Verify the request contains the correct operation name
@@ -233,17 +236,21 @@ class PlansServiceTest {
             respond(
                 content = """{"data":{"userPlan":[]}}""",
                 status = HttpStatusCode.OK,
-                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                headers =
+                    headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
             )
         }
-        val client = HttpClient(mockEngine) {
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                })
+        val client =
+            HttpClient(mockEngine) {
+                install(ContentNegotiation) {
+                    json(
+                        Json {
+                            ignoreUnknownKeys = true
+                            isLenient = true
+                        }
+                    )
+                }
             }
-        }
 
         val service = PlansService(client, "secret-token-123")
         service.fetchPlans(LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31))
@@ -253,7 +260,8 @@ class PlansServiceTest {
 
     @Test
     fun `fetchPlans handles completed workout items`() = runBlocking {
-        val responseJson = """
+        val responseJson =
+            """
             {
                 "data": {
                     "userPlan": [
@@ -279,15 +287,13 @@ class PlansServiceTest {
                     ]
                 }
             }
-        """.trimIndent()
+            """
+                .trimIndent()
 
         val client = createMockClient(responseJson)
         val service = PlansService(client, "test-token")
 
-        val result = service.fetchPlans(
-            LocalDate.of(2026, 3, 1),
-            LocalDate.of(2026, 3, 31)
-        )
+        val result = service.fetchPlans(LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31))
 
         assertEquals(1, result.size)
         assertEquals("Completed", result[0].status)
@@ -297,7 +303,8 @@ class PlansServiceTest {
 
     @Test
     fun `fetchPlans handles strength and yoga workout types`() = runBlocking {
-        val responseJson = """
+        val responseJson =
+            """
             {
                 "data": {
                     "userPlan": [
@@ -342,15 +349,13 @@ class PlansServiceTest {
                     ]
                 }
             }
-        """.trimIndent()
+            """
+                .trimIndent()
 
         val client = createMockClient(responseJson)
         val service = PlansService(client, "test-token")
 
-        val result = service.fetchPlans(
-            LocalDate.of(2026, 3, 1),
-            LocalDate.of(2026, 3, 31)
-        )
+        val result = service.fetchPlans(LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31))
 
         assertEquals(2, result.size)
         assertEquals("Strength", result[0].type)

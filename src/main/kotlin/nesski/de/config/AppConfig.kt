@@ -3,37 +3,32 @@ package nesski.de.config
 import com.akuleshov7.ktoml.file.TomlFileReader
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Paths
-
-private val logger = LoggerFactory.getLogger("AppConfig")
 
 @Serializable
 data class AppConfig(
     val credentials: CredentialsConfig,
     val output: OutputConfig = OutputConfig(),
-    val email: EmailConfig = EmailConfig()
+    val email: EmailConfig = EmailConfig(),
 ) {
     companion object {
         /**
-         * Load config from a TOML file at the given path.
-         * If the file doesn't exist or can't be parsed, returns defaults.
+         * Load config from a TOML file at the given path. If the file doesn't exist or can't be
+         * parsed, returns defaults.
          */
         fun load(config: File): AppConfig {
             return try {
-                TomlFileReader.decodeFromFile(
-                    serializer(),
-                    config.path
-                )
+                TomlFileReader.decodeFromFile(serializer(), config.path)
             } catch (e: Exception) {
                 error("Failed to parse config file at ${config.path}: ${e.message}")
             }
         }
     }
+
     /**
-     * Resolve credentials with env var overrides.
-     * Env vars SYSTM_USER and SYSTM_PASSWORD take precedence over config file values.
+     * Resolve credentials with env var overrides. Env vars SYSTM_USER and SYSTM_PASSWORD take
+     * precedence over config file values.
      */
     fun resolvedCredentials(): CredentialsConfig {
         val username = System.getenv("SYSTM_USER") ?: credentials.username
@@ -42,34 +37,22 @@ data class AppConfig(
     }
 }
 
-@Serializable
-data class CredentialsConfig(
-    val username: String,
-    val password: String
-)
+@Serializable data class CredentialsConfig(val username: String, val password: String)
 
 @Serializable
 data class OutputConfig(
-    @SerialName("ics_save_path")
-    val icsSavePath: String = Paths.get("").toAbsolutePath().toString(),
+    @SerialName("ics_save_path") val icsSavePath: String = Paths.get("").toAbsolutePath().toString()
 )
 
 @Serializable
 data class EmailConfig(
     val enabled: Boolean = false,
-    @SerialName("smtp_host")
-    val smtpHost: String = "",
-    @SerialName("smtp_port")
-    val smtpPort: Int = 587,
-    @SerialName("smtp_username")
-    val smtpUsername: String = "",
-    @SerialName("smtp_password")
-    val smtpPassword: String = "",
-    @SerialName("from_address")
-    val fromAddress: String = "",
-    @SerialName("to_address")
-    val toAddress: String = "",
+    @SerialName("smtp_host") val smtpHost: String = "",
+    @SerialName("smtp_port") val smtpPort: Int = 587,
+    @SerialName("smtp_username") val smtpUsername: String = "",
+    @SerialName("smtp_password") val smtpPassword: String = "",
+    @SerialName("from_address") val fromAddress: String = "",
+    @SerialName("to_address") val toAddress: String = "",
     val subject: String = "Wahoo SYSTM Workout Plan",
-    @SerialName("use_tls")
-    val useTls: Boolean = true
+    @SerialName("use_tls") val useTls: Boolean = true,
 )

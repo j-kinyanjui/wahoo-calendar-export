@@ -30,16 +30,15 @@ data class IcsBuildResult(
     val icsContent: String,
     val exportedCount: Int,
     val skippedCount: Int,
-    val skippedReasons: List<String> = emptyList()
+    val skippedReasons: List<String> = emptyList(),
 )
 
 /**
- * Builds RFC 5545-compliant VCALENDAR content with VEVENT entries from
- * Wahoo SYSTM training plan items using ical4j.
+ * Builds RFC 5545-compliant VCALENDAR content with VEVENT entries from Wahoo SYSTM training plan
+ * items using ical4j.
  *
- * Each workout becomes an all-day calendar event (DATE-only DTSTART/DTEND)
- * that is universally compatible with Apple Calendar, Google Calendar,
- * Yahoo Calendar, and Outlook.
+ * Each workout becomes an all-day calendar event (DATE-only DTSTART/DTEND) that is universally
+ * compatible with Apple Calendar, Google Calendar, Yahoo Calendar, and Outlook.
  *
  * Key VEVENT decisions:
  * - DTSTART/DTEND use DATE-only format for all-day placeholder events
@@ -56,8 +55,8 @@ object IcsBuilder {
     /**
      * Build a complete VCALENDAR string from a list of [UserPlanItem]s.
      *
-     * Workouts with missing plannedDate are skipped. Rest days (type == "Rest")
-     * are skipped. Items with no prospect (no workout details) are skipped.
+     * Workouts with missing plannedDate are skipped. Rest days (type == "Rest") are skipped. Items
+     * with no prospect (no workout details) are skipped.
      *
      * @param items The workout plan items from the GraphQL API
      * @return An [IcsBuildResult] with the ICS content and export statistics
@@ -85,14 +84,19 @@ object IcsBuilder {
             }
 
             // Parse the date from ISO-8601 datetime
-            val eventDate = try {
-                LocalDate.parse(item.plannedDate.substringBefore("T"))
-            } catch (e: Exception) {
-                log.warn("Skipping item with unparseable date '${item.plannedDate}': ${e.message}")
-                skippedCount++
-                skippedReasons.add("Unparseable date '${item.plannedDate}': agendaId=${item.agendaId ?: "unknown"}")
-                continue
-            }
+            val eventDate =
+                try {
+                    LocalDate.parse(item.plannedDate.substringBefore("T"))
+                } catch (e: Exception) {
+                    log.warn(
+                        "Skipping item with unparseable date '${item.plannedDate}': ${e.message}"
+                    )
+                    skippedCount++
+                    skippedReasons.add(
+                        "Unparseable date '${item.plannedDate}': agendaId=${item.agendaId ?: "unknown"}"
+                    )
+                    continue
+                }
 
             val prospect = item.prospects?.firstOrNull()
 
@@ -116,20 +120,20 @@ object IcsBuilder {
             icsContent = icsContent,
             exportedCount = events.size,
             skippedCount = skippedCount,
-            skippedReasons = skippedReasons
+            skippedReasons = skippedReasons,
         )
     }
 
     /**
      * Build a single VEVENT component for one workout.
      *
-     * Creates an all-day event (DATE-only) so the user can drag it
-     * to their preferred time in any calendar app.
+     * Creates an all-day event (DATE-only) so the user can drag it to their preferred time in any
+     * calendar app.
      */
     internal fun buildVEvent(
         item: UserPlanItem,
         prospect: nesski.de.models.Prospect?,
-        eventDate: LocalDate
+        eventDate: LocalDate,
     ): VEvent {
         val summary = formatSummary(item, prospect)
 
@@ -155,8 +159,8 @@ object IcsBuilder {
     }
 
     /**
-     * Wrap VEVENT entries in a VCALENDAR envelope using ical4j,
-     * then serialize to a compliant string via CalendarOutputter.
+     * Wrap VEVENT entries in a VCALENDAR envelope using ical4j, then serialize to a compliant
+     * string via CalendarOutputter.
      */
     private fun buildCalendar(events: List<VEvent>): String {
         val calendar = Calendar()
@@ -175,22 +179,22 @@ object IcsBuilder {
     }
 
     /**
-     * Resolve a unique ID for the VEVENT.
-     * Priority: agendaId > prospect.workoutId > generated fallback.
-     * All UIDs get @wahoo suffix for domain uniqueness.
+     * Resolve a unique ID for the VEVENT. Priority: agendaId > prospect.workoutId > generated
+     * fallback. All UIDs get @wahoo suffix for domain uniqueness.
      */
     private fun resolveUid(item: UserPlanItem, prospect: nesski.de.models.Prospect?): String {
-        val baseUid = item.agendaId
-            ?: prospect?.workoutId
-            ?: "wahoo-${item.plannedDate?.replace(Regex("[^0-9]"), "") ?: System.currentTimeMillis()}"
+        val baseUid =
+            item.agendaId
+                ?: prospect?.workoutId
+                ?: "wahoo-${item.plannedDate?.replace(Regex("[^0-9]"), "") ?: System.currentTimeMillis()}"
         return "$baseUid@wahoo"
     }
 
     /**
      * Format the SUMMARY field with sport emoji, workout name, and duration hint.
      *
-     * Format: "emoji WorkoutName (Xmin)" — duration helps users know how long
-     * the workout will take when they schedule it.
+     * Format: "emoji WorkoutName (Xmin)" — duration helps users know how long the workout will take
+     * when they schedule it.
      */
     internal fun formatSummary(item: UserPlanItem, prospect: nesski.de.models.Prospect?): String {
         val workoutName = prospect?.name ?: item.type ?: "Workout"
@@ -198,20 +202,22 @@ object IcsBuilder {
         val emoji = SportEmoji.forType(sportType)
 
         val duration = prospect?.plannedDuration
-        val durationHint = if (duration != null) {
-            val totalMinutes = (duration * 60).toInt()
-            " (${totalMinutes} min)"
-        } else {
-            ""
-        }
+        val durationHint =
+            if (duration != null) {
+                val totalMinutes = (duration * 60).toInt()
+                " (${totalMinutes} min)"
+            } else {
+                ""
+            }
 
         return "$emoji $workoutName$durationHint"
     }
 
-    /**
-     * Format the DESCRIPTION field with workout type, plan info, and drag instruction.
-     */
-    private fun formatDescription(item: UserPlanItem, prospect: nesski.de.models.Prospect?): String {
+    /** Format the DESCRIPTION field with workout type, plan info, and drag instruction. */
+    private fun formatDescription(
+        item: UserPlanItem,
+        prospect: nesski.de.models.Prospect?,
+    ): String {
         val parts = mutableListOf<String>()
 
         val workoutType = prospect?.type ?: prospect?.style ?: item.type

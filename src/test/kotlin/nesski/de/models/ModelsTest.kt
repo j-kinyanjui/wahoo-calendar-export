@@ -8,11 +8,10 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
- * Tests for deserialization of Wahoo SYSTM GraphQL API responses
- * into the Kotlin model classes.
+ * Tests for deserialization of Wahoo SYSTM GraphQL API responses into the Kotlin model classes.
  *
- * Models are trimmed to fields needed for VTODO/VCALENDAR generation.
- * Test data reflects real API response patterns (capitalized values, null style, etc.).
+ * Models are trimmed to fields needed for VTODO/VCALENDAR generation. Test data reflects real API
+ * response patterns (capitalized values, null style, etc.).
  */
 class ModelsTest {
 
@@ -28,7 +27,7 @@ class ModelsTest {
         val raw = """{"userPlan":[]}"""
         val response = json.decodeFromString<GetUserPlansRangeResponse>(raw)
         assertNotNull(response.userPlan)
-        assertTrue(response.userPlan!!.isEmpty())
+        assertTrue(response.userPlan.isEmpty())
     }
 
     @Test
@@ -37,14 +36,15 @@ class ModelsTest {
         val response = json.decodeFromString<GraphQLResponse<GetUserPlansRangeResponse>>(raw)
         assertNull(response.errors)
         assertNotNull(response.data)
-        assertTrue(response.data!!.userPlan!!.isEmpty())
+        assertTrue(response.data.userPlan!!.isEmpty())
     }
 
     // ── UserPlanItem ────────────────────────────────────────────────
 
     @Test
     fun `deserialize minimal UserPlanItem`() {
-        val raw = """
+        val raw =
+            """
             {
                 "plannedDate": "2026-03-10T00:00:00.000Z",
                 "status": "Planned",
@@ -52,19 +52,21 @@ class ModelsTest {
                 "prospects": [],
                 "plan": null
             }
-        """.trimIndent()
+            """
+                .trimIndent()
         val item = json.decodeFromString<UserPlanItem>(raw)
         assertEquals("2026-03-10T00:00:00.000Z", item.plannedDate)
         assertEquals("Planned", item.status)
         assertEquals("Cycling", item.type)
         assertNotNull(item.prospects)
-        assertTrue(item.prospects!!.isEmpty())
+        assertTrue(item.prospects.isEmpty())
         assertNull(item.plan)
     }
 
     @Test
     fun `deserialize UserPlanItem with all retained fields`() {
-        val raw = """
+        val raw =
+            """
             {
                 "plannedDate": "2026-03-17T00:00:00.000Z",
                 "agendaId": "xu8fKNWU5M_7",
@@ -85,7 +87,8 @@ class ModelsTest {
                     "level": ""
                 }
             }
-        """.trimIndent()
+            """
+                .trimIndent()
 
         val item = json.decodeFromString<UserPlanItem>(raw)
 
@@ -97,8 +100,8 @@ class ModelsTest {
 
         // Prospects
         assertNotNull(item.prospects)
-        assertEquals(1, item.prospects!!.size)
-        val prospect = item.prospects!![0]
+        assertEquals(1, item.prospects.size)
+        val prospect = item.prospects[0]
         assertEquals("Cycling", prospect.type)
         assertEquals("Costa Blanca: Puerto de la Vall de Ebo (Recharger Ride)", prospect.name)
         assertNull(prospect.style)
@@ -107,14 +110,15 @@ class ModelsTest {
 
         // PlanInfo
         assertNotNull(item.plan)
-        assertEquals("xu8fKNWU5M", item.plan!!.id)
-        assertEquals("6 Week - Fitness Kickstarter ", item.plan!!.name)
-        assertEquals("", item.plan!!.level)
+        assertEquals("xu8fKNWU5M", item.plan.id)
+        assertEquals("6 Week - Fitness Kickstarter ", item.plan.name)
+        assertEquals("", item.plan.level)
     }
 
     @Test
     fun `deserialize UserPlanItem ignores unknown fields from full API response`() {
-        val raw = """
+        val raw =
+            """
             {
                 "day": 15,
                 "plannedDate": "2026-03-17T00:00:00.000Z",
@@ -130,7 +134,8 @@ class ModelsTest {
                 "prospects": [],
                 "plan": null
             }
-        """.trimIndent()
+            """
+                .trimIndent()
         val item = json.decodeFromString<UserPlanItem>(raw)
         assertEquals("2026-03-17T00:00:00.000Z", item.plannedDate)
         assertEquals("xu8fKNWU5M_7", item.agendaId)
@@ -142,7 +147,8 @@ class ModelsTest {
 
     @Test
     fun `deserialize GraphQL error response`() {
-        val raw = """
+        val raw =
+            """
             {
                 "data": null,
                 "errors": [
@@ -153,20 +159,22 @@ class ModelsTest {
                     }
                 ]
             }
-        """.trimIndent()
+            """
+                .trimIndent()
         val response = json.decodeFromString<GraphQLResponse<GetUserPlansRangeResponse>>(raw)
         assertNull(response.data)
         assertNotNull(response.errors)
-        assertEquals(1, response.errors!!.size)
-        assertEquals("Not authenticated", response.errors!![0].message)
-        assertEquals(2, response.errors!![0].locations!![0].line)
+        assertEquals(1, response.errors.size)
+        assertEquals("Not authenticated", response.errors[0].message)
+        assertEquals(2, response.errors[0].locations!![0].line)
     }
 
     // ── Full realistic response (from real API) ─────────────────────
 
     @Test
     fun `deserialize real API response with multiple plan items`() {
-        val raw = """
+        val raw =
+            """
             {
                 "data": {
                     "userPlan": [
@@ -255,7 +263,8 @@ class ModelsTest {
                     ]
                 }
             }
-        """.trimIndent()
+            """
+                .trimIndent()
 
         val response = json.decodeFromString<GraphQLResponse<GetUserPlansRangeResponse>>(raw)
         assertNull(response.errors)
@@ -264,23 +273,26 @@ class ModelsTest {
 
         // Cycling workout
         val cycling = items[0]
-        assertEquals("Costa Blanca: Puerto de la Vall de Ebo (Recharger Ride)", cycling.prospects!![0].name)
-        assertEquals("Cycling", cycling.prospects!![0].type)
-        assertNull(cycling.prospects!![0].style)
-        assertEquals(0.6011111111111112, cycling.prospects!![0].plannedDuration)
+        assertEquals(
+            "Costa Blanca: Puerto de la Vall de Ebo (Recharger Ride)",
+            cycling.prospects!![0].name,
+        )
+        assertEquals("Cycling", cycling.prospects[0].type)
+        assertNull(cycling.prospects[0].style)
+        assertEquals(0.6011111111111112, cycling.prospects[0].plannedDuration)
         assertEquals("xu8fKNWU5M_7", cycling.agendaId)
 
         // Yoga workout
         val yoga = items[1]
         assertEquals("Morning Yoga Routine", yoga.prospects!![0].name)
         assertEquals("Yoga", yoga.type)
-        assertEquals("Yoga", yoga.prospects!![0].type)
+        assertEquals("Yoga", yoga.prospects[0].type)
 
         // Strength workout
         val strength = items[2]
         assertEquals("Full Body 02", strength.prospects!![0].name)
         assertEquals("Strength", strength.type)
-        assertEquals(0.19555555555555557, strength.prospects!![0].plannedDuration)
+        assertEquals(0.19555555555555557, strength.prospects[0].plannedDuration)
 
         // All belong to the same plan
         assertTrue(items.all { it.plan?.name == "6 Week - Fitness Kickstarter " })
@@ -290,7 +302,8 @@ class ModelsTest {
 
     @Test
     fun `deserialize Prospect with null style (real API pattern)`() {
-        val raw = """
+        val raw =
+            """
             {
                 "type": "Cycling",
                 "name": "Cadence Builds",
@@ -298,7 +311,8 @@ class ModelsTest {
                 "plannedDuration": 0.5480555555555555,
                 "workoutId": "04BfbUGDMk"
             }
-        """.trimIndent()
+            """
+                .trimIndent()
         val prospect = json.decodeFromString<Prospect>(raw)
         assertEquals("Cadence Builds", prospect.name)
         assertEquals("Cycling", prospect.type)
@@ -309,14 +323,16 @@ class ModelsTest {
 
     @Test
     fun `deserialize Prospect with style populated (legacy pattern)`() {
-        val raw = """
+        val raw =
+            """
             {
                 "name": "Recovery Spin",
                 "style": "cycling",
                 "plannedDuration": 0.5,
                 "workoutId": "wo-1"
             }
-        """.trimIndent()
+            """
+                .trimIndent()
         val prospect = json.decodeFromString<Prospect>(raw)
         assertEquals("Recovery Spin", prospect.name)
         assertEquals("cycling", prospect.style)
@@ -325,14 +341,16 @@ class ModelsTest {
 
     @Test
     fun `deserialize Prospect with fractional plannedDuration`() {
-        val raw = """
+        val raw =
+            """
             {
                 "type": "Yoga",
                 "name": "Morning Yoga Routine",
                 "style": null,
                 "plannedDuration": 0.25305555555555553
             }
-        """.trimIndent()
+            """
+                .trimIndent()
         val prospect = json.decodeFromString<Prospect>(raw)
         assertEquals("Morning Yoga Routine", prospect.name)
         assertEquals(0.25305555555555553, prospect.plannedDuration)
@@ -341,7 +359,8 @@ class ModelsTest {
 
     @Test
     fun `deserialize Prospect ignores unknown fields from full API response`() {
-        val raw = """
+        val raw =
+            """
             {
                 "type": "Cycling",
                 "name": "The Shovel",
@@ -359,7 +378,8 @@ class ModelsTest {
                 "fourDPWorkoutGraph": null,
                 "__typename": "Prospect"
             }
-        """.trimIndent()
+            """
+                .trimIndent()
         val prospect = json.decodeFromString<Prospect>(raw)
         assertEquals("The Shovel", prospect.name)
         assertEquals("Cycling", prospect.type)
@@ -370,7 +390,8 @@ class ModelsTest {
 
     @Test
     fun `deserialize UserPlanItem with null prospects`() {
-        val raw = """
+        val raw =
+            """
             {
                 "plannedDate": "2026-03-10T00:00:00.000Z",
                 "status": "Planned",
@@ -378,7 +399,8 @@ class ModelsTest {
                 "prospects": null,
                 "plan": null
             }
-        """.trimIndent()
+            """
+                .trimIndent()
         val item = json.decodeFromString<UserPlanItem>(raw)
         assertEquals("Rest", item.type)
         assertNull(item.prospects)
@@ -388,7 +410,8 @@ class ModelsTest {
 
     @Test
     fun `deserialize PlanInfo ignores unknown fields from full API response`() {
-        val raw = """
+        val raw =
+            """
             {
                 "id": "xu8fKNWU5M",
                 "name": "6 Week - Fitness Kickstarter ",
@@ -404,7 +427,8 @@ class ModelsTest {
                 "type": "Cycling",
                 "__typename": "UserPlan"
             }
-        """.trimIndent()
+            """
+                .trimIndent()
         val planInfo = json.decodeFromString<PlanInfo>(raw)
         assertEquals("xu8fKNWU5M", planInfo.id)
         assertEquals("6 Week - Fitness Kickstarter ", planInfo.name)
@@ -413,13 +437,15 @@ class ModelsTest {
 
     @Test
     fun `deserialize PlanInfo with empty level string`() {
-        val raw = """
+        val raw =
+            """
             {
                 "id": "p1",
                 "name": "Test Plan",
                 "level": ""
             }
-        """.trimIndent()
+            """
+                .trimIndent()
         val planInfo = json.decodeFromString<PlanInfo>(raw)
         assertEquals("", planInfo.level)
     }

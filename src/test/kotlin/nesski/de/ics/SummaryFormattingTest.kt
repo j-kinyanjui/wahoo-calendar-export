@@ -10,9 +10,8 @@ import kotlin.test.assertTrue
 /**
  * Tests for VEVENT SUMMARY formatting — emoji + workout name + duration hint.
  *
- * Format: "emoji WorkoutName (Xmin)" when duration is available.
- * Format: "emoji WorkoutName" when no duration.
- * Examples: "🚴 Costa Blanca (36 min)", "🧘 Morning Yoga Routine (30 min)"
+ * Format: "emoji WorkoutName (Xmin)" when duration is available. Format: "emoji WorkoutName" when
+ * no duration. Examples: "🚴 Costa Blanca (36 min)", "🧘 Morning Yoga Routine (30 min)"
  *
  * Verifies:
  * - Emoji from prospect.type takes priority
@@ -27,10 +26,11 @@ class SummaryFormattingTest {
 
     @Test
     fun `summary uses emoji from prospect type and prospect name with duration`() {
-        val item = createItem(
-            prospectType = "Cycling",
-            prospectName = "Costa Blanca: Puerto de la Vall de Ebo"
-        )
+        val item =
+            createItem(
+                prospectType = "Cycling",
+                prospectName = "Costa Blanca: Puerto de la Vall de Ebo",
+            )
         val prospect = item.prospects!!.first()
 
         val summary = IcsBuilder.formatSummary(item, prospect)
@@ -63,15 +63,22 @@ class SummaryFormattingTest {
 
     @Test
     fun `summary falls back to prospect style for emoji when prospect type is null`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = "a1",
-            status = "Planned",
-            type = "Cycling",
-            prospects = listOf(
-                Prospect(type = null, name = "Recovery Spin", style = "cycling", plannedDuration = 0.5)
+        val item =
+            UserPlanItem(
+                plannedDate = "2026-03-10T00:00:00.000Z",
+                agendaId = "a1",
+                status = "Planned",
+                type = "Cycling",
+                prospects =
+                    listOf(
+                        Prospect(
+                            type = null,
+                            name = "Recovery Spin",
+                            style = "cycling",
+                            plannedDuration = 0.5,
+                        )
+                    ),
             )
-        )
         val prospect = item.prospects!!.first()
 
         val summary = IcsBuilder.formatSummary(item, prospect)
@@ -82,15 +89,14 @@ class SummaryFormattingTest {
 
     @Test
     fun `summary falls back to item type for emoji when prospect has no type or style`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = "a1",
-            status = "Planned",
-            type = "Yoga",
-            prospects = listOf(
-                Prospect(type = null, name = "Stretch Session", style = null)
+        val item =
+            UserPlanItem(
+                plannedDate = "2026-03-10T00:00:00.000Z",
+                agendaId = "a1",
+                status = "Planned",
+                type = "Yoga",
+                prospects = listOf(Prospect(type = null, name = "Stretch Session", style = null)),
             )
-        )
         val prospect = item.prospects!!.first()
 
         val summary = IcsBuilder.formatSummary(item, prospect)
@@ -101,13 +107,14 @@ class SummaryFormattingTest {
 
     @Test
     fun `summary uses item type as workout name when no prospect`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = "a1",
-            status = "Planned",
-            type = "Cycling",
-            prospects = emptyList()
-        )
+        val item =
+            UserPlanItem(
+                plannedDate = "2026-03-10T00:00:00.000Z",
+                agendaId = "a1",
+                status = "Planned",
+                type = "Cycling",
+                prospects = emptyList(),
+            )
 
         val summary = IcsBuilder.formatSummary(item, null)
 
@@ -117,15 +124,14 @@ class SummaryFormattingTest {
 
     @Test
     fun `summary uses default emoji and Workout when no type info available`() {
-        val item = UserPlanItem(
-            plannedDate = "2026-03-10T00:00:00.000Z",
-            agendaId = "a1",
-            status = "Planned",
-            type = null,
-            prospects = listOf(
-                Prospect(type = null, name = "Mystery Session", style = null)
+        val item =
+            UserPlanItem(
+                plannedDate = "2026-03-10T00:00:00.000Z",
+                agendaId = "a1",
+                status = "Planned",
+                type = null,
+                prospects = listOf(Prospect(type = null, name = "Mystery Session", style = null)),
             )
-        )
         val prospect = item.prospects!!.first()
 
         val summary = IcsBuilder.formatSummary(item, prospect)
@@ -138,9 +144,7 @@ class SummaryFormattingTest {
 
     @Test
     fun `generated ICS contains correct SUMMARY line for cycling with duration`() {
-        val items = listOf(
-            createItem(prospectType = "Cycling", prospectName = "The Shovel")
-        )
+        val items = listOf(createItem(prospectType = "Cycling", prospectName = "The Shovel"))
 
         val result = IcsBuilder.build(items)
 
@@ -149,9 +153,7 @@ class SummaryFormattingTest {
 
     @Test
     fun `generated ICS contains correct SUMMARY line for yoga with duration`() {
-        val items = listOf(
-            createItem(prospectType = "Yoga", prospectName = "Side Bends")
-        )
+        val items = listOf(createItem(prospectType = "Yoga", prospectName = "Side Bends"))
 
         val result = IcsBuilder.build(items)
 
@@ -160,11 +162,20 @@ class SummaryFormattingTest {
 
     @Test
     fun `generated ICS with multiple workouts has correct emoji per type`() {
-        val items = listOf(
-            createItem(prospectType = "Cycling", prospectName = "Cadence Builds"),
-            createItem(prospectType = "Yoga", prospectName = "Morning Yoga Routine", agendaId = "a2"),
-            createItem(prospectType = "Strength", prospectName = "Full Body 02", agendaId = "a3"),
-        )
+        val items =
+            listOf(
+                createItem(prospectType = "Cycling", prospectName = "Cadence Builds"),
+                createItem(
+                    prospectType = "Yoga",
+                    prospectName = "Morning Yoga Routine",
+                    agendaId = "a2",
+                ),
+                createItem(
+                    prospectType = "Strength",
+                    prospectName = "Full Body 02",
+                    agendaId = "a3",
+                ),
+            )
 
         val result = IcsBuilder.build(items)
 
@@ -178,23 +189,24 @@ class SummaryFormattingTest {
     private fun createItem(
         prospectType: String,
         prospectName: String,
-        agendaId: String = "a1"
+        agendaId: String = "a1",
     ): UserPlanItem {
         return UserPlanItem(
             plannedDate = "2026-03-10T00:00:00.000Z",
             agendaId = agendaId,
             status = "Planned",
             type = prospectType,
-            prospects = listOf(
-                Prospect(
-                    type = prospectType,
-                    name = prospectName,
-                    style = null,
-                    plannedDuration = 0.5,
-                    workoutId = "wo-1"
-                )
-            ),
-            plan = PlanInfo(id = "p1", name = "Test Plan", level = "")
+            prospects =
+                listOf(
+                    Prospect(
+                        type = prospectType,
+                        name = prospectName,
+                        style = null,
+                        plannedDuration = 0.5,
+                        workoutId = "wo-1",
+                    )
+                ),
+            plan = PlanInfo(id = "p1", name = "Test Plan", level = ""),
         )
     }
 }

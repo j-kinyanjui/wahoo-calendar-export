@@ -13,12 +13,15 @@ object TokenStorage {
     lateinit var token: String
 }
 
-val wahooClient = HttpClient(CIO) {
-    install(ContentNegotiation) {
-        json(Json {
-            prettyPrint = true
-            isLenient = true
-            ignoreUnknownKeys = true
-        })
+val wahooClient =
+    HttpClient(CIO) {
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                }
+            )
+        }
     }
-}
