@@ -50,8 +50,8 @@ class WahooCli : CliktCommand(
         .convert { input ->
             parseDate(input) ?: fail("Invalid date")
         }
-    private val configPath by option("--config", "-c", help = "Config file path")
-        .default("src/main/resources/config.toml")
+    private val outputFile by option("--out", "-o", help = "Output file location.")
+        .file(canBeFile = true, canBeDir = false)
 
     override fun run() {
         val config = AppConfig.load(configFile)
@@ -121,11 +121,15 @@ class WahooCli : CliktCommand(
                 } else {
                     echo("Email failed: ${emailResult.errorMessage}")
                     // Fallback: save to disk
-                    saveIcsToDisk(config.output.icsSavePath, filename, result.icsContent)
+                    saveIcsToDisk(
+                        outputFile ?: File(config.output.icsSavePath, filename),
+                        result.icsContent)
                 }
             } else {
                 // No email configured — save to disk directly
-                saveIcsToDisk(config.output.icsSavePath, filename, result.icsContent)
+                saveIcsToDisk(
+                    outputFile ?: File(config.output.icsSavePath, filename),
+                    result.icsContent)
             }
 
             // Report skipped items

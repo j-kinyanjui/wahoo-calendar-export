@@ -19,14 +19,7 @@ object IcsFileWriter {
      * @param icsContent The RFC 5545 VCALENDAR string to write
      * @return The absolute path of the written file
      */
-    fun write(savePath: String, filename: String, icsContent: String): String {
-        val resolvedPath = savePath.replaceFirst("~", System.getProperty("user.home"))
-        val dir = File(resolvedPath)
-        if (!dir.exists()) {
-            dir.mkdirs()
-            log.info("Created directory: ${dir.absolutePath}")
-        }
-        val file = File(dir, filename)
+    fun write(file: File, icsContent: String): String {
         file.writeText(icsContent, Charsets.UTF_8)
         log.info("ICS file written: ${file.absolutePath} (${icsContent.length} bytes)")
         return file.absolutePath
