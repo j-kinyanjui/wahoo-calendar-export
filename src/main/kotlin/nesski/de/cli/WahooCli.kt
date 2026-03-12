@@ -32,7 +32,7 @@ class WahooCli : CliktCommand(
     override fun help(context: Context): String =
         "Fetch Wahoo SYSTM training plans and export as .ics"
 
-    private val configFile by option("--config", "-c", help = "Config file path")
+    private val configFile by option("--config", "-c", help = "Config file path: Default will be created at ~/.config/wahoo_sync/config.toml")
         .file(canBeFile = true, canBeDir = false)
         .defaultLazy { defaultConfigFile() }
 

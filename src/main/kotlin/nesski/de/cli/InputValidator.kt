@@ -48,7 +48,7 @@ fun defaultConfigFile(): File {
 
     if (!file.exists()) {
         dir.mkdirs()
-        val stream = object {}.javaClass.getResourceAsStream("config.toml")
+        val stream = object {}.javaClass.getResourceAsStream("/config.toml")
             ?: error("config.toml not found in resources")
         file.outputStream().use { stream.copyTo(it) }
     }
