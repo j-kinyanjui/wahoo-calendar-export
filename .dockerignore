@@ -16,3 +16,8 @@ LICENSE
 devenv.lock
 *.nix
 node_modules/
+.kotlin
+.opencode
+.planning
+opencode.json
+

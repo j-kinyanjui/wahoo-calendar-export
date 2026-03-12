@@ -58,22 +58,6 @@ docker run -it --rm \
 
 The `.ics` file will be saved to your current directory (`$(pwd)`).
 
-### Option 3: Nix Flake
-
-```bash
-# Build the CLI
-nix build ./nix
-
-# Run directly
-nix run ./nix
-
-# Run with arguments
-nix run ./nix -- --range 1m
-
-# Show flake outputs
-nix flake show ./nix
-```
-
 ## Configuration
 
 Create a config file at `~/.config/wahoo-cli/config`:
