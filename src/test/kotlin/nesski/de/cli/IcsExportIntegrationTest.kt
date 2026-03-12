@@ -49,8 +49,9 @@ class IcsExportIntegrationTest {
         try {
             val icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR"
             val filename = "test_export.ics"
+            val targetFile = java.io.File(tempDir, filename)
 
-            val savedPath = IcsFileWriter.write(tempDir.absolutePath, filename, icsContent)
+            val savedPath = IcsFileWriter.write(targetFile, icsContent)
 
             val savedFile = java.io.File(savedPath)
             assertTrue(savedFile.exists(), "ICS file should exist on disk")
@@ -67,8 +68,10 @@ class IcsExportIntegrationTest {
         try {
             val icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR"
             val filename = "nested_test.ics"
+            nestedPath.mkdirs()
+            val targetFile = java.io.File(nestedPath, filename)
 
-            val savedPath = IcsFileWriter.write(nestedPath.absolutePath, filename, icsContent)
+            val savedPath = IcsFileWriter.write(targetFile, icsContent)
 
             val savedFile = java.io.File(savedPath)
             assertTrue(savedFile.exists(), "ICS file should exist in nested directory")
@@ -84,8 +87,9 @@ class IcsExportIntegrationTest {
         try {
             val icsContent = "BEGIN:VCALENDAR\nSUMMARY:\uD83D\uDEB4 Cycling Workout\nEND:VCALENDAR"
             val filename = "emoji_test.ics"
+            val targetFile = java.io.File(tempDir, filename)
 
-            val savedPath = IcsFileWriter.write(tempDir.absolutePath, filename, icsContent)
+            val savedPath = IcsFileWriter.write(targetFile, icsContent)
 
             val savedFile = java.io.File(savedPath)
             assertTrue(savedFile.exists())
@@ -102,8 +106,9 @@ class IcsExportIntegrationTest {
         try {
             val icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR"
             val filename = "path_test.ics"
+            val targetFile = java.io.File(tempDir, filename)
 
-            val savedPath = IcsFileWriter.write(tempDir.absolutePath, filename, icsContent)
+            val savedPath = IcsFileWriter.write(targetFile, icsContent)
 
             assertTrue(savedPath.endsWith(filename), "Should end with the filename")
             assertTrue(java.io.File(savedPath).isAbsolute, "Should be absolute path")
