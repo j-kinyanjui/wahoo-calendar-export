@@ -6,21 +6,22 @@ COPY build.gradle.kts gradle.properties settings.gradle.kts ./
 COPY gradle/ gradle/
 COPY src/ src/
 
-RUN gradle build -x test --no-daemon
+# Build and install distribution (excludes tests for faster build)
+RUN gradle clean installDist -x test --no-daemon
 
 # Runtime stage: use lightweight JRE image
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-ubi9-minimal
 
 WORKDIR /app
 
 # Copy the built application from builder stage
-COPY --from=builder /app/build/install/wahoo-cli /app/wahoo-cli
+COPY --from=builder /app/build/install/wahoo-plan-to-calendar/ /app/wahoo-cli
 
 # Create directory for config and output files
 RUN mkdir -p /app/config /app/output
 
 # Set the entrypoint to the CLI
-ENTRYPOINT ["/app/wahoo-cli/bin/wahoo-cli"]
+ENTRYPOINT ["/app/wahoo-cli/bin/wahoo-plan-to-calendar"]
 
 # Default command: fetch and export workouts with 2-week range
 CMD ["--range", "2w"]
