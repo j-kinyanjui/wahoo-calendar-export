@@ -1,5 +1,4 @@
 {
-  pkgs,
   ...
 }:
 {
@@ -14,13 +13,13 @@
     };
   };
 
+  enterTest = "./gradlew test";
+
   # https://devenv.sh/scripts/
   scripts.gsd-opencode.exec = "npx gsd-opencode \"$@\"";
 
   enterShell = ''
-    echo "Welcome to the gsd-opencode development environment!"
-    echo "You can run 'gsd-opencode' directly."
+    echo "Welcome to your development environment!"
+    echo "To use gsd run 'gsd-opencode' to init."
   '';
-
-  # See full reference at https://devenv.sh/reference/options/
 }
