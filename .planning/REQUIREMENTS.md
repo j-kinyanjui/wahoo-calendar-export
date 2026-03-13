@@ -113,16 +113,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXPORT-01   | Phase 3 | Complete |
 | EXPORT-02   | Phase 4 | Complete |
 
-### v1.1 (Pending)
+### v1.1 (In Progress)
 
 | Requirement | Phase   | Status  |
 | ----------- | ------- | ------- |
-| CI-01       | TBD     | Pending |
-| CI-02       | TBD     | Pending |
-| CI-03       | TBD     | Pending |
-| CD-01       | TBD     | Pending |
-| CD-02       | TBD     | Pending |
-| CD-03       | TBD     | Pending |
+| CI-01       | Phase 5 | Pending |
+| CI-02       | Phase 5 | Pending |
+| CI-03       | Phase 5 | Pending |
+| CD-01       | Phase 6 | Pending |
+| CD-02       | Phase 6 | Pending |
+| CD-03       | Phase 6 | Pending |
 
 **Coverage:**
 
