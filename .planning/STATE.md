@@ -1,23 +1,23 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: unknown
-last_updated: "2026-03-10T21:12:13.432Z"
+milestone: v1.1
+milestone_name: CI/CD Pipeline
+status: defining_requirements
+last_updated: "2026-03-13T19:30:00.000Z"
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 10
-  completed_plans: 10
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # State: Wahoo Plan to Calendar
 
 ## Project Reference
 
-**Core Value:** Allow users to view their Wahoo/Systm training plans in their personal calendar for better workout scheduling and tracking.
+**Core Value:** Simple, non-interactive CLI access to training plans with instant calendar export.
 
-**Current Focus:** Phase 4 - Calendar Export v2 (complete)
+**Current Focus:** Milestone v1.1 — CI/CD Pipeline
 
 ---
 
@@ -25,10 +25,10 @@ progress:
 
 | Field | Value |
 |-------|-------|
-| **Phase** | 4 - Calendar Export v2 |
-| **Current Plan** | 1 of 1 |
-| **Status** | Phase complete |
-| **Progress** | All plans complete |
+| **Phase** | Not started (defining requirements) |
+| **Current Plan** | — |
+| **Status** | Defining requirements |
+| **Last Activity** | 2026-03-13 — Milestone v1.1 started |
 
 ---
 
@@ -36,21 +36,9 @@ progress:
 
 | Metric | Value | Notes |
 |--------|-------|-------|
-| v1 Requirements | 17 | All mapped to phases (incl. EXPORT-02) |
-| Phases | 4 | Quick depth approach |
-| Current Phase Progress | 1/1 | Phase 4 complete |
-| Blockers | 0 | None identified |
-
-| Phase-Plan | Duration | Tasks | Files |
-|------------|----------|-------|-------|
-| Phase 01-authentication-graphql-setup P03 | 3 min | 3 tasks | 4 files |
-| Phase 02-cli-migration-plan-export P01 | 21 min | 2 tasks | 6 files |
-| Phase 02-cli-migration-plan-export P02 | 2 min | 2 tasks | 5 files |
-| Phase 02-cli-migration-plan-export P03 | 1 min | 1 tasks | 2 files |
-| Phase 02-cli-migration-plan-export P04 | 1 min | 1 tasks | 1 files |
-| Phase 03-ics-export-email P01 | 4 min | 2 tasks | 5 files |
-| Phase 03-ics-export-email P02 | 5 min | 2 tasks | 8 files |
-| Phase 04-calendar-export-v2 P01 | 8 min | 4 tasks | 9 files |
+| v1.1 Requirements | TBD | Being defined |
+| Phases | TBD | Pending roadmap |
+| Blockers | 0 | None |
 
 ## Accumulated Context
 
@@ -126,26 +114,14 @@ progress:
 
 ### What's Been Done
 
-- Project initialized with core value defined
-- 16 v1 requirements documented across 5 categories (added CLI section)
-- Research completed on GraphQL Kotlin client and JWT handling
-- Roadmap created with 2 phases
-- Phase 1 Plan 01 completed: Session infrastructure + GraphQL client
-- Phase 1 Plan 02 completed: Config-based auth with auto-login
-- Phase 1 Plan 03 completed: GetUserPlansRange query + error handling
-- Phase 2 Plan 01 completed: CLI migration — build, entry point, config, date range parser
-- Phase 2 Plan 02 completed: CLI wired end-to-end — auth, fetch, console display, server cleanup
-- Phase 2 Plan 03 completed: Gap closure — added CLI-01/CLI-02 requirement definitions and traceability
-- Phase 2 Plan 04 completed: Gap closure — changed default --config path to ~/.config/wahoo-cli/config
-- Phase 3 Plan 01 completed: IcsBuilder + SportEmoji — RFC 5545 VTODO builder with sport emoji mapping
-- Phase 3 Plan 02 completed: SMTP email with .ics attachment, disk fallback, IcsFileWriter
-- Phase 4 Plan 01 completed: VTODO→VEVENT migration using ical4j 4.0.8
+- v1.0 MVP shipped (4 phases, 10 plans, 17 requirements)
+- Milestone v1.1 started: CI/CD Pipeline
 
 ### What's Next
 
-- Phase 4 complete: all plans executed
-- All 82 tests passing across project
-- All 4 phases complete — ready for milestone completion
+- Define v1.1 requirements
+- Create roadmap
+- Plan and execute CI/CD phases
 
 ### User Preferences
 
@@ -157,4 +133,4 @@ progress:
 
 ---
 
-*State updated: 2026-03-10 (Phase 4 Plan 01 complete — all phases complete)*
+*State updated: 2026-03-13 (Milestone v1.1 started — CI/CD Pipeline)*

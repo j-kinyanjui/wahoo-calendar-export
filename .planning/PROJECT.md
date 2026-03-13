@@ -25,7 +25,13 @@ Simple, non-interactive CLI access to training plans with instant calendar expor
 - ✓ Email delivery of workouts to provided address via SMTP — v1.0
 - ✓ RFC 5545-compliant .ics export with VEVENT all-day entries (cross-calendar: Apple, Google, Outlook, Yahoo) — v1.0
 
-### Active (v1.1+)
+### Active (v1.1)
+
+- [ ] GitHub Actions CI workflow (build + test on push/PR)
+- [ ] Docker image build and push to GHCR
+- [ ] Release workflow triggered by git tags
+
+### Future (v1.2+)
 
 - [ ] Email scheduling (daily/weekly digest of upcoming workouts)
 - [ ] Workout filtering by type (cycling, strength, yoga, etc.)
@@ -38,6 +44,16 @@ Simple, non-interactive CLI access to training plans with instant calendar expor
 - Real-time sync — fetch on-demand only
 - OAuth flow — manual token input acceptable
 - Two-way sync (calendar → Systm) — export only
+
+## Current Milestone: v1.1 CI/CD Pipeline
+
+**Goal:** Automated build, test, and Docker image publishing via GitHub Actions.
+
+**Target features:**
+- GitHub Actions workflow: build + test on push/PR to main
+- Docker image build from existing Dockerfile
+- Push Docker image to GitHub Container Registry (GHCR) on main merges
+- Release workflow: git tag triggers versioned image push to GHCR
 
 ## Current State (v1.0 Shipped)
 
@@ -111,21 +127,5 @@ Simple, non-interactive CLI access to training plans with instant calendar expor
 
 ---
 
-## Next Milestone (v1.1+)
-
-**Email Scheduling & Filtering** — Add recurring email delivery and workout type filtering.
-
-**Planned features:**
-- [ ] Daily/weekly email digest of upcoming workouts
-- [ ] Workout filtering by type (cycling, strength, yoga, running, etc.)
-- [ ] Custom date range presets in TOML config
-- [ ] Quiet/verbose output modes for different use cases
-
-**Depends on:** v1.0 core platform (CLI, ICS, email)
-
-**Timeline:** 3-4 phases with research, planning, and implementation
-
----
-
-_Last updated: 2026-03-10 after v1.0 milestone completion_
+_Last updated: 2026-03-13 after v1.1 milestone start_
 _Shipped: 4 phases, 10 plans, 17 requirements validated, 2,900 LOC_
