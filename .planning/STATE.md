@@ -112,7 +112,7 @@ progress:
 
 ### Pending Todos
 
-No pending todos.
+1. **Add GitHub Action to build and package app** (area: tooling) — `.planning/todos/pending/2026-03-13-add-github-action-to-build-and-package-app.md`
 
 ### Known Risks
 
