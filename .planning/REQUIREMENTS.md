@@ -43,6 +43,22 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **EXPORT-01**: Application generates RFC 5545-compliant .ics file with VTODO entries from fetched workouts (Apple Reminders compatible, sport emoji in SUMMARY, date-only DUE)
 - [x] **EXPORT-02**: Application generates RFC 5545-compliant .ics file with VEVENT all-day entries using ical4j (cross-calendar compatible: Apple, Google, Outlook, Yahoo; sport emoji + duration in SUMMARY)
 
+## v1.1 Requirements
+
+Requirements for CI/CD Pipeline milestone.
+
+### CI (Continuous Integration)
+
+- [ ] **CI-01**: Gradle build runs automatically on push and PR to main
+- [ ] **CI-02**: All tests execute during CI, workflow fails on test failure
+- [ ] **CI-03**: Gradle dependencies are cached between workflow runs for faster builds
+
+### CD (Continuous Delivery)
+
+- [ ] **CD-01**: Docker image is built and pushed to GHCR with `latest` tag on merge to main
+- [ ] **CD-02**: Git tag matching `v*.*.*` triggers Docker image build and push to GHCR with version tag
+- [ ] **CD-03**: GitHub Release is created with changelog when a version tag is pushed
+
 ## v2 Requirements
 
 Deferred to future release. Tracked but not in current roadmap.
@@ -67,10 +83,14 @@ Explicitly excluded. Documented to prevent scope creep.
 | ---------------------- | ----------------------------------------------------------- |
 | Real-time sync         | On-demand/daily sync sufficient per requirements            |
 | Wahoo REST API removal | Keep existing functionality, add Systm as additional source |
+| JDK matrix testing     | Single JDK sufficient for this project                      |
+| Docker build on PRs    | Only build Docker on main merge and release tags             |
 
 ## Traceability
 
 Which phases cover which requirements. Updated during roadmap creation.
+
+### v1.0 (Complete)
 
 | Requirement | Phase   | Status  |
 | ----------- | ------- | ------- |
@@ -93,14 +113,24 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXPORT-01   | Phase 3 | Complete |
 | EXPORT-02   | Phase 4 | Complete |
 
+### v1.1 (Pending)
+
+| Requirement | Phase   | Status  |
+| ----------- | ------- | ------- |
+| CI-01       | TBD     | Pending |
+| CI-02       | TBD     | Pending |
+| CI-03       | TBD     | Pending |
+| CD-01       | TBD     | Pending |
+| CD-02       | TBD     | Pending |
+| CD-03       | TBD     | Pending |
+
 **Coverage:**
 
-- v1 requirements: 17 total (all complete)
-- v2 requirements: 1 (EXPORT-02 — complete)
-- Mapped to phases: 18
+- v1.0 requirements: 18 total (all complete)
+- v1.1 requirements: 6 total (pending)
 - Unmapped: 0 ✓
 
 ---
 
 _Requirements defined: 2026-03-01_
-_Last updated: 2026-03-10 after plan 04-01 completion_
+_Last updated: 2026-03-13 after v1.1 requirements definition_
