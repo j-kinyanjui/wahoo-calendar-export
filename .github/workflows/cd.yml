@@ -1,0 +1,126 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    # No branches/tags filter here — workflow_run filters by the triggering workflow's ref.
+    # We use conditional logic in the jobs to distinguish main-branch vs tag-push triggers.
+    # The CI workflow already runs on push to main AND v* tags, so CD will fire for both.
+
+permissions:
+  contents: write      # needed for creating GitHub Releases
+  packages: write      # needed for pushing to GHCR
+
+jobs:
+  docker:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    # Run only when CI succeeded AND (triggered by main branch push OR a v* tag push)
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.head_branch == 'main' ||
+       startsWith(github.event.workflow_run.head_branch, 'v'))
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0   # needed for tags
+
+      - name: Set up QEMU (multi-platform support)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/j-kinyanjui/wahoo-plan-to-calendar
+          tags: |
+            # Push `latest` tag on main merge (not a tag push)
+            type=raw,value=latest,enable=${{ github.event.workflow_run.head_branch == 'main' }}
+            # Push full version tag (e.g., v1.1.0) when triggered by a tag push
+            type=raw,value=${{ github.event.workflow_run.head_branch }},enable=${{ startsWith(github.event.workflow_run.head_branch, 'v') }}
+          labels: |
+            org.opencontainers.image.title=wahoo-plan-to-calendar
+            org.opencontainers.image.description=CLI tool to export Wahoo SYSTM training plans to iCal format
+            org.opencontainers.image.vendor=j-kinyanjui
+            org.opencontainers.image.revision=${{ github.event.workflow_run.head_sha }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: docker
+    # Only create a release for v* tag pushes (not main merges)
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      startsWith(github.event.workflow_run.head_branch, 'v')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Set up JDK 17 for Gradle distribution build
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Build distribution archive
+        run: ./gradlew distZip
+
+      - name: Get version tag
+        id: tag
+        run: echo "version=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.version }}
+          generate_release_notes: true
+          make_latest: true
+          body: |
+            ## Docker Image
+
+            Pull and run this release:
+
+            ```
+            docker pull ghcr.io/j-kinyanjui/wahoo-plan-to-calendar:${{ steps.tag.outputs.version }}
+            docker run --rm \
+              -e SYSTM_USER=your@email.com \
+              -e SYSTM_PASSWORD=yourpassword \
+              ghcr.io/j-kinyanjui/wahoo-plan-to-calendar:${{ steps.tag.outputs.version }}
+            ```
+
+            > **Note:** GHCR image visibility must be set to **Public** in [GitHub package settings](https://github.com/j-kinyanjui/wahoo-plan-to-calendar/pkgs/container/wahoo-plan-to-calendar) after first push for unauthenticated pulls.
+
+          files: |
+            build/distributions/*.zip
