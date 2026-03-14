@@ -1,3 +1,5 @@
+import com.diffplug.spotless.kotlin.KtfmtStep
+
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
@@ -6,6 +8,7 @@ plugins {
     kotlin("jvm") version "2.3.10"
     application
     kotlin("plugin.serialization") version "2.3.10"
+    id("com.diffplug.spotless") version "8.3.0"
 }
 
 group = "nesski.de"
@@ -45,4 +48,14 @@ dependencies {
     // Test
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
+}
+
+spotless {
+    kotlin {
+        // version, style and all configurations here are optional
+        ktfmt("0.61").kotlinlangStyle().configure {
+            it.setRemoveUnusedImports(true)
+            it.setTrailingCommaManagementStrategy(KtfmtStep.TrailingCommaManagementStrategy.NONE)
+        }
+    }
 }

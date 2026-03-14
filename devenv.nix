@@ -13,17 +13,6 @@
     };
   };
 
-  git-hooks.hooks = {
-    ktfmt = {
-      enable = true;
-      name = "ktfmt";
-      description = "Format Kotlin source files with ktfmt";
-      entry = "./gradlew ktfmtFormat";
-      files = "\\.kt$";
-      language = "system";
-    };
-  };
-
   enterTest = "./gradlew test";
 
   # https://devenv.sh/scripts/
