@@ -21,7 +21,7 @@ repositories { mavenCentral() }
 
 dependencies {
     // CLI framework
-    implementation("com.github.ajalt.clikt:clikt:5.0.3")
+    implementation("com.github.ajalt.clikt:clikt:5.1.0")
 
     // TOML config parsing
     implementation("com.akuleshov7:ktoml-core:0.7.0")
