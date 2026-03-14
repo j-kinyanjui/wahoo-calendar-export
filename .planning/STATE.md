@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: CI/CD Pipeline
 status: unknown
-last_updated: "2026-03-14T16:55:46.742Z"
+last_updated: "2026-03-14T17:00:09.580Z"
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 3
-  completed_plans: 2
+  completed_plans: 3
 ---
 
 # State: Wahoo Plan to Calendar
@@ -25,10 +25,10 @@ progress:
 
 | Field | Value |
 |-------|-------|
-| **Phase** | 6 of 6 — Docker & Release Pipeline (in progress) |
-| **Current Plan** | 06-01 complete, 06-02 next |
-| **Status** | Executing Phase 6 — CD workflow live |
-| **Last Activity** | 2026-03-14 — 06-01 executed (CD workflow created) |
+| **Phase** | 6 of 6 — Docker & Release Pipeline (complete) |
+| **Current Plan** | 06-02 complete (all plans done) |
+| **Status** | Milestone v1.1 complete — CI/CD pipeline live |
+| **Last Activity** | 2026-03-14 — 06-02 executed (CD pipeline verified end-to-end) |
 
 ---
 
@@ -39,6 +39,7 @@ progress:
 | v1.1 Requirements | 6 | 3 CI + 3 CD |
 | Phases | 2 | Phase 5 (CI) + Phase 6 (CD) |
 | Blockers | 0 | None |
+| Phase 06 P02 | 1min | 2 tasks | 0 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,7 @@ progress:
 | workflow_run for CI→CD chaining | Ensures Docker builds only run after CI passes | Implemented in 06-01 |
 | Multi-platform Docker (amd64+arm64) | Support both Intel and ARM architectures | Implemented in 06-01 |
 | softprops/action-gh-release@v2 | Maintained community action for GitHub Releases | Implemented in 06-01 |
+| v1.1.0 tag-based release | Tag push triggers CI→CD→GHCR image + GitHub Release | Verified in 06-02 |
 
 ### Technical Notes
 
@@ -125,10 +127,12 @@ progress:
 - Milestone v1.1 started: CI/CD Pipeline
 - Phase 5 (CI Pipeline) complete — CI workflow live, Dependabot configured
 - Phase 6 Plan 1 complete — CD workflow created (Docker build/push + GitHub Releases)
+- Phase 6 Plan 2 complete — CD pipeline verified end-to-end (v1.1.0 tag pushed, GHCR images, GitHub Release)
+- Milestone v1.1 complete — all 6 requirements satisfied (CI-01/02/03 + CD-01/02/03)
 
 ### What's Next
 
-- Execute Phase 6 Plan 2 (README documentation)
+- Milestone v1.1 complete — no remaining plans
 
 ### User Preferences
 
@@ -140,4 +144,4 @@ progress:
 
 ---
 
-*State updated: 2026-03-14 (06-01 complete — CD workflow live, ready for 06-02)*
+*State updated: 2026-03-14 (06-02 complete — CD pipeline verified, milestone v1.1 complete)*
