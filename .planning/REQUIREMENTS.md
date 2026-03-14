@@ -55,9 +55,9 @@ Requirements for CI/CD Pipeline milestone.
 
 ### CD (Continuous Delivery)
 
-- [ ] **CD-01**: Docker image is built and pushed to GHCR with `latest` tag on merge to main
-- [ ] **CD-02**: Git tag matching `v*.*.*` triggers Docker image build and push to GHCR with version tag
-- [ ] **CD-03**: GitHub Release is created with changelog when a version tag is pushed
+- [x] **CD-01**: Docker image is built and pushed to GHCR with `latest` tag on merge to main
+- [x] **CD-02**: Git tag matching `v*.*.*` triggers Docker image build and push to GHCR with version tag
+- [x] **CD-03**: GitHub Release is created with changelog when a version tag is pushed
 
 ## v2 Requirements
 
@@ -120,9 +120,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CI-01       | Phase 5 | Complete |
 | CI-02       | Phase 5 | Complete |
 | CI-03       | Phase 5 | Complete |
-| CD-01       | Phase 6 | Pending |
-| CD-02       | Phase 6 | Pending |
-| CD-03       | Phase 6 | Pending |
+| CD-01       | Phase 6 | Complete |
+| CD-02       | Phase 6 | Complete |
+| CD-03       | Phase 6 | Complete |
 
 **Coverage:**
 

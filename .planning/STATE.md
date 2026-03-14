@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: CI/CD Pipeline
-status: executing
-last_updated: "2026-03-14T14:30:00.000Z"
+status: unknown
+last_updated: "2026-03-14T16:55:46.742Z"
 progress:
   total_phases: 2
   completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
+  total_plans: 3
+  completed_plans: 2
 ---
 
 # State: Wahoo Plan to Calendar
@@ -25,10 +25,10 @@ progress:
 
 | Field | Value |
 |-------|-------|
-| **Phase** | 5 of 6 — CI Pipeline (complete) |
-| **Current Plan** | 05-01 complete |
-| **Status** | Phase 5 complete — ready for Phase 6 |
-| **Last Activity** | 2026-03-14 — Phase 5 executed (CI workflow live) |
+| **Phase** | 6 of 6 — Docker & Release Pipeline (in progress) |
+| **Current Plan** | 06-01 complete, 06-02 next |
+| **Status** | Executing Phase 6 — CD workflow live |
+| **Last Activity** | 2026-03-14 — 06-01 executed (CD workflow created) |
 
 ---
 
@@ -91,6 +91,9 @@ progress:
 | gradle/actions/setup-gradle@v4 | Handles Gradle caching automatically | Implemented in 05-01 |
 | Branch protection deferred | Private repo on free plan; enable when public | Deferred in 05-01 |
 | Dependabot for Gradle + Actions | Weekly automated dependency PRs | Implemented in 05-01 |
+| workflow_run for CI→CD chaining | Ensures Docker builds only run after CI passes | Implemented in 06-01 |
+| Multi-platform Docker (amd64+arm64) | Support both Intel and ARM architectures | Implemented in 06-01 |
+| softprops/action-gh-release@v2 | Maintained community action for GitHub Releases | Implemented in 06-01 |
 
 ### Technical Notes
 
@@ -121,10 +124,11 @@ progress:
 - v1.0 MVP shipped (4 phases, 10 plans, 17 requirements)
 - Milestone v1.1 started: CI/CD Pipeline
 - Phase 5 (CI Pipeline) complete — CI workflow live, Dependabot configured
+- Phase 6 Plan 1 complete — CD workflow created (Docker build/push + GitHub Releases)
 
 ### What's Next
 
-- Plan and execute Phase 6 (Docker & Release Pipeline)
+- Execute Phase 6 Plan 2 (README documentation)
 
 ### User Preferences
 
@@ -136,4 +140,4 @@ progress:
 
 ---
 
-*State updated: 2026-03-14 (Phase 5 complete — CI workflow live, ready for Phase 6)*
+*State updated: 2026-03-14 (06-01 complete — CD workflow live, ready for 06-02)*

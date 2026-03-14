@@ -48,7 +48,7 @@
 **Plans:** 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Create cd.yml CD workflow (Docker build/push to GHCR + GitHub Release)
+- [x] 06-01-PLAN.md — Create cd.yml CD workflow (Docker build/push to GHCR + GitHub Release)
 - [ ] 06-02-PLAN.md — End-to-end verification: push v1.1.0 tag and confirm GHCR + GitHub Release
 
 **Success Criteria:**
