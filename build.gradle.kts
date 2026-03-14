@@ -1,5 +1,3 @@
-import com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask
-
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
@@ -8,7 +6,6 @@ plugins {
     kotlin("jvm") version "2.3.10"
     application
     kotlin("plugin.serialization") version "2.3.10"
-    id("com.ncorti.ktfmt.gradle") version "0.25.0"
 }
 
 group = "nesski.de"
@@ -48,14 +45,4 @@ dependencies {
     // Test
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
-}
-
-ktfmt {
-    // KotlinLang style - 4 space indentation - From kotlinlang.org/docs/coding-conventions.html
-    kotlinLangStyle()
-}
-
-tasks.register<KtfmtFormatTask>("ktfmtPrecommit") {
-    source = project.fileTree(rootDir)
-    include("**/*.kt")
 }
