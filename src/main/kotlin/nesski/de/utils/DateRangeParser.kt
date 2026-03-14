@@ -41,8 +41,7 @@ fun parseDateRange(range: Range?, from: LocalDate?, to: LocalDate?): DateRange {
         val daysBetween = ChronoUnit.DAYS.between(from, to)
         if (daysBetween > 62) {
             throw IllegalArgumentException(
-                "Date range exceeds maximum of 2 months ($daysBetween days)."
-            )
+                "Date range exceeds maximum of 2 months ($daysBetween days).")
         }
 
         return DateRange(from, to)

@@ -76,8 +76,7 @@ class SummaryFormattingTest {
                             name = "Recovery Spin",
                             style = "cycling",
                             plannedDuration = 0.5,
-                        )
-                    ),
+                        )),
             )
         val prospect = item.prospects!!.first()
 
@@ -204,8 +203,7 @@ class SummaryFormattingTest {
                         style = null,
                         plannedDuration = 0.5,
                         workoutId = "wo-1",
-                    )
-                ),
+                    )),
             plan = PlanInfo(id = "p1", name = "Test Plan", level = ""),
         )
     }

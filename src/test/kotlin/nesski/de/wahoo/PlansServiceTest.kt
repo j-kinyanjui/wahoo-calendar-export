@@ -39,8 +39,7 @@ class PlansServiceTest {
                     Json {
                         ignoreUnknownKeys = true
                         isLenient = true
-                    }
-                )
+                    })
             }
         }
     }
@@ -193,8 +192,7 @@ class PlansServiceTest {
                         Json {
                             ignoreUnknownKeys = true
                             isLenient = true
-                        }
-                    )
+                        })
                 }
             }
 
@@ -247,8 +245,7 @@ class PlansServiceTest {
                         Json {
                             ignoreUnknownKeys = true
                             isLenient = true
-                        }
-                    )
+                        })
                 }
             }
 

@@ -89,12 +89,10 @@ object IcsBuilder {
                     LocalDate.parse(item.plannedDate.substringBefore("T"))
                 } catch (e: Exception) {
                     log.warn(
-                        "Skipping item with unparseable date '${item.plannedDate}': ${e.message}"
-                    )
+                        "Skipping item with unparseable date '${item.plannedDate}': ${e.message}")
                     skippedCount++
                     skippedReasons.add(
-                        "Unparseable date '${item.plannedDate}': agendaId=${item.agendaId ?: "unknown"}"
-                    )
+                        "Unparseable date '${item.plannedDate}': agendaId=${item.agendaId ?: "unknown"}")
                     continue
                 }
 
@@ -232,7 +230,7 @@ object IcsBuilder {
         val duration = prospect?.plannedDuration
         if (duration != null) {
             val totalMinutes = (duration * 60).toInt()
-            parts.add("Duration: ${totalMinutes} min")
+            parts.add("Duration: $totalMinutes min")
         }
 
         parts.add("Drag this event to a time that works for you.")

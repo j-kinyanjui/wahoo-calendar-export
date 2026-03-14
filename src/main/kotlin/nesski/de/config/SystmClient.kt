@@ -21,7 +21,6 @@ val wahooClient =
                     prettyPrint = true
                     isLenient = true
                     ignoreUnknownKeys = true
-                }
-            )
+                })
         }
     }

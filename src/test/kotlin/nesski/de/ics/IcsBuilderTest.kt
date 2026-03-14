@@ -98,7 +98,8 @@ class IcsBuilderTest {
                 agendaId = null,
                 status = "Planned",
                 type = "Cycling",
-                prospects = listOf(Prospect(type = "Cycling", name = "Test Ride", workoutId = null)),
+                prospects =
+                    listOf(Prospect(type = "Cycling", name = "Test Ride", workoutId = null)),
             )
 
         val result = IcsBuilder.build(listOf(item))
@@ -382,8 +383,7 @@ class IcsBuilderTest {
                         style = null,
                         plannedDuration = 0.6,
                         workoutId = "rUrrfvb8ii",
-                    )
-                ),
+                    )),
             plan = PlanInfo(id = "xu8fKNWU5M", name = "6 Week - Fitness Kickstarter", level = ""),
         )
     }

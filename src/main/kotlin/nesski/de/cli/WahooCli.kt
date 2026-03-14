@@ -114,8 +114,7 @@ class WahooCli : CliktCommand(name = "wahoo-cli") {
             }
             .let { result ->
                 echo(
-                    "ICS export: ${result.exportedCount} workouts exported, ${result.skippedCount} skipped"
-                )
+                    "ICS export: ${result.exportedCount} workouts exported, ${result.skippedCount} skipped")
 
                 if (result.exportedCount == 0) {
                     echo("No workouts to export.")

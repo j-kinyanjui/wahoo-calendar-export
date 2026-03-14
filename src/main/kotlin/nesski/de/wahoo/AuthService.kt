@@ -105,8 +105,7 @@ class SystmAuthService(
         if (result?.failureId != null) {
             throw IllegalStateException(
                 "Login failed: status=${result.status}, " +
-                    "message=${result.message}, failureId=${result.failureId}"
-            )
+                    "message=${result.message}, failureId=${result.failureId}")
         }
 
         logger.info("Successfully logged in as: ${result?.user?.fullName}")
