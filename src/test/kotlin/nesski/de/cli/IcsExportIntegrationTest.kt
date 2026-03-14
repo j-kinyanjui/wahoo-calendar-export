@@ -1,11 +1,11 @@
 package nesski.de.cli
 
-import nesski.de.config.EmailConfig
-import nesski.de.ics.IcsFileWriter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import nesski.de.config.EmailConfig
+import nesski.de.ics.IcsFileWriter
 
 class IcsExportIntegrationTest {
 

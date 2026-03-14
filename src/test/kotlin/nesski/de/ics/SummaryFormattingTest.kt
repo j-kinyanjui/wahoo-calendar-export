@@ -1,11 +1,11 @@
 package nesski.de.ics
 
-import nesski.de.models.PlanInfo
-import nesski.de.models.Prospect
-import nesski.de.models.UserPlanItem
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import nesski.de.models.PlanInfo
+import nesski.de.models.Prospect
+import nesski.de.models.UserPlanItem
 
 /**
  * Tests for VEVENT SUMMARY formatting — emoji + workout name + duration hint.

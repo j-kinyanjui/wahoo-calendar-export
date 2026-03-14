@@ -9,6 +9,10 @@ import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
+import java.io.File
+import java.time.LocalDate
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 import kotlinx.coroutines.runBlocking
 import nesski.de.config.AppConfig
 import nesski.de.config.TokenStorage
@@ -21,10 +25,6 @@ import nesski.de.utils.DateRange
 import nesski.de.utils.parseDateRange
 import nesski.de.wahoo.PlansService
 import nesski.de.wahoo.SystmAuthService
-import java.io.File
-import java.time.LocalDate
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 class WahooCli : CliktCommand(name = "wahoo-cli") {
     override fun help(context: Context): String =

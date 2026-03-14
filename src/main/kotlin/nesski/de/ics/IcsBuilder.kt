@@ -1,5 +1,7 @@
 package nesski.de.ics
 
+import java.io.StringWriter
+import java.time.LocalDate
 import nesski.de.models.UserPlanItem
 import net.fortuna.ical4j.data.CalendarOutputter
 import net.fortuna.ical4j.model.Calendar
@@ -13,8 +15,6 @@ import net.fortuna.ical4j.model.property.Transp
 import net.fortuna.ical4j.model.property.Uid
 import net.fortuna.ical4j.model.property.Version
 import org.slf4j.LoggerFactory
-import java.io.StringWriter
-import java.time.LocalDate
 
 private val log = LoggerFactory.getLogger("IcsBuilder")
 

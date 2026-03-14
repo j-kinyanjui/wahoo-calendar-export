@@ -1,11 +1,11 @@
 package nesski.de.models
 
-import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.serialization.json.Json
 
 /**
  * Tests for deserialization of Wahoo SYSTM GraphQL API responses into the Kotlin model classes.

@@ -1,8 +1,8 @@
 package nesski.de.utils
 
-import nesski.de.cli.Range
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import nesski.de.cli.Range
 
 data class DateRange(val start: LocalDate, val end: LocalDate)
 

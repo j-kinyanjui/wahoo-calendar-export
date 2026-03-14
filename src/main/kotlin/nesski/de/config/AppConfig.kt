@@ -1,10 +1,10 @@
 package nesski.de.config
 
 import com.akuleshov7.ktoml.file.TomlFileReader
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import java.io.File
 import java.nio.file.Paths
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class AppConfig(

@@ -7,6 +7,9 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import nesski.de.config.SYSTM_GRAPHQL_ENDPOINT
 import nesski.de.models.GetUserPlansRangeResponse
 import nesski.de.models.GraphQLError
@@ -14,9 +17,6 @@ import nesski.de.models.GraphQLRequest
 import nesski.de.models.GraphQLResponse
 import nesski.de.models.UserPlanItem
 import org.slf4j.LoggerFactory
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 private val log = LoggerFactory.getLogger("SystmPlansService")
 

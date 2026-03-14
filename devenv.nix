@@ -13,6 +13,8 @@
     };
   };
 
+  git-hooks.enable = true;
+
   enterTest = "./gradlew test";
 
   # https://devenv.sh/scripts/

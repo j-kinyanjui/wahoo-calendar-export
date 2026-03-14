@@ -1,11 +1,11 @@
 package nesski.de.email
 
-import nesski.de.config.EmailConfig
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import nesski.de.config.EmailConfig
 
 class EmailServiceTest {
 
