@@ -24,8 +24,8 @@ dependencies {
     implementation("com.github.ajalt.clikt:clikt:5.0.3")
 
     // TOML config parsing
-    implementation("com.akuleshov7:ktoml-core:0.7.0")
-    implementation("com.akuleshov7:ktoml-file:0.7.0")
+    implementation("com.akuleshov7:ktoml-core:0.7.1")
+    implementation("com.akuleshov7:ktoml-file:0.7.1")
 
     // Ktor client (retained for GraphQL API calls)
     implementation("io.ktor:ktor-client-core:$ktor_version")
