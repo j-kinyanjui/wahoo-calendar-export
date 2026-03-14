@@ -10,7 +10,6 @@ import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
 import java.io.File
-import java.time.LocalDate
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 import kotlinx.coroutines.runBlocking
@@ -123,8 +122,8 @@ class WahooCli : CliktCommand(name = "wahoo-cli") {
                     ProgramResult(0)
                 }
 
-                val rangeLabel = range ?: "${dateRange.start}_${dateRange.end}"
-                val filename = "workouts_${rangeLabel}_${LocalDate.now()}.ics"
+                val rangeLabel = "${dateRange.start}_${dateRange.end}"
+                val filename = "workouts_${rangeLabel}.ics"
 
                 if (config.email.enabled) {
                     val emailResult =

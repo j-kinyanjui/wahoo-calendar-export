@@ -13,21 +13,16 @@
     };
   };
 
-  treefmt = {
-    enable = true;
-    config = {
-      programs.ktfmt.enable = true;
-      settings.formatter.ktfmt = {
-        options = [ "--kotlinlang-style" ];
-        excludes = [
-          "src/**/AuthService.kt"
-          "src/**/PlansService.kt"
-        ];
-      };
+  git-hooks.hooks = {
+    ktfmt = {
+      enable = true;
+      name = "ktfmt";
+      description = "Format Kotlin source files with ktfmt";
+      entry = "./gradlew ktfmtFormat";
+      files = "\\.kt$";
+      language = "system";
     };
   };
-
-  git-hooks.hooks.treefmt.enable = true;
 
   enterTest = "./gradlew test";
 
