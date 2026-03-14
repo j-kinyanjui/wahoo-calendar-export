@@ -2,25 +2,25 @@
   "$schema": "https://opencode.ai/config.json",
   "agent": {
     "gsd-planner": {
-      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+      "model": "portkey-anthropic/@vertex-ai/anthropic.claude-sonnet-4-6"
     },
     "gsd-plan-checker": {
-      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+      "model": "portkey-anthropic/@vertex-ai/anthropic.claude-sonnet-4-6"
     },
     "gsd-phase-researcher": {
-      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+      "model": "portkey-anthropic/@vertex-ai/anthropic.claude-sonnet-4-6"
     },
     "gsd-roadmapper": {
-      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+      "model": "portkey-anthropic/@vertex-ai/anthropic.claude-sonnet-4-6"
     },
     "gsd-project-researcher": {
-      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+      "model": "portkey-anthropic/@vertex-ai/anthropic.claude-sonnet-4-6"
     },
     "gsd-research-synthesizer": {
-      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+      "model": "portkey-anthropic/@vertex-ai/anthropic.claude-sonnet-4-6"
     },
     "gsd-codebase-mapper": {
-      "model": "portkey-openai/@azure-openai-foundry/gpt-5.2-chat"
+      "model": "portkey-anthropic/@vertex-ai/anthropic.claude-sonnet-4-6"
     },
     "gsd-executor": {
       "model": "portkey-anthropic/@vertex-ai/anthropic.claude-opus-4-6"
@@ -29,10 +29,10 @@
       "model": "portkey-anthropic/@vertex-ai/anthropic.claude-opus-4-6"
     },
     "gsd-verifier": {
-      "model": "portkey-openai/@azure-openai-foundry/gpt-5.3-codex"
+      "model": "portkey-anthropic/@vertex-ai/anthropic.claude-sonnet-4-6"
     },
     "gsd-integration-checker": {
-      "model": "portkey-openai/@azure-openai-foundry/gpt-5.3-codex"
+      "model": "portkey-anthropic/@vertex-ai/anthropic.claude-sonnet-4-6"
     }
   },
   "permission": {
