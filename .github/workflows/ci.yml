@@ -22,13 +22,14 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "21"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Check formatting
+        run: ./gradlew spotlessCheck
+
       - name: Build and test
         run: ./gradlew build
 
-      - name: Check formatting
-        run: ./gradlew spotlessCheck

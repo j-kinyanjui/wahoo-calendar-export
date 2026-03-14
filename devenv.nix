@@ -13,8 +13,6 @@
     };
   };
 
-  enterTest = "./gradlew test";
-
   # https://devenv.sh/scripts/
   scripts.gsd-opencode.exec = "npx gsd-opencode \"$@\"";
 
