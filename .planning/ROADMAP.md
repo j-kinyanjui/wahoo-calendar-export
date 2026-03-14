@@ -45,6 +45,12 @@
 
 **Requirements:** CD-01, CD-02, CD-03
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Create cd.yml CD workflow (Docker build/push to GHCR + GitHub Release)
+- [ ] 06-02-PLAN.md — End-to-end verification: push v1.1.0 tag and confirm GHCR + GitHub Release
+
 **Success Criteria:**
 1. Merging to main builds a Docker image and pushes it to GHCR tagged `latest`
 2. Pushing a `v*.*.*` git tag builds a Docker image and pushes it to GHCR with the version tag
