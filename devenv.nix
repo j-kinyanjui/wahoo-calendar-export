@@ -13,7 +13,21 @@
     };
   };
 
-  git-hooks.enable = true;
+  treefmt = {
+    enable = true;
+    config = {
+      programs.ktfmt.enable = true;
+      settings.formatter.ktfmt = {
+        options = [ "--kotlinlang-style" ];
+        excludes = [
+          "src/**/AuthService.kt"
+          "src/**/PlansService.kt"
+        ];
+      };
+    };
+  };
+
+  git-hooks.hooks.treefmt.enable = true;
 
   enterTest = "./gradlew test";
 
