@@ -49,9 +49,9 @@ Requirements for CI/CD Pipeline milestone.
 
 ### CI (Continuous Integration)
 
-- [ ] **CI-01**: Gradle build runs automatically on push and PR to main
-- [ ] **CI-02**: All tests execute during CI, workflow fails on test failure
-- [ ] **CI-03**: Gradle dependencies are cached between workflow runs for faster builds
+- [x] **CI-01**: Gradle build runs automatically on push and PR to main
+- [x] **CI-02**: All tests execute during CI, workflow fails on test failure
+- [x] **CI-03**: Gradle dependencies are cached between workflow runs for faster builds
 
 ### CD (Continuous Delivery)
 
@@ -117,9 +117,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase   | Status  |
 | ----------- | ------- | ------- |
-| CI-01       | Phase 5 | Pending |
-| CI-02       | Phase 5 | Pending |
-| CI-03       | Phase 5 | Pending |
+| CI-01       | Phase 5 | Complete |
+| CI-02       | Phase 5 | Complete |
+| CI-03       | Phase 5 | Complete |
 | CD-01       | Phase 6 | Pending |
 | CD-02       | Phase 6 | Pending |
 | CD-03       | Phase 6 | Pending |
@@ -127,7 +127,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 **Coverage:**
 
 - v1.0 requirements: 18 total (all complete)
-- v1.1 requirements: 6 total (pending)
+- v1.1 requirements: 6 total (3 complete, 3 pending)
 - Unmapped: 0 ✓
 
 ---

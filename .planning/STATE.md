@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: CI/CD Pipeline
-status: roadmap_created
-last_updated: "2026-03-13T19:35:00.000Z"
+status: executing
+last_updated: "2026-03-14T14:30:00.000Z"
 progress:
   total_phases: 2
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
 ---
 
 # State: Wahoo Plan to Calendar
@@ -25,10 +25,10 @@ progress:
 
 | Field | Value |
 |-------|-------|
-| **Phase** | 5 of 6 — CI Pipeline |
-| **Current Plan** | Not yet planned |
-| **Status** | Roadmap created |
-| **Last Activity** | 2026-03-13 — Roadmap created (2 phases) |
+| **Phase** | 5 of 6 — CI Pipeline (complete) |
+| **Current Plan** | 05-01 complete |
+| **Status** | Phase 5 complete — ready for Phase 6 |
+| **Last Activity** | 2026-03-14 — Phase 5 executed (CI workflow live) |
 
 ---
 
@@ -87,6 +87,10 @@ progress:
 | TRANSP:TRANSPARENT for all-day events | Don't block calendar when events are all-day placeholders | Implemented in 04-01 |
 | UID @wahoo suffix | Domain uniqueness per RFC 5545 | Implemented in 04-01 |
 | Duration hint in SUMMARY text | Communicates workout length without enforcing it | Implemented in 04-01 |
+| Spotless/ktfmt for CI formatting | spotlessCheck enforces ktfmt style in CI | Implemented in 05-01 |
+| gradle/actions/setup-gradle@v4 | Handles Gradle caching automatically | Implemented in 05-01 |
+| Branch protection deferred | Private repo on free plan; enable when public | Deferred in 05-01 |
+| Dependabot for Gradle + Actions | Weekly automated dependency PRs | Implemented in 05-01 |
 
 ### Technical Notes
 
@@ -100,7 +104,7 @@ progress:
 
 ### Pending Todos
 
-1. **Add GitHub Action to build and package app** (area: tooling) — `.planning/todos/pending/2026-03-13-add-github-action-to-build-and-package-app.md`
+1. ~~**Add GitHub Action to build and package app**~~ (area: tooling) — completed in 05-01
 
 ### Known Risks
 
@@ -116,12 +120,11 @@ progress:
 
 - v1.0 MVP shipped (4 phases, 10 plans, 17 requirements)
 - Milestone v1.1 started: CI/CD Pipeline
+- Phase 5 (CI Pipeline) complete — CI workflow live, Dependabot configured
 
 ### What's Next
 
-- Define v1.1 requirements
-- Create roadmap
-- Plan and execute CI/CD phases
+- Plan and execute Phase 6 (Docker & Release Pipeline)
 
 ### User Preferences
 
@@ -133,4 +136,4 @@ progress:
 
 ---
 
-*State updated: 2026-03-13 (Milestone v1.1 started — CI/CD Pipeline)*
+*State updated: 2026-03-14 (Phase 5 complete — CI workflow live, ready for Phase 6)*

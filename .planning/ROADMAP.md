@@ -21,17 +21,19 @@
 
 ## Active Phases — v1.1 CI/CD Pipeline
 
-### Phase 5: CI Pipeline
+### Phase 5: CI Pipeline -- COMPLETE
 
 **Goal:** Automated build and test on every push and PR to main, with Gradle dependency caching.
 
 **Requirements:** CI-01, CI-02, CI-03
 
+**Status:** Complete (2026-03-14) -- 1/1 plan executed
+
 **Success Criteria:**
-1. Pushing a commit to main triggers a GitHub Actions workflow that builds the project
-2. Opening a PR to main triggers the same workflow
-3. All tests run during CI; a failing test causes the workflow to fail with visible error
-4. Subsequent workflow runs use cached Gradle dependencies (faster than first run)
+1. [x] Pushing a commit to main triggers a GitHub Actions workflow that builds the project
+2. [ ] Opening a PR to main triggers the same workflow (configured, not yet triggered)
+3. [x] All tests run during CI; a failing test causes the workflow to fail with visible error
+4. [x] Subsequent workflow runs use cached Gradle dependencies (faster than first run)
 
 **Dependencies:** None (first phase)
 
@@ -58,7 +60,7 @@
 | Milestone         | Phases | Plans | Status     | Shipped    |
 | ----------------- | ------ | ----- | ---------- | ---------- |
 | v1.0 MVP          | 1-4    | 10    | Complete   | 2026-03-10 |
-| v1.1 CI/CD        | 5-6    | TBD   | In Progress | —          |
+| v1.1 CI/CD        | 5-6    | 1     | In Progress | —          |
 
 ## v1.1 Requirements Coverage
 
@@ -87,4 +89,4 @@
 
 _For v1.0 phase details, see `.planning/milestones/v1.0-ROADMAP.md`_
 
-_Roadmap created: 2026-03-01 | Last updated: 2026-03-13 after v1.1 roadmap creation_
+_Roadmap created: 2026-03-01 | Last updated: 2026-03-14 after Phase 5 completion_
