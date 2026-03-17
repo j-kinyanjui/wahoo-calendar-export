@@ -1,27 +1,22 @@
-# Multi-stage build: compile in Gradle container, then run in minimal JRE
-FROM gradle:8.4-jdk17 AS builder
+# Build stage:
+FROM gradle:9.4.0-jdk21-alpine AS builder
 
 WORKDIR /app
 COPY build.gradle.kts gradle.properties settings.gradle.kts ./
-COPY gradle/ gradle/
+#COPY gradle/ gradle/
 COPY src/ src/
 
 # Build and install distribution (excludes tests for faster build)
 RUN gradle clean installDist -x test --no-daemon
 
-# Runtime stage: use lightweight JRE image
-FROM eclipse-temurin:17-jre-ubi9-minimal
+# Runtime stage:
+FROM gcr.io/distroless/java17-debian13
 
 WORKDIR /app
 
-# Copy the built application from builder stage
-COPY --from=builder /app/build/install/wahoo-plan-to-calendar/ /app/wahoo-cli
-
-# Create directory for config and output files
+COPY --from=builder /app/build/install/wahoo-calendar-export/ /app/wahoo-calendar-export
 RUN mkdir -p /app/config /app/output
-
-# Set the entrypoint to the CLI
-ENTRYPOINT ["/app/wahoo-cli/bin/wahoo-plan-to-calendar"]
+ENTRYPOINT ["/app/wahoo-cli/bin/wahoo-calendar-export"]
 
 # Default command: fetch and export workouts with 2-week range
 CMD ["--range", "2w"]
