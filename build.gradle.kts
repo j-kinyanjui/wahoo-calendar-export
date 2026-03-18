@@ -5,7 +5,7 @@ val kotlin_version: String by project
 val logback_version: String by project
 
 plugins {
-    kotlin("jvm") version "2.3.10"
+    kotlin("jvm") version "2.3.20"
     application
     kotlin("plugin.serialization") version "2.3.20"
     id("com.diffplug.spotless") version "8.3.0"
