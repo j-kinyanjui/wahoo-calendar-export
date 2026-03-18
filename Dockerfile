@@ -12,6 +12,6 @@ FROM eclipse-temurin:21-jre-ubi9-minimal
 
 WORKDIR /app
 
-COPY --from=builder /app/build/install/wahoo-calendar-export/ /app/wahoo-calendar-export/
-ENTRYPOINT ["/app/wahoo-calendar-export/bin/wahoo-calendar-export"]
+COPY --from=builder /app/build/install/wahoo-cal/ /app/wahoo-cal/
+ENTRYPOINT ["/app/wahoo-cal/bin/wahoo-cal"]
 CMD ["--range", "2w"]

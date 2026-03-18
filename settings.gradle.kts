@@ -1,1 +1,1 @@
-rootProject.name = "wahoo-calendar-export"
+rootProject.name = "wahoo-cal"

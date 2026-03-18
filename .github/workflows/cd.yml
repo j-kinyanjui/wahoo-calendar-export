@@ -19,8 +19,7 @@ jobs:
     # Run only when CI succeeded AND (triggered by main branch push OR a v* tag push)
     if: |
       github.event.workflow_run.conclusion == 'success' &&
-      (github.event.workflow_run.head_branch == 'main' ||
-       startsWith(github.event.workflow_run.head_branch, 'v'))
+      startsWith(github.event.workflow_run.head_branch, 'v')
 
     steps:
       - name: Checkout code
@@ -48,8 +47,6 @@ jobs:
         with:
           images: ghcr.io/j-kinyanjui/wahoo-plan-to-calendar
           tags: |
-            # Push `latest` tag on main merge (not a tag push)
-            type=raw,value=latest,enable=${{ github.event.workflow_run.head_branch == 'main' }}
             # Push full version tag (e.g., v1.1.0) when triggered by a tag push
             type=raw,value=${{ github.event.workflow_run.head_branch }},enable=${{ startsWith(github.event.workflow_run.head_branch, 'v') }}
           labels: |
@@ -95,7 +92,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Build distribution archive
-        run: ./gradlew distZip
+        run: ./gradlew assembleDist
 
       - name: Get version tag
         id: tag
@@ -109,18 +106,12 @@ jobs:
           make_latest: true
           body: |
             ## Docker Image
-
-            Pull and run this release:
-
-            ```
+            `
             docker pull ghcr.io/j-kinyanjui/wahoo-plan-to-calendar:${{ steps.tag.outputs.version }}
-            docker run --rm \
-              -e SYSTM_USER=your@email.com \
-              -e SYSTM_PASSWORD=yourpassword \
-              ghcr.io/j-kinyanjui/wahoo-plan-to-calendar:${{ steps.tag.outputs.version }}
-            ```
+            `
 
             > **Note:** GHCR image visibility must be set to **Public** in [GitHub package settings](https://github.com/j-kinyanjui/wahoo-plan-to-calendar/pkgs/container/wahoo-plan-to-calendar) after first push for unauthenticated pulls.
 
           files: |
             build/distributions/*.zip
+            build/distributions/*.tar

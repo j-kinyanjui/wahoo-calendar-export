@@ -11,11 +11,11 @@ plugins {
     id("com.diffplug.spotless") version "8.3.0"
 }
 
-group = "nesski.de"
+group = "de.nesski"
 
 version = "0.0.1"
 
-application { mainClass.set("nesski.de.ApplicationKt") }
+application { mainClass.set("de.nesski.ApplicationKt") }
 
 repositories { mavenCentral() }
 
