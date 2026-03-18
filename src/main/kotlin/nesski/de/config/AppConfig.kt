@@ -2,7 +2,6 @@ package nesski.de.config
 
 import com.akuleshov7.ktoml.file.TomlFileReader
 import java.io.File
-import java.nio.file.Paths
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -39,10 +38,7 @@ data class AppConfig(
 
 @Serializable data class CredentialsConfig(val username: String, val password: String)
 
-@Serializable
-data class OutputConfig(
-    @SerialName("ics_save_path") val icsSavePath: String = Paths.get("").toAbsolutePath().toString()
-)
+@Serializable data class OutputConfig(@SerialName("ics_save_path") val icsSavePath: String)
 
 @Serializable
 data class EmailConfig(
