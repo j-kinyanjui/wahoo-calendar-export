@@ -110,6 +110,7 @@ progress:
 ### Pending Todos
 
 1. ~~**Add GitHub Action to build and package app**~~ (area: tooling) — completed in 05-01
+2. **Migrate CI/CD from Docker build to Gradle assembleDist artifacts** (area: tooling) — replace Docker image pipeline with `gradle assembleDist` zip/tar uploads to GitHub Releases
 
 ### Known Risks
 
