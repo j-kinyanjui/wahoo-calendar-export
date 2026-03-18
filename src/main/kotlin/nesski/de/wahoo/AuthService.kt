@@ -72,7 +72,7 @@ class SystmAuthService(
      * @return token on success, or null if login fails.
      */
     suspend fun login(): String {
-        logger.info("Attempting Systm login for user: $credentials.username")
+        logger.info("Attempting Systm login for user: ${credentials.username}")
 
         val request =
             GraphQLRequest(

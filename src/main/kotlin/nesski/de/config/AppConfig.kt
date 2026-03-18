@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AppConfig(
     val credentials: CredentialsConfig,
-    val output: OutputConfig = OutputConfig(),
+    val output: OutputConfig,
     val email: EmailConfig = EmailConfig(),
 ) {
     companion object {

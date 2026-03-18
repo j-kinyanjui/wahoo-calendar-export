@@ -38,21 +38,22 @@ docker run --rm wahoo-cli:latest --help
 docker run -it --rm \
   -e SYSTM_USER="your-email@example.com" \
   -e SYSTM_PASSWORD="your-password" \
-  -v "$(pwd)":/app/output \
+  -v "$(pwd)/output":/app/output \
   wahoo-cli:latest
 
 # Custom date range
 docker run -it --rm \
   -e SYSTM_USER="your-email@example.com" \
   -e SYSTM_PASSWORD="your-password" \
-  -v "$(pwd)":/app/output \
+  -v "$(pwd)/output":/app/output \
   wahoo-cli:latest \
   --from 2026-03-01 --to 2026-04-01
 
 # Using a config file
 docker run -it --rm \
   -v ~/.config/wahoo-cli/config:/app/config:ro \
-  -v "$(pwd)":/app/output \
+  -v "$(pwd)/output":/app/output \
+  -w /app \
   wahoo-cli:latest
 ```
 
