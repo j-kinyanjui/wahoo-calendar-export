@@ -39,5 +39,39 @@
 - Email credentials via config.toml — production should use env vars only
 - No token refresh mechanism — users re-run with fresh credentials
 
+## v1.1 CI/CD Pipeline (Shipped: 2026-03-14)
+
+**Phases completed:** 2 phases, 3 plans
+
+**Timeline:** 2026-03-13 → 2026-03-14 (2 days)
+
+**Codebase:** CI/CD pipeline live — 3 new workflow files (ci.yml, cd.yml, dependabot.yml)
+
+**Key accomplishments:**
+- ✓ GitHub Actions CI workflow — build + test + format check on push and PR to main
+- ✓ Gradle dependency caching via `gradle/actions/setup-gradle@v4`
+- ✓ Spotless/ktfmt formatting enforcement in CI
+- ✓ Dependabot for automated dependency updates (Gradle + GitHub Actions ecosystems)
+- ✓ CD workflow with `workflow_run` CI→CD chaining (Docker builds only after CI passes)
+- ✓ Multi-platform Docker images (linux/amd64 + linux/arm64) pushed to GHCR
+- ✓ GitHub Release with auto-generated changelog triggered by `v*.*.*` git tags
+- ✓ End-to-end pipeline verified via v1.1.0 tag push
+
+**Requirements shipped:**
+- CI-01, CI-02, CI-03 (Continuous Integration)
+- CD-01, CD-02, CD-03 (Continuous Delivery)
+
+**Decisions locked in v1.1:**
+- `workflow_run` CI→CD chaining — Docker never runs unless CI passes
+- Multi-platform Docker (amd64+arm64) — future-proofs for ARM servers and Apple Silicon
+- Spotless/ktfmt in CI — formatting enforced, not just suggested
+- Dependabot — automated security and version updates
+
+**Technical debt deferred:**
+- Branch protection rules — private repo on free plan; enable when public
+- GHCR package visibility — one-time manual toggle to Public required
+- Docker → Gradle `assembleDist` migration — lighter releases without Docker dependency
+
 ---
+
 

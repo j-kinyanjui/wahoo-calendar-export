@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: CI/CD Pipeline
-status: unknown
-last_updated: "2026-03-14T17:00:09.580Z"
+status: archived
+last_updated: "2026-03-18T00:00:00.000Z"
 progress:
   total_phases: 2
   completed_phases: 2
@@ -25,10 +25,10 @@ progress:
 
 | Field | Value |
 |-------|-------|
-| **Phase** | 6 of 6 — Docker & Release Pipeline (complete) |
-| **Current Plan** | 06-02 complete (all plans done) |
-| **Status** | Milestone v1.1 complete — CI/CD pipeline live |
-| **Last Activity** | 2026-03-14 — 06-02 executed (CD pipeline verified end-to-end) |
+| **Phase** | — (milestone v1.1 archived) |
+| **Current Plan** | — (all plans complete) |
+| **Status** | Milestone v1.1 archived — ready for next milestone |
+| **Last Activity** | 2026-03-18 — v1.1 archived (planning docs updated, git tag v1.1) |
 
 ---
 
@@ -133,7 +133,7 @@ progress:
 
 ### What's Next
 
-- Milestone v1.1 complete — no remaining plans
+- Milestone v1.1 archived — run `/gsd-new-milestone` to start next milestone
 
 ### User Preferences
 
@@ -145,4 +145,4 @@ progress:
 
 ---
 
-*State updated: 2026-03-14 (06-02 complete — CD pipeline verified, milestone v1.1 complete)*
+*State updated: 2026-03-18 (v1.1 milestone archived — planning docs updated, git tag v1.1 created)*
