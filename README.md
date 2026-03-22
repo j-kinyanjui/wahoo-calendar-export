@@ -10,58 +10,41 @@ A lightweight CLI tool that fetches your Wahoo Systm training plans and exports 
 - Java 17+
 - Gradle 9.4+
 
-**Build:**
+**Build and run locally:**
 
 ```bash
-./gradlew build
+./gradlew run --args="--help"
+```
+
+**Build Executable:**
+
+```bash
 ./gradlew installDist
 ```
 
-The CLI is available in `build/install/wahoo-cli/bin/wahoo-cli`.
+The CLI is available in `build/install/wahoo-cal/bin/wahoo-cal`.
+
+```bash
+./build/install/wahoo-cal/bin/wahoo-cal --help
+```
 
 ### Option 2: Docker
 
 **Build the Docker image:**
 
 ```bash
-docker build -t wahoo-cli:latest .
+docker build -t wahoo-cal:latest .
 ```
 
 **Run with Docker:**
 
 ```bash
-docker run --rm wahoo-cli:latest --help 
+docker run --rm wahoo-cal:latest --help 
 ```
-
-```bash
-# Fetch plans from the past 2 weeks and save to current directory
-docker run -it --rm \
-  -e SYSTM_USER="your-email@example.com" \
-  -e SYSTM_PASSWORD="your-password" \
-  -v "$(pwd)/output":/app/output \
-  wahoo-cli:latest
-
-# Custom date range
-docker run -it --rm \
-  -e SYSTM_USER="your-email@example.com" \
-  -e SYSTM_PASSWORD="your-password" \
-  -v "$(pwd)/output":/app/output \
-  wahoo-cli:latest \
-  --from 2026-03-01 --to 2026-04-01
-
-# Using a config file
-docker run -it --rm \
-  -v ~/.config/wahoo-cli/config:/app/config:ro \
-  -v "$(pwd)/output":/app/output \
-  -w /app \
-  wahoo-cli:latest
-```
-
-The `.ics` file will be saved to your current directory (`$(pwd)`).
 
 ## Configuration
 
-Create a config file at `~/.config/wahoo-cli/config`:
+Create a config file at a location of choice. For example: `~/.config/wahoo-cal/config.toml`
 
 ```toml
 [credentials]
@@ -70,7 +53,6 @@ password = "your-systm-password"
 
 [output]
 ics_save_path = "."
-
 ```
 
 Or use environment variables to override:
@@ -87,25 +69,24 @@ export SYSTM_PASSWORD="your-password"
 **Fetch and export plans to .ics:**
 
 ```bash
-wahoo-cli
-# Exports to: workouts_2w_<date>.ics (past 7 days + next 14 days)
+./build/install/wahoo-cal/bin/wahoo-cal --range now
 ```
 
 **Specify date range:**
 
 ```bash
 # Using shorthand
-wahoo-cli --range 1m    # Past 1 month
-wahoo-cli --range 2w    # Past 2 weeks
+./build/install/wahoo-cal/bin/wahoo-cal --range 1m
+./build/install/wahoo-cal/bin/wahoo-cal --range 2w
 
 # Using explicit dates (max 2 months)
-wahoo-cli --from 2026-03-01 --to 2026-05-01
+wahoo-cal --from 2026-03-01 --to 2026-05-01
 ```
 
 **Use custom config path:**
 
 ```bash
-wahoo-cli --config /path/to/custom/config
+wahoo-cal --config /path/to/custom/config
 ```
 
 ### Docker
@@ -113,34 +94,31 @@ wahoo-cli --config /path/to/custom/config
 **Basic usage (2-week default range):**
 
 ```bash
-docker run -it \
+docker run -it --rm \
   -e SYSTM_USER="your-email@example.com" \
   -e SYSTM_PASSWORD="your-password" \
-  -v "$(pwd)":/app/output \
-  wahoo-cli:latest
-```
+  -v "$(pwd)/output":/app/output \
+  wahoo-cal:latest
 
-**Custom date range:**
-
-```bash
-docker run -it \
+docker run -it --rm \
   -e SYSTM_USER="your-email@example.com" \
   -e SYSTM_PASSWORD="your-password" \
-  -v "$(pwd)":/app/output \
-  wahoo-cli:latest \
+  -v "$(pwd)/output":/app/output \
+  wahoo-cal:latest \
   --from 2026-03-01 --to 2026-04-01
+
+docker run -it --rm \
+  -v ~/.config/wahoo-cal/config:/app/config:ro \
+  -v "$(pwd)/output":/app/output \
+  -w /app \
+  wahoo-cal:latest
 ```
 
-**With config file:**
-
-```bash
-docker run -it \
-  -v ~/.config/wahoo-cli/config:/app/config:ro \
-  -v "$(pwd)":/app/output \
-  wahoo-cli:latest
-```
+The `.ics` file will be saved to the directory specified in the `config file` or a given `--out` option. 
 
 **Email the .ics file (if configured):**
+
+>[!Warning]: This is not yet tested
 
 Enable email in config, then run normally. The .ics will be emailed; if SMTP fails, it saves to disk as backup.
 
@@ -151,65 +129,10 @@ A `.ics` file with all your workouts as calendar events:
 - **Date:** All-day event (you can drag to preferred time in your calendar)
 - **Type:** RFC 5545 VEVENT format (compatible with all major calendar apps)
 
-## Examples
-
-### Apple Calendar (Local)
-
-```bash
-./wahoo-cli
-open workouts_*.ics
-```
-
-### Apple Calendar (Docker)
-
-```bash
-docker run -it \
-  -e SYSTM_USER="your-email@example.com" \
-  -e SYSTM_PASSWORD="your-password" \
-  -v "$(pwd)":/app/output \
-  wahoo-cli:latest
-
-open workouts_*.ics
-```
-
-### Google Calendar (Local)
-
-```bash
-./wahoo-cli --from 2026-03-01 --to 2026-04-01
-# Go to Google Calendar → Settings → Import & Export → Upload workouts_*.ics
-```
-
-### Google Calendar (Docker)
-
-```bash
-docker run -it \
-  -e SYSTM_USER="your-email@example.com" \
-  -e SYSTM_PASSWORD="your-password" \
-  -v "$(pwd)":/app/output \
-  wahoo-cli:latest \
-  --from 2026-03-01 --to 2026-04-01
-```
-
-### Command Line
-
-```bash
-# Local:
-./wahoo-cli && xdg-open workouts_*.ics
-
-# Docker:
-docker run -it -e SYSTM_USER="..." -e SYSTM_PASSWORD="..." -v "$(pwd)":/app/output wahoo-cli:latest && xdg-open workouts_*.ics
-```
-
 ## Development
 
 ### Run tests
 
 ```bash
 ./gradlew test
-```
-
-### Build and run locally
-
-```bash
-./gradlew run --args="--from 2026-03-01 --to 2026-03-31"
 ```

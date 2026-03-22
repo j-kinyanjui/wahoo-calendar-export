@@ -15,7 +15,7 @@ group = "de.nesski"
 
 version = "0.0.1"
 
-application { mainClass.set("de.nesski.ApplicationKt") }
+application { mainClass.set("nesski.de.ApplicationKt") }
 
 repositories { mavenCentral() }
 
