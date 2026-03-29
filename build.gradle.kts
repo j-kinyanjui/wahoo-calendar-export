@@ -34,7 +34,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 
     // ICS calendar generation (ical4j — RFC 5545 compliant)
-    implementation("org.mnode.ical4j:ical4j:4.2.3")
+    implementation("org.mnode.ical4j:ical4j:4.2.4")
 
     // Email (Simple Java Mail for SMTP with .ics attachment)
     implementation("org.simplejavamail:simple-java-mail:8.12.6")
