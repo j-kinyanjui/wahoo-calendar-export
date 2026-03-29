@@ -55,11 +55,15 @@ password = "your-systm-password"
 ics_save_path = "."
 ```
 
-Or use environment variables to override:
+Or use environment variables to override some properties:
 
 ```bash
 export SYSTM_USER="your-email@example.com"
 export SYSTM_PASSWORD="your-password"
+export SMTP_USERNAME="smtp username"
+export SMTP_PASSWORD="smtp password"
+export SMTP_FROM="sending email"
+export SMTP_TO="receiving email"
 ```
 
 ## Usage
@@ -118,7 +122,8 @@ The `.ics` file will be saved to the directory specified in the `config file` or
 
 **Email the .ics file (if configured):**
 
->[!Warning]: This is not yet tested
+> [!WARNING]  
+> This is not yet tested.
 
 Enable email in config, then run normally. The .ics will be emailed; if SMTP fails, it saves to disk as backup.
 
