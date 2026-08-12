@@ -37,7 +37,7 @@ dependencies {
     implementation("org.mnode.ical4j:ical4j:4.2.5")
 
     // Email (Simple Java Mail for SMTP with .ics attachment)
-    implementation("org.simplejavamail:simple-java-mail:8.12.6")
+    implementation("org.simplejavamail:simple-java-mail:9.2.0")
 
     // Logging
     implementation("ch.qos.logback:logback-classic:$logback_version")
