@@ -5,10 +5,10 @@ val kotlin_version: String by project
 val logback_version: String by project
 
 plugins {
-    kotlin("jvm") version "2.3.21"
+    kotlin("jvm") version "2.4.10"
     application
     kotlin("plugin.serialization") version "2.3.21"
-    id("com.diffplug.spotless") version "8.6.0"
+    id("com.diffplug.spotless") version "8.9.0"
 }
 
 group = "de.nesski"
@@ -34,7 +34,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 
     // ICS calendar generation (ical4j — RFC 5545 compliant)
-    implementation("org.mnode.ical4j:ical4j:4.2.5")
+    implementation("org.mnode.ical4j:ical4j:4.3.0")
 
     // Email (Simple Java Mail for SMTP with .ics attachment)
     implementation("org.simplejavamail:simple-java-mail:8.12.6")
