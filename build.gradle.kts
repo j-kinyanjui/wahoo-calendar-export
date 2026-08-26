@@ -8,7 +8,7 @@ plugins {
     kotlin("jvm") version "2.4.10"
     application
     kotlin("plugin.serialization") version "2.3.21"
-    id("com.diffplug.spotless") version "8.9.0"
+    id("com.diffplug.spotless") version "8.10.0"
 }
 
 group = "de.nesski"
